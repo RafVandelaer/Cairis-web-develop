@@ -1,0 +1,92 @@
+.menu-image{
+    max-height:20px;
+    position: relative;
+}
+
+
+p.imgPopup {
+    position: absolute;
+    top: 52px;
+    background: rgba(52, 52, 52, 0.72);
+    color: #fff;
+    padding: 5px;
+    left: -5px;
+    height: 200px;
+    width: 100px;
+    visibility: hidden;
+    opacity: 0;
+    text-align: center;
+    -webkit-transition: visibility-opacity 1s;
+}
+.navbar-custom-menu .mCustomScrollBox .navbar-nav>li:last-child> a > p {
+    left: -50px;
+}
+.isEnd > img{
+    border: 1px rgba(85, 85, 85, 0.50);
+    border-right-style: solid;
+    padding-right: 5px;
+}
+/*Overrride from AdminLTE for bigger icons in top nav menu*/
+.navbar-custom-menu .mCustomScrollBox .navbar-nav>li>a.imgwrapper{
+    padding: 15px 6px 3px 6px;
+    margin-bottom: 12px;
+}
+/*Overrride from AdminLTE for bigger icons in top nav menu*/
+.navbar-nav>li>a.imgwrapper.isEnd {
+    padding: 15px 0px 15px 6px;
+}
+a.imgwrapper:hover .imgPopup {
+    visibility: visible;
+    z-index: 1;
+    opacity: 1;
+}
+/*override from adminLTE*/
+.main-header .navbar-custom-menu, .main-header .navbar-right{
+    margin-right: 0px;
+}
+div#mCSB_1 {
+    height: 50px;
+}
+ul.nav.navbar-nav {
+    height: 50px;
+}
+a.dropdown-toggle.imgwrapper{
+    padding-left: 5px;
+    padding-right: 5px;
+}
+div#mCSB_1 {
+    float: right;
+}
+.navbar-custom-menu.mCustomScrollbar._mCS_1.mCS_no_scrollbar{
+    height:50px;
+}
+header.main-header{
+    height: 50px;
+}
+
+/* For config*/
+input{
+    float:right;
+    clear:both;
+}
+select{
+    visibility: hidden;
+    min-width: 150px;
+}
+table, th, td{
+    padding: 5px;
+    border: 1px solid black;
+}
+.theTable{
+    visibility: hidden;
+}
+.topCombobox{
+    visibility: hidden;
+}
+#errorDialog{
+    visibility: hidden;
+    display: none;
+}
+thead{
+    border-bottom: 3px black solid;
+}
