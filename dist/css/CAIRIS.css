@@ -90,3 +90,15 @@ table, th, td{
 thead{
     border-bottom: 3px black solid;
 }
+.comboboxD{
+    visibility: hidden;
+}
+#svgViewer{
+    width: 100%;
+    height: 100%;
+    background-color: white;
+}
+svg{
+    width: 100%;
+    height: 100%;
+}

@@ -44,6 +44,8 @@ $(window).load(function(){
         $("#inform").text(p.text());
 
     });
+    activeElement("reqTable");
+
 
     /*
      FOR JSON

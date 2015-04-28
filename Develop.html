@@ -31,6 +31,8 @@
     <script src="plugins/editableTable/editableRAF.js"></script>
     <!-- Session plugin -->
     <script src="dist/js/jquery.session.js"></script>
+    <!-- svg pan and zoom script -->
+    <script src="plugins/svg-pan-zoom/svg-pan-zoom.js"></script>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -92,7 +94,7 @@
                     </ul>
                     </li>
                     <li class="dropdown messages-menu">
-                        <a href="#" class="dropdown-toggle imgwrapper" data-toggle="dropdown">
+                        <a href="#" class="dropdown-toggle imgwrapper" id="removesessionButton" data-toggle="dropdown">
                            <img class="menu-image" src="images/new_file2.png" alt="New Project">
                                 <p class="imgPopup">New Project</p>
                         </a>
@@ -300,9 +302,9 @@
                             <p class="imgPopup">View Responsibility Model</p>
                         </a>
                     </li>
-                    <li class="dropdown messages-menu">
+                    <li  id="assetView">
                         <a href="#" class="dropdown-toggle imgwrapper" data-toggle="dropdown">
-                            <img class="menu-image" src="images/classModel.png" alt="View Asset Model">
+                            <img class="menu-image"  src="images/classModel.png" alt="View Asset Model">
                             <p class="imgPopup">View Asset Model</p>
                         </a>
                     </li>
@@ -559,7 +561,7 @@
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <section class="content-header">
-           <div class="extraContent">
+           <div id="filtercontent" class="extraContent">
                <label  class="topCombobox" for="assetsbox">Assets</label>
                 <select class="topCombobox" id="assetsbox" ><option>All</option></select>
                <label  class="topCombobox" for="environmentsbox">Requirements</label>
@@ -571,15 +573,14 @@
         <!-- Main content -->
         <section id="maincontent" class="content">
             <!-- Your Page Content Here -->
-            <button id="testingButton" >Push me</button>
-            <button id="removesessionButton" >Remove Session</button>
             <table id="reqTable"class="theTable table table-striped">
                 <thead><th width="50px">  </th><th>Name</th><th>Description</th><th>Priority</th><th>Rationale</th><th>Fit Citerion</th><th>Originator</th><th>Type</th></tr></thead>
                 <tbody>
 
                 </tbody>
             </table>
-            <div id="test"></div>
+            <div id="svgViewer"></div>
+
         </section><!-- /.content -->
     </div><!-- /.content-wrapper -->
     <!-- rightnav -->
@@ -627,6 +628,11 @@
         </p>
     </form>
 </div>
+<div class="comboboxD" id="comboboxDialog" title="Dialog">
+    <label> Choose the environment</label>
+    <select class="comboboxD" id="comboboxDialogSelect">
+    </select>
+</div>
 <div id="errorDialog" title="ERROR">
     <p>TYou can't use CAIRIS without any settings</p>
 </div>
@@ -640,6 +646,7 @@
         //$('textarea').css("","hidden");
         reqTabl.find('td:last').focus();
     });
+
 </script>
 <!-- REQUIRED JS SCRIPTS -->
 <!-- AdminLTE App -->

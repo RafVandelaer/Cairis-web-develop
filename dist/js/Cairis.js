@@ -100,6 +100,86 @@ $('#assetsbox').change(function() {
 
 });
 /*
+When assetview is clicked
+ */
+$('#assetView').click(function(){
+
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            //session_id: String($.session.get('sessionID')),
+            //TODO: aanpassen session
+            session_id: "test"
+        },
+        crossDomain: true,
+        url: serverIP + "/api/environments/names",
+        success: function (data) {
+            $("#comboboxDialogSelect").empty();
+            $.each(data, function(i, item) {
+                $("#comboboxDialogSelect").append("<option value=" + item + ">"  + item + "</option>")
+            });
+            $( "#comboboxDialog" ).dialog({
+                modal: true,
+                buttons: {
+                    Ok: function() {
+                        $( this ).dialog( "close" );
+                        //Created a function, for readability
+                        getAssetview($( "#comboboxDialogSelect").find("option:selected" ).text());
+                    }
+                }
+            });
+            $(".comboboxD").css("visibility","visible");
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log(this.url);
+            var err = eval("(" + xhr.responseText + ")");
+            //alert(err.message);
+            console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+})});
+function getAssetview(environment){
+    $.ajax({
+        type:"GET",
+        accept:"text/plain",
+        //TODO: change session_id
+        data: {
+            environment: environment,
+            session_id: "test"
+        },
+        crossDomain: true,
+        url: serverIP + "/api/assets/view",
+        success: function(data){
+           // console.log(data.lastElementChild);
+            console.log(this.url);
+            svgDiv =  $("#svgViewer");
+            svgDiv.css("visibility","visible");
+            svgDiv.css("height",$("#maincontent").height());
+            svgDiv.css("width","100%");
+            svgDiv.html(data);
+            $("svg").attr("id","svg-id");
+            activeElement("svgViewer");
+            panZoomInstance = svgPanZoom('#svg-id', {
+                zoomEnabled: true,
+                controlIconsEnabled: true,
+                fit: true,
+                center: true,
+                minZoom: 0.1
+            })
+
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            console.log(this.url);
+            var err = eval("(" + xhr.responseText + ")");
+            //alert(err.message);
+            console.log("error: " + err + ", textstatus: "  +textStatus + ", thrown: "+ errorThrown);
+        }
+
+    });
+}
+
+/*
 Same for the environments
  */
 $('#environmentsbox').change(function() {
@@ -152,10 +232,10 @@ function createRequirementsTable(data){
         }
 
         tre = $('<tr>');
-        tre.append("<td name=" +item.theLabel + "  >" + item.theLabel + "</td>");
-        tre.append("<td name=" +name + "  contenteditable=true>" + name + "</td>");
-        tre.append("<td name=" +desc + "  contenteditable=true>" + desc + "</td>");
-        tre.append("<td name=" +item.thePriority + "  contenteditable=true>" + item.thePriority + "</td>");
+        tre.append("<td name='theLabel' >" + item.theLabel + "</td>");
+        tre.append("<td name='theName'  contenteditable=true>" + name + "</td>");
+        tre.append("<td name='theDescription'  contenteditable=true>" + desc + "</td>");
+        tre.append("<td name='thePriority'  contenteditable=true>" + item.thePriority + "</td>");
 
 
         var datas = eval(item.attrs); // this will convert your json string to a javascript object
@@ -178,10 +258,24 @@ Function for adding a row to the table
  */
 $("#addReq").click(function() {
     var clonedRow = $("#reqTable tr:last").clone();
-   $("#reqTable").append(clonedRow);
-    $('#reqTable tr:last td').each(function() {
-        $(this).html("")
-    });
+    if(clonedRow.has("th")){
+        // if no tr, I'm creating an row from a template
+        console.log("No row");
+        var template = '<tr> <td name="theLabel"></td> <td name="theName" contenteditable="true"></td> <td name="theDescription" contenteditable="true"></td> <td name="thePriority" contenteditable="true">1</td> <td name="originator" contenteditable="true"></td> <td name="fitCriterion" contenteditable="true">None</td> <td name="rationale" contenteditable="true">None</td> <td name="type" contenteditable="true">Functional</td> </tr>';
+        $("#reqTable").append(template);
+    }else {
+        console.log("A row");
+        $("#reqTable").append(clonedRow);
+        $('#reqTable tr:last td').each(function() {
+
+            $(this).html("");
+            $(this).each(function(){
+                console.log("Jup")
+            });
+        });
+    }
+
+
 });
 
 /*
@@ -268,6 +362,7 @@ function startingTable(){
         success: function(data) {
             // $("#test").append(JSON.stringify(data));
             createRequirementsTable(data);
+            activeElement("reqTable");
         },
         error: function(xhr, textStatus, errorThrown) {
             console.log(this.url);
@@ -276,6 +371,20 @@ function startingTable(){
             console.log("error: " + err + ", textstatus: "  +textStatus + ", thrown: "+ errorThrown);
         }
     });
+}
+/*
+This is for saying which element has the main focus
+ */
+function activeElement(elementid){
+    if(elementid != "reqTable"){
+        $("#reqTable").hide();
+    }
+    if(elementid != "svgViewer"){
+        $("#svgViewer").hide();
+    }
+    elementid = "#" + elementid;
+    $(elementid).show();
+
 }
 
 
