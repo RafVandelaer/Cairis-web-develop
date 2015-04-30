@@ -22,7 +22,7 @@
     <script src="plugins/mCustomScrollbar/jquery.mCustomScrollbar.js"></script>
     <!-- Script for dialog window -->
     <script src="http://code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
-    <link href="plugins/jQueryUI/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/jQueryUI/jquery-ui.2.css" rel="stylesheet" type="text/css" />
 
     <link href="dist/css/skins/skin-blue.min.css" rel="stylesheet" type="text/css" />
     <link href="dist/css/CAIRIS.css" rel="stylesheet" type="text/css" />
@@ -61,7 +61,7 @@
                     <!-- Tasks Menu -->
                     <li class="dropdown tasks-menu">
                     <!-- Menu Toggle Button -->
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <a href="#" class="dropdown-toggle"  id="testingButton" data-toggle="dropdown">
                         <i class="fa fa-flag-o"></i>
                         <span class="label label-danger">9</span>
                     </a>
@@ -152,7 +152,7 @@
                         </a>
                     </li>
                     <li class="dropdown messages-menu">
-                        <a href="#" id="addReq" class="dropdown-toggle imgwrapper" data-toggle="dropdown">
+                        <a href="#" id="addRow" class="dropdown-toggle imgwrapper" data-toggle="dropdown">
                             <img class="menu-image"  src="images/addEO.png" alt="Add new requirement">
                             <p class="imgPopup">Add new requirement</p>
                         </a>
@@ -533,7 +533,7 @@
                             <span>Grid</span><i class="fa fa-angle-left pull-right"></i>
                         </a>
                         <ul class="treeview-menu">
-                            <li><a href="#">Requirements
+                            <li><a href="#" id="gridReq">Requirements
                             </a></li>
                             <li><a href="#">Goals
                             </a></li>
@@ -574,7 +574,7 @@
         <section id="maincontent" class="content">
             <!-- Your Page Content Here -->
             <table id="reqTable"class="theTable table table-striped">
-                <thead><th width="50px">  </th><th>Name</th><th>Description</th><th>Priority</th><th>Rationale</th><th>Fit Citerion</th><th>Originator</th><th>Type</th></tr></thead>
+                <thead></thead>
                 <tbody>
 
                 </tbody>
@@ -605,14 +605,14 @@
 </div>
 <div id="dialogContent" title="Configuration">
     <p>Define your database settings</p>
-    <form action="#" method="post" id="configForm">
+    <form  enctype='application/json' id="configForm">
         <p>
             <label for="host">Host </label>
             <input type="text" id="host" name="host" value="127.0.0.1" />
         </p>
         <p>
             <label for="port">Port </label>
-            <input type="text" id="port" name="port" value="3306" />
+            <input type='number' id="port" name="port" value="3306" />
         <p/>
         <p>
             <label for="user">User </label>
@@ -646,6 +646,7 @@
         //$('textarea').css("","hidden");
         reqTabl.find('td:last').focus();
     });
+    $("#comboboxDialog").hide();
 
 </script>
 <!-- REQUIRED JS SCRIPTS -->

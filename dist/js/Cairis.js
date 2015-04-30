@@ -2,6 +2,8 @@
  * Created by Raf on 24/04/2015.
  */
 window.serverIP = "http://192.168.112.129:7071";
+window.activeTable ="Requirements";
+
 //var yetVisited = localStorage['visited'];
 
 
@@ -26,11 +28,18 @@ var dialogwindow = $( "#dialogContent" ).dialog({
     buttons: {
         OK: function() {
 
+            var json_text = JSON.stringify($('#configForm').serializeObject());
+            var portArr  = json_text.match('port":"(.*)","user');
+            var port = portArr[1];
+            json_text = json_text.replace('"'+port+'"',port);
+            console.log(json_text);
             $.ajax({
                 type: 'POST',
-                url: serverIP + '/user/config',
-                data: $('#configForm').serializeArray(),
+                url: serverIP + '/api/user/config',
+               // data: $('#configForm').serializeArray(),
+                data: json_text,
                 accept:"application/json",
+                contentType : "application/json",
                 success: function(data, status, xhr) {
                     // console.log("DB Settings saved");
                     console.log(data);
@@ -41,7 +50,8 @@ var dialogwindow = $( "#dialogContent" ).dialog({
                 },
                 error: function(data, status, xhr) {
                     var err = eval("(" + xhr.responseText + ")");
-                    alert(err.message);
+                    console.log("error: " + err + ", textstatus: " + status + ", data: " + JSON.stringify(data));
+                    alert("There is a problem with the server...");
                 }
             });
 
@@ -56,9 +66,29 @@ var dialogwindow = $( "#dialogContent" ).dialog({
     }
 });
 
+/*
+For converting the form in JSON
+ */
+$.fn.serializeObject = function()
+{
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function() {
+        if (o[this.name] !== undefined) {
+            if (!o[this.name].push) {
+                o[this.name] = [o[this.name]];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
+    });
+    return o;
+};
+
 //Just for debug
 $("#testingButton").click(function(){
-
+    findLabel();
 });
 
 //For debug
@@ -84,7 +114,7 @@ $('#assetsbox').change(function() {
                     session_id: String($.session.get('sessionID'))
                 },
                 crossDomain: true,
-                url: serverIP + "/api/requirements/filter/" + encodeURIComponent(selection),
+                url: serverIP + "/api/requirements/asset/" + encodeURIComponent(selection),
                 success: function (data) {
                     createRequirementsTable(data);
                 },
@@ -109,9 +139,8 @@ $('#assetView').click(function(){
         dataType: "json",
         accept: "application/json",
         data: {
-            //session_id: String($.session.get('sessionID')),
-            //TODO: aanpassen session
-            session_id: "test"
+            session_id: String($.session.get('sessionID'))
+
         },
         crossDomain: true,
         url: serverIP + "/api/environments/names",
@@ -143,30 +172,14 @@ function getAssetview(environment){
     $.ajax({
         type:"GET",
         accept:"text/plain",
-        //TODO: change session_id
         data: {
             environment: environment,
-            session_id: "test"
+            session_id: String($.session.get('sessionID'))
         },
         crossDomain: true,
         url: serverIP + "/api/assets/view",
         success: function(data){
-           // console.log(data.lastElementChild);
-            console.log(this.url);
-            svgDiv =  $("#svgViewer");
-            svgDiv.css("visibility","visible");
-            svgDiv.css("height",$("#maincontent").height());
-            svgDiv.css("width","100%");
-            svgDiv.html(data);
-            $("svg").attr("id","svg-id");
-            activeElement("svgViewer");
-            panZoomInstance = svgPanZoom('#svg-id', {
-                zoomEnabled: true,
-                controlIconsEnabled: true,
-                fit: true,
-                center: true,
-                minZoom: 0.1
-            })
+           fillSvgViewer(data);
 
         },
         error: function(xhr, textStatus, errorThrown) {
@@ -200,7 +213,7 @@ $('#environmentsbox').change(function() {
                     is_asset: 0
                 },
                 crossDomain: true,
-                url: serverIP + "/api/requirements/filter/" + encodeURIComponent(selection),
+                url: serverIP + "/api/requirements/environment/" + encodeURIComponent(selection),
                 success: function (data) {
                     createRequirementsTable(data);
                 },
@@ -222,20 +235,13 @@ function createRequirementsTable(data){
      var tre;
     $(".theTable tr").not(function(){if ($(this).has('th').length){return true}}).remove();
     $.each(data, function(index, item) {
-        var name = " ";
-        var desc = " ";
-        if(item.theName.trim()){
-            name = item.theName;
-        }
-        if(item.theDescription.trim()){
-            desc = item.theDescription;
-        }
 
         tre = $('<tr>');
         tre.append("<td name='theLabel' >" + item.theLabel + "</td>");
-        tre.append("<td name='theName'  contenteditable=true>" + name + "</td>");
-        tre.append("<td name='theDescription'  contenteditable=true>" + desc + "</td>");
+        tre.append("<td name='theName'  contenteditable=true>" + item.theName + "</td>");
+        tre.append("<td name='theDescription'  contenteditable=true>" + item.theDescription + "</td>");
         tre.append("<td name='thePriority'  contenteditable=true>" + item.thePriority + "</td>");
+        tre.append("<td name='theId'  style='display:none;'>" + item.theId + "</td>");
 
 
         var datas = eval(item.attrs); // this will convert your json string to a javascript object
@@ -256,25 +262,28 @@ function createRequirementsTable(data){
 /*
 Function for adding a row to the table
  */
-$("#addReq").click(function() {
-    var clonedRow = $("#reqTable tr:last").clone();
-    if(clonedRow.has("th")){
-        // if no tr, I'm creating an row from a template
-        console.log("No row");
-        var template = '<tr> <td name="theLabel"></td> <td name="theName" contenteditable="true"></td> <td name="theDescription" contenteditable="true"></td> <td name="thePriority" contenteditable="true">1</td> <td name="originator" contenteditable="true"></td> <td name="fitCriterion" contenteditable="true">None</td> <td name="rationale" contenteditable="true">None</td> <td name="type" contenteditable="true">Functional</td> </tr>';
-        $("#reqTable").append(template);
-    }else {
-        console.log("A row");
-        $("#reqTable").append(clonedRow);
-        $('#reqTable tr:last td').each(function() {
-
-            $(this).html("");
-            $(this).each(function(){
-                console.log("Jup")
-            });
-        });
+$("#addRow").click(function() {
+    //var clonedRow = $("#reqTable tr:last").clone();
+    if($( "#assetsbox").find("option:selected" ).text() == "All" && $( "#environmentsbox").find("option:selected" ).text() == "All"){
+        alert("Please select an asset or an environment");
     }
-
+    else{
+        var template = "";
+        var num = findLabel();
+        switch (window.activeTable) {
+            case "Requirements":
+                template = '<tr> <td name="theLabel">' + num + '</td> <td name="theName" contenteditable="true"></td> <td name="theDescription" contenteditable="true"></td> <td name="thePriority" contenteditable="true">1</td><td name="theId" style="display:none;"></td><td name="originator" contenteditable="true"></td> <td name="fitCriterion" contenteditable="true">None</td> <td name="rationale" contenteditable="true">None</td> <td name="type" contenteditable="true">Functional</td> </tr>';
+                break;
+            case "Goals":
+                template = '<tr><td name="theLabel">' + num + '</td><td name="theName" contenteditable="true" ></td><td name="theDefinition" contenteditable="true"></td><td name="theCategory" contenteditable="true">Maintain</td><td name="thePriority" contenteditable="true">Low</td><td name="theId" style="display:none;"></td><td name="fitCriterion" contenteditable="true" >None</td><td  name="theIssue" contenteditable="true">None</td><td name="originator" contenteditable="true"></td></tr>';
+                break;
+            case "Obstacles":
+                template = '<tr><td name="theLabel">' + num + '</td><td name="theName" contenteditable="true">Name</td><td name="theDefinition" contenteditable="true">Definition</td><td name="theCategory" contenteditable="true">Category</td><td name="theId" style="display:none;"></td><td name="originator" contenteditable="true">Originator</td></tr>';
+                break;
+        }
+        $("#reqTable").append(template);
+        sortTable();
+    }
 
 });
 
@@ -286,21 +295,27 @@ $("#removeReq").click(function() {
     //of remove
     //TODO: AJAX CALL BEFORE REMOVE
 });
+
+$("#gridReq").click(function(){
+  startingTable();
+});
+
 /*
 Function for creating the comboboxes
  */
 function createComboboxes(){
-
+var sess = String($.session.get('sessionID'));
     //Assetsbox
    $.ajax({
            type:"GET",
            dataType: "json",
            accept:"application/json",
-           data: {session_id: String($.session.get('sessionID'))},
+           data: {session_id: sess
+            },
            crossDomain: true,
        //Had to be sync, otherwise cherrypy could crash
-            async: false,
-            url: serverIP + "/api/assets/all",
+           // async: false,
+            url: serverIP + "/api/assets/all/names",
 
             success: function(data){
                 // we make a successful JSONP call!
@@ -309,6 +324,7 @@ function createComboboxes(){
                     options.append($("<option />").val(this).text(this));
                 });
                 $(".topCombobox").css("visibility", "visible");
+                reqAjax();
             },
             error: function(xhr, textStatus, errorThrown) {
                 console.log(this.url);
@@ -318,32 +334,36 @@ function createComboboxes(){
              }
 
         });
-    //RequirementsBox
-    $.ajax({
-        type:"GET",
-        dataType: "json",
-        async: false,
-        accept:"application/json",
-        data: {session_id: String($.session.get('sessionID'))},
-        crossDomain: true,
-        url: serverIP + "/api/environments/all/names",
 
-        success: function(data){
-            // we make a successful JSONP call!
-            var boxoptions = $("#environmentsbox");
-            $.each(data, function() {
-                boxoptions.append($("<option />").val(this).text(this));
-            });
-            boxoptions.css("visibility", "visible");
-        },
-        error: function(xhr, textStatus, errorThrown) {
-            console.log(this.url);
-            var err = eval("(" + xhr.responseText + ")");
-            //alert(err.message);
-            console.log("error: " + err + ", textstatus: "  +textStatus + ", thrown: "+ errorThrown);
-        }
+    function reqAjax(){
+        $.ajax({
+            type:"GET",
+            dataType: "json",
+            // async: false,
+            accept:"application/json",
+            data: {session_id: sess
 
-    });
+            },
+            crossDomain: true,
+            url: serverIP + "/api/environments/names",
+
+            success: function(data){
+                // we make a successful JSONP call!
+                var boxoptions = $("#environmentsbox");
+                $.each(data, function() {
+                    boxoptions.append($("<option />").val(this).text(this));
+                });
+                boxoptions.css("visibility", "visible");
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.log(this.url);
+                var err = eval("(" + xhr.responseText + ")");
+                //alert(err.message);
+                console.log("error: " + err + ", textstatus: "  +textStatus + ", thrown: "+ errorThrown);
+            }
+
+        })
+    }
 
    /* }))).map(function () {
         return $('<option>').val(this.value).text(this.label);
@@ -355,12 +375,14 @@ function startingTable(){
         type:"GET",
         dataType: "json",
         accept:"application/json",
+
         data: {session_id: String($.session.get('sessionID'))},
         crossDomain: true,
         url: serverIP + "/api/requirements/all",
 
         success: function(data) {
             // $("#test").append(JSON.stringify(data));
+            setTableHeader("Requirements");
             createRequirementsTable(data);
             activeElement("reqTable");
         },
@@ -378,21 +400,100 @@ This is for saying which element has the main focus
 function activeElement(elementid){
     if(elementid != "reqTable"){
         $("#reqTable").hide();
+        $("#filtercontent").hide();
     }
     if(elementid != "svgViewer"){
         $("#svgViewer").hide();
+    }
+
+    if(elementid == "reqTable"){
+        $("#filtercontent").show();
     }
     elementid = "#" + elementid;
     $(elementid).show();
 
 }
+/*
+function for setting the table head
+ */
+function setTableHeader(){
+    thead = "";
 
+    switch (window.activeTable) {
+        case "Requirements":
+            console.log("Is Requirement");
+            thead = "<th width='50px'></th><th>Name</th><th>Description</th><th>Priority</th><th>Rationale</th><th>Fit Citerion</th><th>Originator</th><th>Type</th>";
+            break;
+        case "Goals":
+            console.log("Is Goal");
+            thead = "<th width='50px'></th><th>Name</th><th>Definition</th><th>Category</th><th>Priority</th><th>Fit Citerion</th><th>Issue</th><th>Originator</th>";
+            break;
+        case "Obstacles":
+            console.log("Is Obstacle");
+            thead = "<th width='50px'></th><th>Name</th><th>Definition</th><th>Category</th><th>Originator</th>";
+            break;
+    }
+    $("#reqTable").find("thead").empty();
+    $("#reqTable").find("thead").append(thead);
 
+}
 
+/*
+for filling up the SVG viewer
+ */
+function fillSvgViewer(data){
+    svgDiv =  $("#svgViewer");
+    svgDiv.css("visibility","visible");
+    svgDiv.css("height",$("#maincontent").height());
+    svgDiv.css("width","100%");
+    svgDiv.html(data);
+    $("svg").attr("id","svg-id");
+    activeElement("svgViewer");
+    panZoomInstance = svgPanZoom('#svg-id', {
+        zoomEnabled: true,
+        controlIconsEnabled: true,
+        fit: true,
+        center: true,
+        minZoom: 0.2
+    })
+}
 
+/*
+finding the lowest label in the table
+ */
+function findLabel() {
+    var numbers = [];
+    var index = 0;
+    $("tbody").find("tr").each(function () {
+        numbers[index] = parseInt($(this).find("td:first").text());
+        index++;
 
+    });
+    numbers.sort();
+    var number = numbers.length + 1;
+    for(var i =0; i < numbers.length; i++){
+        if(i+1 !=numbers[i]){
+          // console.log(i+1 + " is the number");
+            return i+1;
+        }
+    }
+   // console.log(i+1 + " is the number");
+    return i+1;
+}
 
-
-
-
-
+function sortTable(){
+    var tbl = document.getElementById("reqTable").tBodies[0];
+    var store = [];
+    for(var i=0, len=tbl.rows.length; i<len; i++){
+        var row = tbl.rows[i];
+        var sortnr = parseFloat(row.cells[0].textContent || row.cells[0].innerText);
+        if(!isNaN(sortnr)) store.push([sortnr, row]);
+    }
+    store.sort(function(x,y){
+        return x[0] - y[0];
+    });
+    for(var i=0, len=store.length; i<len; i++){
+        tbl.appendChild(store[i][1]);
+    }
+    store = null;
+}
