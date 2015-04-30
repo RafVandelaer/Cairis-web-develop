@@ -33,6 +33,7 @@
     <script src="dist/js/jquery.session.js"></script>
     <!-- svg pan and zoom script -->
     <script src="plugins/svg-pan-zoom/svg-pan-zoom.js"></script>
+    <script src="plugins/lazyLoad/lazyload.js"></script>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -649,15 +650,23 @@
     $("#comboboxDialog").hide();
 
 </script>
+
 <!-- REQUIRED JS SCRIPTS -->
 <!-- AdminLTE App -->
 <script src="dist/js/app.js" type="text/javascript"></script>
 <!-- Slimscroll App  -->
 <script src="plugins/slimScroll/jquery.slimscroll.js" type="text/javascript"></script>
-<!-- For the basic page, keeping it separate from the Cairis jQuery -->
+<script>
+    LazyLoad.js(["dist/js/cairis/Cairis-UI.js", "dist/js/cairis/Cairis.js","dist/js/cairis/buttonclicks.js"], function () {
+
+       console.log("All Cairis JS loaded");
+
+    });
+</script>
+<!-- For the basic page, keeping it separate from the Cairis jQuery
 <script src="dist/js/Cairis-UI.js" type="text/javascript"></script>
-<!-- The jQuery for the pages -->
-<script src="dist/js/Cairis.js" type="text/javascript"></script>
+<!-- The jQuery for the pages
+<script src="dist/js/Cairis.js" type="text/javascript"></script>-->
 
 </body>
 </html>

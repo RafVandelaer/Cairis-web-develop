@@ -6,21 +6,6 @@ window.activeTable ="Requirements";
 
 //var yetVisited = localStorage['visited'];
 
-
-$( document ).ready(function() {
-  //  localStorage.removeItem('sessionID');
-    var sessionID = $.session.get('sessionID');
-    if(!sessionID){
-        dialogwindow.dialog( "open" )
-    }
-    else{
-        //Else we can show the table
-       startingTable();
-    }
-
-
-});
-
 //The config window at start
 var dialogwindow = $( "#dialogContent" ).dialog({
     autoOpen: false,
@@ -36,7 +21,7 @@ var dialogwindow = $( "#dialogContent" ).dialog({
             $.ajax({
                 type: 'POST',
                 url: serverIP + '/api/user/config',
-               // data: $('#configForm').serializeArray(),
+                // data: $('#configForm').serializeArray(),
                 data: json_text,
                 accept:"application/json",
                 contentType : "application/json",
@@ -45,7 +30,7 @@ var dialogwindow = $( "#dialogContent" ).dialog({
                     console.log(data);
                     sessionID = data.split("=")[1];
                     $.session.set("sessionID", sessionID);
-                   startingTable();
+                    startingTable();
 
                 },
                 error: function(data, status, xhr) {
@@ -65,6 +50,21 @@ var dialogwindow = $( "#dialogContent" ).dialog({
         }
     }
 });
+
+$(document).ready(function() {
+  //  localStorage.removeItem('sessionID');
+    var sessionID = $.session.get('sessionID');
+    if(!sessionID){
+        dialogwindow.dialog( "open" )
+    }
+    else{
+        //Else we can show the table
+       startingTable();
+    }
+
+
+});
+
 
 /*
 For converting the form in JSON
@@ -86,16 +86,7 @@ $.fn.serializeObject = function()
     return o;
 };
 
-//Just for debug
-$("#testingButton").click(function(){
-    findLabel();
-});
 
-//For debug
-$("#removesessionButton").click(function() {
-    $.session.remove('sessionID');
-    location.reload();
-});
 // For the assetsbox, if filter is selected
 $('#assetsbox').change(function() {
     var selection = $(this).find('option:selected').text();
@@ -130,44 +121,41 @@ $('#assetsbox').change(function() {
 
 });
 /*
-When assetview is clicked
- */
-$('#assetView').click(function(){
+Same for the environments
+*/
+$('#environmentsbox').change(function() {
+    var selection = $(this).find('option:selected').text();
+    // Clearing the assetsbox
+    $('#assetsbox').prop('selectedIndex', -1);
 
-    $.ajax({
-        type: "GET",
-        dataType: "json",
-        accept: "application/json",
-        data: {
-            session_id: String($.session.get('sessionID'))
+    if (selection.toLowerCase() == "all") {
+        startingTable();
+    } else {
+        //Assetsbox
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            accept: "application/json",
+            data: {
+                session_id: String($.session.get('sessionID')),
+                is_asset: 0
+            },
+            crossDomain: true,
+            url: serverIP + "/api/requirements/environment/" + encodeURIComponent(selection),
+            success: function (data) {
+                createRequirementsTable(data);
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log(this.url);
+                var err = eval("(" + xhr.responseText + ")");
+                //alert(err.message);
+                console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            }
 
-        },
-        crossDomain: true,
-        url: serverIP + "/api/environments/names",
-        success: function (data) {
-            $("#comboboxDialogSelect").empty();
-            $.each(data, function(i, item) {
-                $("#comboboxDialogSelect").append("<option value=" + item + ">"  + item + "</option>")
-            });
-            $( "#comboboxDialog" ).dialog({
-                modal: true,
-                buttons: {
-                    Ok: function() {
-                        $( this ).dialog( "close" );
-                        //Created a function, for readability
-                        getAssetview($( "#comboboxDialogSelect").find("option:selected" ).text());
-                    }
-                }
-            });
-            $(".comboboxD").css("visibility","visible");
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            console.log(this.url);
-            var err = eval("(" + xhr.responseText + ")");
-            //alert(err.message);
-            console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
-        }
-})});
+        });
+    }
+
+});
 function getAssetview(environment){
     $.ajax({
         type:"GET",
@@ -179,6 +167,8 @@ function getAssetview(environment){
         crossDomain: true,
         url: serverIP + "/api/assets/view",
         success: function(data){
+          // console.log("in getAssetView " + data.innerHTML);
+           // console.log(this.url);
            fillSvgViewer(data);
 
         },
@@ -192,82 +182,21 @@ function getAssetview(environment){
     });
 }
 
-/*
-Same for the environments
- */
-$('#environmentsbox').change(function() {
-    var selection = $(this).find('option:selected').text();
-    // Clearing the assetsbox
-    $('#assetsbox').prop('selectedIndex', -1);
 
-        if (selection.toLowerCase() == "all") {
-            startingTable();
-        } else {
-            //Assetsbox
-            $.ajax({
-                type: "GET",
-                dataType: "json",
-                accept: "application/json",
-                data: {
-                    session_id: String($.session.get('sessionID')),
-                    is_asset: 0
-                },
-                crossDomain: true,
-                url: serverIP + "/api/requirements/environment/" + encodeURIComponent(selection),
-                success: function (data) {
-                    createRequirementsTable(data);
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    console.log(this.url);
-                    var err = eval("(" + xhr.responseText + ")");
-                    //alert(err.message);
-                    console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
-                }
-
-            });
-        }
-
-});
 /*
 A function for filling the table
  */
 function createRequirementsTable(data){
      var tre;
     var theTable = $(".theTable");
-    console.log("Before");
     $(".theTable tr").not(function(){if ($(this).has('th').length){return true}}).remove();
-    console.log("After");
-   /* $.each(data, function(index, item) {
-
-        tre = $('<tr>');
-        tre.append("<td name='theLabel' >" + item.theLabel + "</td>");
-        tre.append("<td name='theName'  contenteditable=true>" + item.theName + "</td>");
-        tre.append("<td name='theDescription'  contenteditable=true>" + item.theDescription + "</td>");
-        tre.append("<td name='thePriority'  contenteditable=true>" + item.thePriority + "</td>");
-        tre.append("<td name='theId'  style='display:none;'>" + item.theId + "</td>");
-
-
-        var datas = eval(item.attrs); // this will convert your json string to a javascript object
-        for (var key in datas) {
-            if (datas.hasOwnProperty(key)) {
-                if(key == ("originator") | key == ("rationale") | key == ("fitCriterion") | key == ("type")) {
-                    // alert(key+': '+datas[key]); // this will show each key with it's value
-                    tre.append("<td name=" + key + " contenteditable=true >" + datas[key] + "</td>");
-                }
-            }
-        }
-        tre.append('</tr>')
-
-        theTable.append(tre);
-    });*/
     //var arr = reallyLongArray;
     var textToInsert = [];
     var theRows = [];
     var i = 0;
     var j = 0;
     $.each(data, function(count, item) {
-        console.log("Creating table")
-        textToInsert[i++] = '<tr><td name="theLabel" contenteditable=true>';
+        textToInsert[i++] = '<tr><td name="theLabel">';
         textToInsert[i++] = item.theLabel;
         textToInsert[i++] = '<'+'/td>';
 
@@ -310,46 +239,7 @@ function createRequirementsTable(data){
 
     theTable.css("visibility","visible");
 }
-/*
-Function for adding a row to the table
- */
-$("#addRow").click(function() {
-    //var clonedRow = $("#reqTable tr:last").clone();
-    if($( "#assetsbox").find("option:selected" ).text() == "All" && $( "#environmentsbox").find("option:selected" ).text() == "All"){
-        alert("Please select an asset or an environment");
-    }
-    else{
-        var template = "";
-        var num = findLabel();
-        switch (window.activeTable) {
-            case "Requirements":
-                template = '<tr> <td name="theLabel">' + num + '</td> <td name="theName" contenteditable="true"></td> <td name="theDescription" contenteditable="true"></td> <td name="thePriority" contenteditable="true">1</td><td name="theId" style="display:none;"></td><td name="originator" contenteditable="true"></td> <td name="fitCriterion" contenteditable="true">None</td> <td name="rationale" contenteditable="true">None</td> <td name="type" contenteditable="true">Functional</td> </tr>';
-                break;
-            case "Goals":
-                template = '<tr><td name="theLabel">' + num + '</td><td name="theName" contenteditable="true" ></td><td name="theDefinition" contenteditable="true"></td><td name="theCategory" contenteditable="true">Maintain</td><td name="thePriority" contenteditable="true">Low</td><td name="theId" style="display:none;"></td><td name="fitCriterion" contenteditable="true" >None</td><td  name="theIssue" contenteditable="true">None</td><td name="originator" contenteditable="true"></td></tr>';
-                break;
-            case "Obstacles":
-                template = '<tr><td name="theLabel">' + num + '</td><td name="theName" contenteditable="true">Name</td><td name="theDefinition" contenteditable="true">Definition</td><td name="theCategory" contenteditable="true">Category</td><td name="theId" style="display:none;"></td><td name="originator" contenteditable="true">Originator</td></tr>';
-                break;
-        }
-        $("#reqTable").append(template);
-        sortTable();
-    }
 
-});
-
-/*
-Removing the active tr
- */
-$("#removeReq").click(function() {
-    var oldrow = $("tr").eq(getActiveindex() + 1).detach();
-    //of remove
-    //TODO: AJAX CALL BEFORE REMOVE
-});
-
-$("#gridReq").click(function(){
-  startingTable();
-});
 
 /*
 Function for creating the comboboxes
@@ -357,7 +247,6 @@ Function for creating the comboboxes
 function createComboboxes(){
 var sess = String($.session.get('sessionID'));
     //Assetsbox
-    console.log(new Date().getTime()/1000 + " AssetBox ");
    $.ajax({
            type:"GET",
            dataType: "json",
@@ -370,7 +259,6 @@ var sess = String($.session.get('sessionID'));
             success: function(data){
                 // we make a successful JSONP call!
                 var options = $("#assetsbox");
-                console.log(new Date().getTime()/1000 + "Assetsbox done " );
                 $.each(data, function() {
                     options.append($("<option />").val(this).text(this));
                 });
@@ -384,8 +272,6 @@ var sess = String($.session.get('sessionID'));
              }
 
         });
-
-    console.log( new Date().getTime()/1000 +" Reqbox " );
     $.ajax({
             type:"GET",
             dataType: "json",
@@ -397,9 +283,7 @@ var sess = String($.session.get('sessionID'));
             url: serverIP + "/api/environments/names",
 
             success: function(data){
-                console.log(new Date().getTime()/1000 + " getting by id");
                 var boxoptions = $("#environmentsbox");
-                console.log(new Date().getTime()/1000 + " Reqbox done");
                 $.each(data, function() {
                     boxoptions.append($("<option />").val(this).text(this));
                 });
@@ -419,7 +303,6 @@ var sess = String($.session.get('sessionID'));
         return $('<option>').val(this.value).text(this.label);
     }).appendTo('#assetsbox');*/
 }
-//TODO: Goes slow...
 function startingTable(){
     createComboboxes();
     $.ajax({
@@ -427,7 +310,7 @@ function startingTable(){
         dataType: "json",
         accept:"application/json",
         crossDomain: true,
-        url: serverIP + "/api/requirements/all",
+        url: serverIP + "/api/requirements",
         data: {session_id: String($.session.get('sessionID'))},
         success: function(data) {
             // $("#test").append(JSON.stringify(data));
@@ -483,7 +366,9 @@ function setTableHeader(){
             break;
     }
     $("#reqTable").find("thead").empty();
+   // $("#reqTable").empty();
     $("#reqTable").find("thead").append(thead);
+    $("#reqTable").find("tbody").empty();
 
 }
 
@@ -491,11 +376,13 @@ function setTableHeader(){
 for filling up the SVG viewer
  */
 function fillSvgViewer(data){
-    svgDiv =  $("#svgViewer");
-    svgDiv.css("visibility","visible");
+    var xmlString = (new XMLSerializer()).serializeToString(data);
+    console.log(String(xmlString));
+    var svgDiv = $("#svgViewer");
+    svgDiv.show();
     svgDiv.css("height",$("#maincontent").height());
     svgDiv.css("width","100%");
-    svgDiv.html(data);
+    svgDiv.html(xmlString);
     $("svg").attr("id","svg-id");
     activeElement("svgViewer");
     panZoomInstance = svgPanZoom('#svg-id', {
