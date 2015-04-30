@@ -233,8 +233,11 @@ A function for filling the table
  */
 function createRequirementsTable(data){
      var tre;
+    var theTable = $(".theTable");
+    console.log("Before");
     $(".theTable tr").not(function(){if ($(this).has('th').length){return true}}).remove();
-    $.each(data, function(index, item) {
+    console.log("After");
+   /* $.each(data, function(index, item) {
 
         tre = $('<tr>');
         tre.append("<td name='theLabel' >" + item.theLabel + "</td>");
@@ -254,10 +257,58 @@ function createRequirementsTable(data){
             }
         }
         tre.append('</tr>')
-        $('.theTable').append(tre);
+
+        theTable.append(tre);
+    });*/
+    //var arr = reallyLongArray;
+    var textToInsert = [];
+    var theRows = [];
+    var i = 0;
+    var j = 0;
+    $.each(data, function(count, item) {
+        console.log("Creating table")
+        textToInsert[i++] = '<tr><td name="theLabel" contenteditable=true>';
+        textToInsert[i++] = item.theLabel;
+        textToInsert[i++] = '<'+'/td>';
+
+        textToInsert[i++] = '<td name="theName" contenteditable=true>';
+        textToInsert[i++] = item.theName;
+        textToInsert[i++] = '</td>';
+
+        textToInsert[i++] = '<td name="theDescription" contenteditable=true>';
+        textToInsert[i++] = item.theDescription;
+        textToInsert[i++] = '</td>';
+
+        textToInsert[i++] = '<td name="thePriority"  contenteditable=true>';
+        textToInsert[i++] = item.thePriority;
+        textToInsert[i++] = '</td>';
+
+        textToInsert[i++] = '<td name="theId"  style="display:none;">';
+        textToInsert[i++] = item.theId;
+        textToInsert[i++] = '</td>';
+
+        var datas = eval(item.attrs);
+        for (var key in datas) {
+            if (datas.hasOwnProperty(key)) {
+                if(key == ("originator") || key == ("rationale") || key == ("fitCriterion") || key == ("type")) {
+                    // alert(key+': '+datas[key]); // this will show each key with it's value
+                   // tre.append("<td name=" + key + " contenteditable=true >" + datas[key] + "</td>");
+                    textToInsert[i++] = '<td name=';
+                    textToInsert[i++] = key;
+                    textToInsert[i++] = ' contenteditable=true >';
+                    textToInsert[i++] = datas[key];
+                    textToInsert[i++] = '</td>';
+
+                }
+            }
+        }
+        textToInsert[i++] = '</tr>';
     });
 
-    $('.theTable').css("visibility","visible");
+   // theRows[j++]=textToInsert.join('');
+    theTable.append(textToInsert.join(''));
+
+    theTable.css("visibility","visible");
 }
 /*
 Function for adding a row to the table
@@ -306,50 +357,49 @@ Function for creating the comboboxes
 function createComboboxes(){
 var sess = String($.session.get('sessionID'));
     //Assetsbox
+    console.log(new Date().getTime()/1000 + " AssetBox ");
    $.ajax({
            type:"GET",
            dataType: "json",
            accept:"application/json",
-           data: {session_id: sess
+           data: {session_id:  String($.session.get('sessionID'))
             },
            crossDomain: true,
-       //Had to be sync, otherwise cherrypy could crash
-           // async: false,
             url: serverIP + "/api/assets/all/names",
 
             success: function(data){
                 // we make a successful JSONP call!
                 var options = $("#assetsbox");
+                console.log(new Date().getTime()/1000 + "Assetsbox done " );
                 $.each(data, function() {
                     options.append($("<option />").val(this).text(this));
                 });
                 $(".topCombobox").css("visibility", "visible");
-                reqAjax();
+
             },
             error: function(xhr, textStatus, errorThrown) {
                 console.log(this.url);
                 var err = eval("(" + xhr.responseText + ")");
-                //alert(err.message);
                 console.log("error: " + err + ", textstatus: "  +textStatus + ", thrown: "+ errorThrown);
              }
 
         });
 
-    function reqAjax(){
-        $.ajax({
+    console.log( new Date().getTime()/1000 +" Reqbox " );
+    $.ajax({
             type:"GET",
             dataType: "json",
             // async: false,
             accept:"application/json",
-            data: {session_id: sess
-
+            data: {session_id:  String($.session.get('sessionID'))
             },
             crossDomain: true,
             url: serverIP + "/api/environments/names",
 
             success: function(data){
-                // we make a successful JSONP call!
+                console.log(new Date().getTime()/1000 + " getting by id");
                 var boxoptions = $("#environmentsbox");
+                console.log(new Date().getTime()/1000 + " Reqbox done");
                 $.each(data, function() {
                     boxoptions.append($("<option />").val(this).text(this));
                 });
@@ -362,24 +412,23 @@ var sess = String($.session.get('sessionID'));
                 console.log("error: " + err + ", textstatus: "  +textStatus + ", thrown: "+ errorThrown);
             }
 
-        })
-    }
+        });
+
 
    /* }))).map(function () {
         return $('<option>').val(this.value).text(this.label);
     }).appendTo('#assetsbox');*/
 }
+//TODO: Goes slow...
 function startingTable(){
     createComboboxes();
     $.ajax({
         type:"GET",
         dataType: "json",
         accept:"application/json",
-
-        data: {session_id: String($.session.get('sessionID'))},
         crossDomain: true,
         url: serverIP + "/api/requirements/all",
-
+        data: {session_id: String($.session.get('sessionID'))},
         success: function(data) {
             // $("#test").append(JSON.stringify(data));
             setTableHeader("Requirements");
