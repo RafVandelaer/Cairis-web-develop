@@ -1,0 +1,16 @@
+<form>
+    <label>Name</label>
+    <input type="text" name="theName">
+    <br>
+    <label>Description</label>
+    <input type="text" name="theDescription">
+    <br>
+   <label>Significance</label>
+    <input type="text" name="theSignificance">
+    <br>
+    <label>Properties</label>
+    <br>
+    <table>
+        <thead><th>Property</th><th>Value</th></thead>
+    </table>
+</form>

@@ -280,7 +280,7 @@ var sess = String($.session.get('sessionID'));
             data: {session_id:  String($.session.get('sessionID'))
             },
             crossDomain: true,
-            url: serverIP + "/api/environments/names",
+            url: serverIP + "/api/environments/all/names",
 
             success: function(data){
                 var boxoptions = $("#environmentsbox");

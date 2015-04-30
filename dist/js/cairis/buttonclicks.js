@@ -46,7 +46,7 @@ $("#gridReq").click(function(){
 
 //Just for debug
 $("#testingButton").click(function(){
-    findLabel();
+   readText("../../CAIRIS/fastTemplates/AssetOptions.txt","#optionsContent")
 });
 
 //For debug
