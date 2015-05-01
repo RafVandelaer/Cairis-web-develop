@@ -26,17 +26,7 @@ $(window).load(function(){
    // console.log("Header:" + mainh.height()+ ", Footer: " + footh.height())
     //For the gear, making it retractable
     $('#rightnavGear').click(function(){
-        var navGear = $('#rightnavGear');
-        var navMenu = $('#rightnavMenu');
-        if (!navGear.hasClass("open")) {
-            navGear.animate({"right": "250px"});
-            navMenu.animate({"right": "0"});
-            navGear.addClass("open");
-        } else {
-            navGear.animate({"right": "0"});
-            navMenu.animate({"right": "-250px"});
-            navGear.removeClass("open");
-        }
+        openOptions();
     });
     $(".imgwrapper").hover(function(){
 
@@ -45,6 +35,7 @@ $(window).load(function(){
 
     });
     activeElement("reqTable");
+
 
 
     /*
@@ -92,17 +83,45 @@ function makeHorizontalScrollbar() {
         // setWidth: false
     });
 }
+/*
+For opening the right options menu
+ */
+function openOptions(){
+    var navGear = $('#rightnavGear');
+    var navMenu = $('#rightnavMenu');
+    if (!navGear.hasClass("open")) {
+        navGear.animate({"right": "500px"});
+        navMenu.animate({"right": "0"});
+        navGear.addClass("open");
+    } else {
+        navGear.animate({"right": "0"});
+        navMenu.animate({"right": "-500px"});
+        navGear.removeClass("open");
+    }
+}
+/*
+ For forcing opening the right options menu
+ */
+function forceOpenOptions(){
+    var navGear = $('#rightnavGear');
+    var navMenu = $('#rightnavMenu');
+    if (!navGear.hasClass("open")) {
+        navGear.animate({"right": "500px"});
+        navMenu.animate({"right": "0"});
+        navGear.addClass("open");
+    }
+}
 
 /*
  Created for the top navbar, which in AdminLTE didn't stick on top.
  */
 function resizable() {
 
-    var collapser = $('.sidebar-toggle').outerWidth()
-    var docWidth = $(document).width()
+    var collapser = $('.sidebar-toggle').outerWidth();
+    var docWidth = $(document).width();
     //Was 770
     if ($(window).width() > 0) {
-        var logo = $('.logo').outerWidth()
+        var logo = $('.logo').outerWidth();
         //If logo takes whole screen
         if (logo > 230) {
             // console.log("logo to big")
@@ -110,7 +129,7 @@ function resizable() {
         } else {
             $('.navbar-custom-menu').outerWidth(docWidth - (logo + collapser + 20));
 
-            var actwidth = (docWidth - (logo + collapser - 7))
+            var actwidth = (docWidth - (logo + collapser - 7));
             $("ul.nav.navbar-nav").css("float", "right")
         }
     }

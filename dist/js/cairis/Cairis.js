@@ -86,7 +86,6 @@ $.fn.serializeObject = function()
     return o;
 };
 
-
 // For the assetsbox, if filter is selected
 $('#assetsbox').change(function() {
     var selection = $(this).find('option:selected').text();
@@ -377,7 +376,7 @@ for filling up the SVG viewer
  */
 function fillSvgViewer(data){
     var xmlString = (new XMLSerializer()).serializeToString(data);
-    console.log(String(xmlString));
+    //console.log(String(xmlString));
     var svgDiv = $("#svgViewer");
     svgDiv.show();
     svgDiv.css("height",$("#maincontent").height());

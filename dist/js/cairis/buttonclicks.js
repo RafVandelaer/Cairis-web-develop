@@ -46,7 +46,7 @@ $("#gridReq").click(function(){
 
 //Just for debug
 $("#testingButton").click(function(){
-   readText("../../CAIRIS/fastTemplates/AssetOptions.txt","#optionsContent")
+   readText("../../CAIRIS/fastTemplates/AssetOptions.html","#optionsContent")
 });
 
 //For debug

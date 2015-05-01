@@ -102,3 +102,16 @@ footer{
     padding-top: 5px;
     padding-bottom: 5px;
 }
+.optionsInput{
+    float:right;
+    clear:both;
+}
+.gearOptions input{
+    width: 60%;
+}
+#tabs textarea {
+    width: 100%;
+}
+#tabs input{
+    width: 60%;
+}
