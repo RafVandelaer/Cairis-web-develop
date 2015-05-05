@@ -1,8 +1,7 @@
 /**
  * Created by Raf on 30/04/2015.
  */
-//TODO: Naam veranderen naar iets van GEAROptions
-function readText(filePath,theElement,theData,createTabs,optionsHeader) {
+function fillOptionMenu(filePath,theElement,theData,createTabs,optionsHeader) {
     jQuery.get(filePath, function(data) {
         var optionsDIV = $("#optionsHeaderGear");
         if(optionsHeader){
@@ -21,15 +20,24 @@ function readText(filePath,theElement,theData,createTabs,optionsHeader) {
 
         for (var key in theData) {
             if (theData.hasOwnProperty(key)) {
-                var value = theData[key];
-                // Use `key` and `value`
-                console.log("ID: " + key + " Value: " + String(value));
-                $(key).attr("value",String(value));
+                if(key.indexOf("table") >= 0){
+                    var tablevars = theData[key];
+                    var testvar = eval(tablevars);
+                    for(var prop in tablevars){
+                        $("#" + key).append("<tr><td>" + prop + "</td><td>" + tablevars["prop"] + "</td></tr>");
+                        console.log("ID: " + key + " the data: <tr><td>" + prop + "</td><td>" + tablevars["prop"] + "</td></tr>");
+                    }
+                }else {
+                    var value = theData[key];
+                    // Use `key` and `value`
+                    console.log("ID: " + key + " Value: " + String(value));
+                    $(key).attr("value", String(value));
+                }
             }
         }
         if(createTabs){
             $(function() {
-                $( "#tabs" ).tabs();
+                $( ".tabs" ).tabs();
             });
         }
 

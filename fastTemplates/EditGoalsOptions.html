@@ -1,0 +1,103 @@
+<form xmlns="http://www.w3.org/1999/html" class="gearOptions">
+    <p>
+        <label>Name</label>
+        <input class="optionsInput" type="text" value="null" id="theName" name="theName" readonly>
+    </p>
+    <p>
+        <label>Tags</label>
+        <input class="optionsInput" type="text" value="null" id="theTags " name="theTags " readonly>
+    </p>
+    <p>
+        <label>Originator</label>
+        <input class="optionsInput" type="text" value="null" id="theOriginator" name="theOriginator" readonly>
+    </p>
+    <p>
+        <label for="goalEnvCombobox">Environment</label>
+        <select id="goalEnvCombobox">
+            <option>
+                !!!!!!çç!!!!!! ajax call
+            </option>
+        </select>
+    <div class="tabs">
+        <ul>
+            <li><a href="#Definition">Definition</a></li>
+            <li><a href="#Fit-Criterion">Fit Criterion</a></li>
+            <li><a href="#Issue">Issue</a></li>
+            <li><a href="#Goals">Goals</a></li>
+            <li><a href="#Sub-Goals">Sub-Goals</a></li>
+            <li><a href="#Concerns">Concerns</a></li>
+            <li><a href="#Concern-Associations">Concern Associations</a></li>
+        </ul>
+        <div id="Definition">
+            <p><label>Label</label> <input id="theLabel" readonly></p><p> <label>Category</label> <select id="theCategory" >
+                <option>Maintain</option>
+                <option>Achieve</option>
+                <option>Avoid</option>
+                <option>Improve</option>
+                <option>Increase</option>
+                <option>Maximise</option>
+                <option>Minimise</option>
+            </select></p>
+            <label>Priority</label><select id="thePriority" >
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+        </select>
+            <br>
+            <label>Definition</label><textarea></textarea>
+            <br>
+            &nbsp;
+            &nbsp;
+            &nbsp;
+        </div>
+        <div id="Fit-Criterion">
+            <textarea id="Fit-criterion-textarea" readonly> </textarea>
+        </div>
+        <div id="Issue">
+            <textarea id="Issue-textarea" readonly> </textarea>
+        </div>
+        <div id="Goals">
+            <table id="editgoalsGoalsTable">
+                <thead>
+                <tr> <th>Goal</th><th>Type</th><th>Refinement</th><th>Alternative</th><th>Rationale</th></tr>
+                </thead>
+                <tbody>
+                !!!!!!!!!!! AJAX
+                </tbody>
+            </table>
+        </div>
+        <div id="Sub-Goals">
+            <table id="editgoalsSubgoalsTable">
+                <thead>
+                <tr><th>Sub-Goals</th><th>Type</th><th>Refinement</th><th>Alternative</th><th>Rationale</th> </tr>
+                </thead>
+                <tbody>
+                !!!!!!!!!!! AJAX
+                </tbody>
+            </table>
+        </div>
+        <div id="Concerns">
+            <table id="editgoalsConcernTable">
+                <thead>
+                <tr><th>Concern</th></tr>
+                </thead>
+                <tbody>
+                !!!!!!!!!!! AJAX
+                </tbody>
+            </table>
+        </div>
+        <div id="Concern-Associations">
+            <table id="editgoalsConcernassociationsTable">
+                <thead>
+                <tr><th>Source</th><th>n</th><th>Link Verb</th><th>n</th><th>Target</th> </tr>
+                </thead>
+                <tbody>
+                !!!!!!!!!!! AJAX
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </p>
+
+
+</form>

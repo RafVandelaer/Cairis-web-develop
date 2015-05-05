@@ -183,7 +183,7 @@
                         </a>
                     </li>
                     <li class="dropdown messages-menu">
-                    <a href="#" class="dropdown-toggle imgwrapper" data-toggle="dropdown">
+                    <a href="#" class="dropdown-toggle imgwrapper" id="EditGoals" data-toggle="dropdown">
                         <img class="menu-image" src="images/goal.png" alt="Edit Goals">
                         <p class="imgPopup">Edit Goals</p>
                     </a>
@@ -564,12 +564,17 @@
         <section class="content-header">
            <div id="filtercontent" class="extraContent">
                <label  class="topCombobox" for="assetsbox">Assets</label>
-                <select class="topCombobox" id="assetsbox" ><option>All</option></select>
+                <select class="topCombobox" id="assetsbox" ></select>
                <label  class="topCombobox" for="environmentsbox">Requirements</label>
                <select class="topCombobox" id="environmentsbox">
-               <option>All</option>
+
                </select>
            </div>
+            <div id="editGoalsOptions">
+                <button id="addGoalButton">Add</button>
+                <button id="deleteGoalButton">Delete</button>
+                <button id="editGoalButton">Edit</button>
+            </div>
         </section>
         <!-- Main content -->
         <section id="maincontent" class="content">
@@ -593,6 +598,7 @@
         <h4 id="optionsHeaderGear" class="text-light-blue" style="margin: 0 0 5px 0; border-bottom: 1px solid #ddd; padding-bottom: 15px;">
             Options</h4>
         <div id="optionsContent"></div>
+
     </div>
     <footer class="main-footer">
         <!-- To the right -->
@@ -636,7 +642,7 @@
     </select>
 </div>
 <div id="errorDialog" title="ERROR">
-    <p>TYou can't use CAIRIS without any settings</p>
+    <p>You can't use CAIRIS without any settings</p>
 </div>
 <script>
    var reqTabl =  $('#reqTable').editableTableWidget({editor: $('<textarea>')});
@@ -644,9 +650,9 @@
      if the table is been scrolled, it needs to be out of focus
      */
     $('#maincontent').scroll(function(){
-        //console.log("Scrolling")
-        //$('textarea').css("","hidden");
-        reqTabl.find('td:last').focus();
+        $('#reqTable').find('td:first').focus();
+        $('#reqTable').find('td:last').focus();
+        //console.log("Scrolling");
     });
     $("#comboboxDialog").hide();
 
@@ -660,7 +666,7 @@
 <script src="plugins/slimScroll/jquery.slimscroll.js" type="text/javascript"></script>
 <script>
     LazyLoad.js(["dist/js/cairis/Cairis-UI.js","dist/js/cairis/buttonclicks.js", "dist/js/cairis/Cairis.js", "dist/js/cairis/readFile.js",
-        "dist/js/cairis/SVGhandler.js", "dist/js/cairis/Ajax.js"], function () {
+        "dist/js/cairis/SVGhandler.js"], function () {
 
        console.log("All Cairis JS loaded");
 

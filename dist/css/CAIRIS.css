@@ -115,3 +115,16 @@ footer{
 #tabs input{
     width: 60%;
 }
+.gearOptions table{
+    width: 100%;
+}
+
+.gearOptions select{
+    float: right;
+    width: 60%;
+}
+
+.gearOptions textarea {
+    float: right;
+    width: 60%;
+}

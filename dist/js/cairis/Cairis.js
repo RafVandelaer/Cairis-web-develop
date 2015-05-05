@@ -1,8 +1,9 @@
 /**
  * Created by Raf on 24/04/2015.
  */
-window.serverIP = "http://192.168.112.129:7071";
+window.serverIP = "http://192.168.112.130:7071";
 window.activeTable ="Requirements";
+window.boxesAreFilled = false;
 
 //var yetVisited = localStorage['visited'];
 
@@ -156,6 +157,7 @@ $('#environmentsbox').change(function() {
 
 });
 function getAssetview(environment){
+    window.assetEnvironment = environment;
     $.ajax({
         type:"GET",
         accept:"text/plain",
@@ -183,10 +185,10 @@ function getAssetview(environment){
 
 
 /*
-A function for filling the table
+A function for filling the table with requirements
  */
 function createRequirementsTable(data){
-     var tre;
+    var tre;
     var theTable = $(".theTable");
     $(".theTable tr").not(function(){if ($(this).has('th').length){return true}}).remove();
     //var arr = reallyLongArray;
@@ -220,7 +222,7 @@ function createRequirementsTable(data){
             if (datas.hasOwnProperty(key)) {
                 if(key == ("originator") || key == ("rationale") || key == ("fitCriterion") || key == ("type")) {
                     // alert(key+': '+datas[key]); // this will show each key with it's value
-                   // tre.append("<td name=" + key + " contenteditable=true >" + datas[key] + "</td>");
+                    // tre.append("<td name=" + key + " contenteditable=true >" + datas[key] + "</td>");
                     textToInsert[i++] = '<td name=';
                     textToInsert[i++] = key;
                     textToInsert[i++] = ' contenteditable=true >';
@@ -233,12 +235,57 @@ function createRequirementsTable(data){
         textToInsert[i++] = '</tr>';
     });
 
-   // theRows[j++]=textToInsert.join('');
+    // theRows[j++]=textToInsert.join('');
     theTable.append(textToInsert.join(''));
 
     theTable.css("visibility","visible");
 }
 
+/*
+ A function for filling the table with requirements
+ */
+function createEditGoalsTable(data){
+    var tre;
+    var theTable = $(".theTable");
+    $(".theTable tr").not(function(){if ($(this).has('th').length){return true}}).remove();
+    //var arr = reallyLongArray;
+    var textToInsert = [];
+    var theRows = [];
+    var i = 0;
+
+    $.each(data, function(count, item) {
+        textToInsert[i++] = "<tr>"
+        textToInsert[i++] = '<td name="theName" contenteditable=true>';
+        textToInsert[i++] = item.theName;
+        textToInsert[i++] = '</td>';
+
+        textToInsert[i++] = '<td name="theOriginator" contenteditable=true>';
+        textToInsert[i++] = item.theOriginator;
+        textToInsert[i++] = '</td>';
+
+       textToInsert[i++] = '<td name="Status"  contenteditable=true>';
+        if(item.theColour == 'black'){
+            textToInsert[i++] = "Check";
+        }else if(item.theColour == 'red'){
+            textToInsert[i++] = "To refine";
+        }else{
+            textToInsert[i++] = "OK";
+        }
+
+        textToInsert[i++] = '</td>';
+
+        textToInsert[i++] = '<td name="theId"  style="display:none;">';
+        textToInsert[i++] = item.theId;
+        textToInsert[i++] = '</td>';
+
+        textToInsert[i++] = '</tr>';
+    });
+
+    // theRows[j++]=textToInsert.join('');
+    theTable.append(textToInsert.join(''));
+
+    theTable.css("visibility","visible");
+}
 
 /*
 Function for creating the comboboxes
@@ -246,57 +293,65 @@ Function for creating the comboboxes
 function createComboboxes(){
 var sess = String($.session.get('sessionID'));
     //Assetsbox
-   $.ajax({
-           type:"GET",
-           dataType: "json",
-           accept:"application/json",
-           data: {session_id:  String($.session.get('sessionID'))
+    if(!window.boxesAreFilled) {
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            accept: "application/json",
+            data: {
+                session_id: String($.session.get('sessionID'))
             },
-           crossDomain: true,
+            crossDomain: true,
             url: serverIP + "/api/assets/all/names",
 
-            success: function(data){
+            success: function (data) {
                 // we make a successful JSONP call!
                 var options = $("#assetsbox");
-                $.each(data, function() {
+                options.empty();
+                options.append("<option>All</option>");
+                $.each(data, function () {
                     options.append($("<option />").val(this).text(this));
                 });
                 $(".topCombobox").css("visibility", "visible");
 
             },
-            error: function(xhr, textStatus, errorThrown) {
+            error: function (xhr, textStatus, errorThrown) {
                 console.log(this.url);
                 var err = eval("(" + xhr.responseText + ")");
-                console.log("error: " + err + ", textstatus: "  +textStatus + ", thrown: "+ errorThrown);
-             }
+                console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            }
 
         });
-    $.ajax({
-            type:"GET",
+        $.ajax({
+            type: "GET",
             dataType: "json",
             // async: false,
-            accept:"application/json",
-            data: {session_id:  String($.session.get('sessionID'))
+            accept: "application/json",
+            data: {
+                session_id: String($.session.get('sessionID'))
             },
             crossDomain: true,
             url: serverIP + "/api/environments/all/names",
 
-            success: function(data){
+            success: function (data) {
                 var boxoptions = $("#environmentsbox");
-                $.each(data, function() {
+                boxoptions.empty();
+                boxoptions.append("<option>All</option>");
+                $.each(data, function () {
                     boxoptions.append($("<option />").val(this).text(this));
                 });
                 boxoptions.css("visibility", "visible");
+                window.boxesAreFilled = true;
             },
-            error: function(xhr, textStatus, errorThrown) {
+            error: function (xhr, textStatus, errorThrown) {
                 console.log(this.url);
                 var err = eval("(" + xhr.responseText + ")");
                 //alert(err.message);
-                console.log("error: " + err + ", textstatus: "  +textStatus + ", thrown: "+ errorThrown);
+                console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
             }
 
         });
-
+    }
 
    /* }))).map(function () {
         return $('<option>').val(this.value).text(this.label);
@@ -338,7 +393,8 @@ function activeElement(elementid){
     }
 
     if(elementid == "reqTable"){
-        $("#filtercontent").show();
+       //If it is the table, we need to see which table it is
+        setActiveOptions();
     }
     elementid = "#" + elementid;
     $(elementid).show();
@@ -362,6 +418,10 @@ function setTableHeader(){
         case "Obstacles":
             console.log("Is Obstacle");
             thead = "<th width='50px'></th><th>Name</th><th>Definition</th><th>Category</th><th>Originator</th>";
+            break;
+        case "EditGoals":
+            console.log("Is EditGoals");
+            thead = "<th>Name</th><th>Originator</th><th>Status</th>";
             break;
     }
     $("#reqTable").find("thead").empty();
@@ -414,6 +474,30 @@ function findLabel() {
     }
    // console.log(i+1 + " is the number");
     return i+1;
+}
+
+/*
+This sets the right comboboxes etc in the main window
+ */
+function setActiveOptions(){
+//filtercontent
+    //If chosen to create a new function for this, because this will increase readability
+    //First disable them all
+    $("#filtercontent").hide();
+    $("#editGoalsOptions").hide();
+    switch (window.activeTable) {
+        case "Requirements":
+            $("#filtercontent").show();
+            break;
+        case "Goals":
+            break;
+        case "Obstacles":
+            break;
+        case "EditGoals":
+            $("#editGoalsOptions").show();
+            break;
+    }
+
 }
 
 function sortTable(){

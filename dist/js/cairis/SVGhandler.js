@@ -20,15 +20,43 @@ $( document ).ajaxComplete(function() {
                 success: function (data) {
                     /*
                      Explanation: Because the options menu is used in multiple cases, I read in the used HTML from a template.
-                     Then, because the reading of this html goed Async (as with every jQuery method), I give my data and the ID's so I can fill it after
+                     Then, because the reading of this html goes Async (as with every jQuery method), I give my data and the ID's so I can fill it after
                      the read of the template is done.
                      */
-                    forceOpenOptions();
+                    //forceOpenOptions();
                     var dataArr = [];
                     dataArr["#theName"] = String(data.theName);
                     dataArr["#theDescription"] = String(data.theDescription);
                     dataArr["#theSignificance"] = String(data.theSignificance);
-                    readText("../../CAIRIS/fastTemplates/AssetOptions.html", "#optionsContent", dataArr,false,true);
+                    var theTableArr =[];
+
+                    //TODO AJAX IN AJAX
+                    $.ajax({
+                        type:"GET",
+                        accept:"application/json",
+                        data: {
+                            session_id: String($.session.get('sessionID'))
+                        },
+                        crossDomain: true,
+                        url: serverIP + "/api/assets/id/"+ data.theId + "/properties",
+                        success: function(data){
+                            // console.log("in getAssetView " + data.innerHTML);
+                            // console.log(this.url);
+                           console.log("Test")
+
+                        },
+                        error: function(xhr, textStatus, errorThrown) {
+                            console.log(this.url);
+                            var err = eval("(" + xhr.responseText + ")");
+                            //alert(err.message);
+                            console.log("error: " + err + ", textstatus: "  +textStatus + ", thrown: "+ errorThrown);
+                        }
+
+                    });
+
+                    dataArr["assetproptable"] = theTableArr;
+
+                    fillOptionMenu("../../CAIRIS/fastTemplates/AssetOptions.html", "#optionsContent", dataArr,false,true);
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     console.log(this.url);
@@ -39,13 +67,13 @@ $( document ).ajaxComplete(function() {
             });
         }else if(link.indexOf("personas") > -1) {
             forceOpenOptions();
-            readText("../../CAIRIS/fastTemplates/PersonaProperties.html", "#optionsContent",null,true,false);
+            fillOptionMenu("../../CAIRIS/fastTemplates/PersonaProperties.html", "#optionsContent",null,true,false);
             $(function() {
-                $( "#tabs" ).tabs();
+                $( ".tabs" ).tabs();
             });
 
         }
 
-
+        forceOpenOptions();
     });
 });

@@ -33,7 +33,10 @@ $("#addRow").click(function() {
  Removing the active tr
  */
 $("#removeReq").click(function() {
-    var oldrow = $("tr").eq(getActiveindex()).detach();
+    if(window.activeTable =="Requirements"){
+        var oldrow = $("tr").eq(getActiveindex()).detach();
+    }
+
     //of remove
     //TODO: AJAX CALL BEFORE REMOVE
 });
@@ -46,7 +49,7 @@ $("#gridReq").click(function(){
 
 //Just for debug
 $("#testingButton").click(function(){
-   readText("../../CAIRIS/fastTemplates/AssetOptions.html","#optionsContent")
+   fillOptionMenu("../../CAIRIS/fastTemplates/EditGoalsOptions.html","#optionsContent",null,true,true);
 });
 
 //For debug
@@ -103,3 +106,33 @@ $('#assetView').click(function(){
             console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     })});
+
+$("#EditGoals").click(function(){
+
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crfossDomain: true,
+        url: serverIP + "/api/goals/coloured",
+        success: function (data) {
+            window.activeTable = "EditGoals";
+            setTableHeader();
+            createEditGoalsTable(data);
+            activeElement("reqTable");
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log(this.url);
+            var err = eval("(" + xhr.responseText + ")");
+            //alert(err.message);
+            console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    })
+
+});
+$("#editGoalButton").click(function(){
+console.log(getActiveindex());
+});
