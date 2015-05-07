@@ -128,3 +128,54 @@ footer{
     float: right;
     width: 60%;
 }
+.inblock{
+    display: inline-block;
+    width: 100%;
+}
+.right{
+    float:right;
+}
+.left{
+    float:left;
+}
+#AssociationsAssetsOptions{
+    overflow-x: scroll;
+    width: 100%;
+    min-width: 200px;
+}
+#AssociationsAssetsOptions > th, td { min-width: 75px; }
+#assetstabsID{
+    width: 70%;
+}
+.tabs textarea{
+    width:100%;
+}
+/*environmentstable*/
+#theEnvironmentDictionary{
+    margin : 5px;
+}
+table.clickable-table {
+    border-collapse: collapse;
+}
+.clickable-table tr {
+    background-color: #ebeff4;
+    border-top: 1px solid #fff;
+}
+.clickable-table tr:hover {
+    background-color: #ccc;
+}
+.clickable-table th {
+    background-color: #fff;
+}
+.clickable-table th, .clickable-table td {
+    padding: 3px 5px;
+}
+.clickable-table td:hover {
+    cursor: pointer;
+}
+select#theType {
+    float: right;
+}
+#editpropertiesWindow p label{
+    width:100%
+}

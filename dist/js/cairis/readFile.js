@@ -1,7 +1,7 @@
 /**
  * Created by Raf on 30/04/2015.
  */
-function fillOptionMenu(filePath,theElement,theData,createTabs,optionsHeader) {
+function fillOptionMenu(filePath,theElement,theData,createTabs,optionsHeader,callback) {
     jQuery.get(filePath, function(data) {
         var optionsDIV = $("#optionsHeaderGear");
         if(optionsHeader){
@@ -24,8 +24,8 @@ function fillOptionMenu(filePath,theElement,theData,createTabs,optionsHeader) {
                     var tablevars = theData[key];
                     var testvar = eval(tablevars);
                     for(var prop in tablevars){
-                        $("#" + key).append("<tr><td>" + prop + "</td><td>" + tablevars["prop"] + "</td></tr>");
-                        console.log("ID: " + key + " the data: <tr><td>" + prop + "</td><td>" + tablevars["prop"] + "</td></tr>");
+                        $("#" + key).append("<tr><td>" + prop + "</td><td>" + tablevars[prop] + "</td></tr>");
+                        console.log("ID: " + key + " the data: <tr><td>" + prop + "</td><td>" + tablevars[prop] + "</td></tr>");
                     }
                 }else {
                     var value = theData[key];
@@ -40,6 +40,7 @@ function fillOptionMenu(filePath,theElement,theData,createTabs,optionsHeader) {
                 $( ".tabs" ).tabs();
             });
         }
-
+        callback();
     });
+
 }

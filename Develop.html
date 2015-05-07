@@ -35,6 +35,8 @@
     <script src="plugins/svg-pan-zoom/svg-pan-zoom.js"></script>
     <script src="plugins/lazyLoad/lazyload.js"></script>
 
+    <script src="plugins/JsonPopulate/jquery.loadJSON.js"></script>
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -219,7 +221,7 @@
                         </a>
                     </li>
                     <li class="dropdown messages-menu">
-                    <a href="#" class="dropdown-toggle imgwrapper" data-toggle="dropdown">
+                    <a href="#" class="dropdown-toggle imgwrapper" id="editAssetsClick" data-toggle="dropdown">
                         <img class="menu-image" src="images/template_asset.png" alt="Edit Assets">
                         <p class="imgPopup">Edit Assets</p>
                     </a>
@@ -575,11 +577,15 @@
                 <button id="deleteGoalButton">Delete</button>
                 <button id="editGoalButton">Edit</button>
             </div>
+            <div id="editAssetsOptions">
+                <button id="addAssetButton">Add</button>
+                <button id="deleteAssetButton">Delete</button>
+            </div>
         </section>
         <!-- Main content -->
         <section id="maincontent" class="content">
             <!-- Your Page Content Here -->
-            <table id="reqTable"class="theTable table table-striped">
+            <table id="reqTable"class="theTable table table-striped sortable">
                 <thead></thead>
                 <tbody>
 

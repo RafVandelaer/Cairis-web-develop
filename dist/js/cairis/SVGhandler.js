@@ -33,17 +33,39 @@ $( document ).ajaxComplete(function() {
                     //TODO AJAX IN AJAX
                     $.ajax({
                         type:"GET",
+                        dataType: "json",
                         accept:"application/json",
                         data: {
                             session_id: String($.session.get('sessionID'))
                         },
                         crossDomain: true,
                         url: serverIP + "/api/assets/id/"+ data.theId + "/properties",
-                        success: function(data){
+                        success: function(data2){
                             // console.log("in getAssetView " + data.innerHTML);
                             // console.log(this.url);
-                           console.log("Test")
-
+                           console.log("Test");
+                            var jsonObj = eval(data2);
+                            var theTableArr = [];
+//window.assetEnvironment
+                            for (var key in jsonObj) {
+                                if (jsonObj.hasOwnProperty(key)) {
+                                    if(key == window.assetEnvironment){
+                                        var goodData =  eval(jsonObj[key]);
+                                        for (var ky in goodData) {
+                                            //goodData[ky] = Availibility  + intgr
+                                            for (var k in goodData[ky]) {
+                                                if(k == "value"){
+                                                    theTableArr[String(ky)] = String(goodData[ky][k]);
+                                                    console.log(String(ky) + " " + String(goodData[ky][k]));
+                                                }
+                                                //console.log(goodData[ky][k] + " " + k);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            dataArr["assetproptable"] = theTableArr;
+                            fillOptionMenu("../../CAIRIS/fastTemplates/AssetOptions.html", "#optionsContent", dataArr,false,true);
                         },
                         error: function(xhr, textStatus, errorThrown) {
                             console.log(this.url);
@@ -54,9 +76,9 @@ $( document ).ajaxComplete(function() {
 
                     });
 
-                    dataArr["assetproptable"] = theTableArr;
 
-                    fillOptionMenu("../../CAIRIS/fastTemplates/AssetOptions.html", "#optionsContent", dataArr,false,true);
+
+
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     console.log(this.url);

@@ -52,6 +52,8 @@ var dialogwindow = $( "#dialogContent" ).dialog({
     }
 });
 
+
+
 $(document).ready(function() {
   //  localStorage.removeItem('sessionID');
     var sessionID = $.session.get('sessionID');
@@ -245,12 +247,10 @@ function createRequirementsTable(data){
  A function for filling the table with requirements
  */
 function createEditGoalsTable(data){
-    var tre;
     var theTable = $(".theTable");
     $(".theTable tr").not(function(){if ($(this).has('th').length){return true}}).remove();
     //var arr = reallyLongArray;
     var textToInsert = [];
-    var theRows = [];
     var i = 0;
 
     $.each(data, function(count, item) {
@@ -285,6 +285,37 @@ function createEditGoalsTable(data){
     theTable.append(textToInsert.join(''));
 
     theTable.css("visibility","visible");
+}
+
+function createAssetsTable(data){
+
+    var theTable = $(".theTable");
+    var textToInsert = [];
+    var i = 0;
+
+    //var thedata = $.parseJSON(data);
+    $.each(data, function(count, item) {
+        textToInsert[i++] = "<tr>"
+
+        textToInsert[i++] = '<td><button class="editAssetsButton" value="' + item.theName + '">' + 'Edit' + '</button></td>';
+
+        textToInsert[i++] = '<td name="theName">';
+        textToInsert[i++] = item.theName;
+        textToInsert[i++] = '</td>';
+
+        textToInsert[i++] = '<td name="theType">';
+        textToInsert[i++] = item.theType;
+        textToInsert[i++] = '</td>';
+
+        textToInsert[i++] = '<td name="theId" style="display:none;">';
+        textToInsert[i++] = item.theId;
+        textToInsert[i++] = '</td>';
+        textToInsert[i++] = '</tr>';
+
+
+    });
+    theTable.append(textToInsert.join(''));
+
 }
 
 /*
@@ -423,12 +454,43 @@ function setTableHeader(){
             console.log("Is EditGoals");
             thead = "<th>Name</th><th>Originator</th><th>Status</th>";
             break;
+        case "Assets":
+            console.log("Is Asset");
+            thead = "<th width='50px'></th><th>Name</th><th>Type</th>";
+            break;
     }
     $("#reqTable").find("thead").empty();
    // $("#reqTable").empty();
     $("#reqTable").find("thead").append(thead);
     $("#reqTable").find("tbody").empty();
 
+}
+/*
+ This sets the right comboboxes etc in the main window
+ */
+function setActiveOptions(){
+//filtercontent
+    //If chosen to create a new function for this, because this will increase readability
+    //First disable them all
+    $("#filtercontent").hide();
+    $("#editGoalsOptions").hide();
+    $("#editAssetsOptions").hide();
+
+    switch (window.activeTable) {
+        case "Requirements":
+            $("#filtercontent").show();
+            break;
+        case "Goals":
+            break;
+        case "Obstacles":
+            break;
+        case "EditGoals":
+            $("#editGoalsOptions").show();
+            break;
+        case "Assets":
+            $("#editAssetsOptions").show();
+            break;
+    }
 }
 
 /*
@@ -476,29 +538,7 @@ function findLabel() {
     return i+1;
 }
 
-/*
-This sets the right comboboxes etc in the main window
- */
-function setActiveOptions(){
-//filtercontent
-    //If chosen to create a new function for this, because this will increase readability
-    //First disable them all
-    $("#filtercontent").hide();
-    $("#editGoalsOptions").hide();
-    switch (window.activeTable) {
-        case "Requirements":
-            $("#filtercontent").show();
-            break;
-        case "Goals":
-            break;
-        case "Obstacles":
-            break;
-        case "EditGoals":
-            $("#editGoalsOptions").show();
-            break;
-    }
 
-}
 
 function sortTable(){
     var tbl = document.getElementById("reqTable").tBodies[0];
@@ -515,4 +555,27 @@ function sortTable(){
         tbl.appendChild(store[i][1]);
     }
     store = null;
+}
+
+/*
+for edit assets
+ */
+
+function getAssetDefinition(props){
+    $('#Properties').find('tbody').empty();
+    var i = 0;
+    var textToInsert = [];
+    $.each(props, function(key, value) {
+        textToInsert[i++] = '<tr class="clickable-properties" ><td>';
+        textToInsert[i++] = key;
+        textToInsert[i++] = '</td>';
+        $.each(value, function(keys, values) {
+            textToInsert[i++] = '<td>';
+            textToInsert[i++] = values;
+            textToInsert[i++] = '</td>';
+        });
+        textToInsert[i++] = '</tr>';
+    });
+    $('#Properties').find('tbody').append(textToInsert.join(''));
+
 }

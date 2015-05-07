@@ -49,7 +49,11 @@ $("#gridReq").click(function(){
 
 //Just for debug
 $("#testingButton").click(function(){
-   fillOptionMenu("../../CAIRIS/fastTemplates/EditGoalsOptions.html","#optionsContent",null,true,true);
+    data = { theName : "Test"};
+   $('#editAssetsOptionsform').loadJSON(data);
+    if ($("#editAssetsOptionsform").length > 0) {
+        console.log("Is found")
+    }
 });
 
 //For debug
@@ -123,6 +127,7 @@ $("#EditGoals").click(function(){
             setTableHeader();
             createEditGoalsTable(data);
             activeElement("reqTable");
+            sortTable();
         },
         error: function (xhr, textStatus, errorThrown) {
             console.log(this.url);
@@ -135,4 +140,142 @@ $("#EditGoals").click(function(){
 });
 $("#editGoalButton").click(function(){
 console.log(getActiveindex());
+});
+$(document).on('click', "button.editAssetsButton",function(){
+    var name = $(this).attr("value");
+
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crossDomain: true,
+        url: serverIP + "/api/assets/name/" + name.replace(" ", "%20"),
+        success: function (rawData) {
+           // console.log(JSON.stringify(rawData));
+            fillOptionMenu("../../CAIRIS/fastTemplates/EditAssetsOptions.html","#optionsContent",null,true,true, function(){
+
+                    //TODO Tables etc invullen
+                    var newdata = rawData;
+                    //Holding asset in Session so it's easy update-able
+                    $.session.set("Asset", JSON.stringify(newdata));
+                    //console.log(JSON.stringify(newdata));
+                   $('#editAssetsOptionsform').loadJSON(newdata,null);
+                    var environments = newdata.theEnvironmentDictionary;
+
+                    var i = 0;
+                    var textToInsert = [];
+                    $.each(environments, function(key, value) {
+                        textToInsert[i++] = '<tr class="clickable-environments" ><td>';
+                        textToInsert[i++] = key;
+                        textToInsert[i++] = '</td></tr>';
+                    });
+                    forceOpenOptions();
+                    $('#theEnvironmentDictionary').append(textToInsert.join(''));
+
+                    $.ajax({
+                        type: "GET",
+                        dataType: "json",
+                        accept: "application/json",
+                        data: {
+                            session_id: String($.session.get('sessionID'))
+                        },
+                        crossDomain: true,
+                        url: serverIP + "/api/assets/id/" + rawData.theId + "/properties",
+                        success: function (data) {
+                            $.session.set("AssetProperties", JSON.stringify(data));
+                            var env = $( "#theEnvironmentDictionary").find("tbody tr:eq(0) > td:eq(0)").text();
+                            var props = data[env];
+                            $.session.set("UsedProperties", JSON.stringify(props));
+                          //  console.log("dsf");
+                            getAssetDefinition(props);
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(this.url);
+                            var err = eval("(" + xhr.responseText + ")");
+                            console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                        }
+                    });
+                    //$('.clickable-rows').on('click', changeEnvironment());
+                }
+            );
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log(this.url);
+            var err = eval("(" + xhr.responseText + ")");
+            console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+});
+
+
+//This is delegation
+var optionsContent = $('#optionsContent');
+optionsContent.on('click', '.clickable-environments', function(){
+    var assts = JSON.parse($.session.get("AssetProperties"));
+    var props = assts[$(this).find("td").text()];
+    $.session.set("UsedProperties", JSON.stringify(props));
+    getAssetDefinition(props);
+});
+/*
+For editing the defenetion properties
+ */
+optionsContent.on('dblclick', '.clickable-properties', function(){
+    var test = $(this);
+    $("#editAssetsOptionsform").hide();
+    $("#editpropertiesWindow").show(function(){
+        var jsonn = JSON.parse($.session.get("UsedProperties"));
+        $.each(jsonn, function (key, data) {
+            //DO NOT DESTROY
+            if(test[0].firstElementChild.innerHTML == key) {
+                $("#property:selected").removeAttr("selected");
+                $("#property").find("option").each(function() {
+                     if($(this)[0].label == key){
+                         $("#property").val(key);
+                     }
+                 });
+            }
+            $('#editpropertiesWindow').loadJSON(data,null);
+        });
+
+    });
+    console.log($.session.get("UsedProperties"));
+
+
+});
+optionsContent.on('click', '#cancelButtonAsset', function(){
+    $("#editAssetsOptionsform").show();
+    $("#editpropertiesWindow").hide();
+});
+
+$("#reqTable").on("click", "td", function() {
+    console.log(getActiveindex());
+    //$('#reqTable').find('td:last').focus();
+    $('#reqTable tr').eq(getActiveindex()).find('td:first').focus();
+});
+$("#editAssetsClick").click(function(){
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crossDomain: true,
+        url: serverIP + "/api/assets",
+        success: function (data) {
+            window.activeTable = "Assets";
+            setTableHeader();
+            createAssetsTable(data);
+            activeElement("reqTable");
+            sortTable();
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log(this.url);
+            var err = eval("(" + xhr.responseText + ")");
+            console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
 });

@@ -36,36 +36,6 @@ $(window).load(function(){
     });
     activeElement("reqTable");
 
-
-
-    /*
-     FOR JSON
-     $.ajax({
-     type: 'GET',
-     url: 'http://example/functions.php',
-     data: { get_param: 'value' },
-     dataType: 'json',
-     success: function (data) {
-     $.each(data, function(index, element) {
-     $('body').append($('<div>', {
-     text: element.name
-     }));
-     });
-     }
-     });
-
-     or use the $.getJSON method:
-
-     $.getJSON('/functions.php', { get_param: 'value' }, function(data) {
-     $.each(data, function(index, element) {
-     $('body').append($('<div>', {
-     text: element.name
-     }));
-     });
-     });
-
-     */
-
 });
 
 $( window ).resize(function() {
