@@ -26,7 +26,7 @@ $(window).load(function(){
    // console.log("Header:" + mainh.height()+ ", Footer: " + footh.height())
     //For the gear, making it retractable
     $('#rightnavGear').click(function(){
-        openOptions();
+        toggleOptions();
     });
     $(".imgwrapper").hover(function(){
 
@@ -56,7 +56,7 @@ function makeHorizontalScrollbar() {
 /*
 For opening the right options menu
  */
-function openOptions(){
+function toggleOptions(){
     var navGear = $('#rightnavGear');
     var navMenu = $('#rightnavMenu');
     if (!navGear.hasClass("open")) {
@@ -80,6 +80,16 @@ function forceOpenOptions(){
         navMenu.animate({"right": "0"});
         navGear.addClass("open");
     }
+}
+/*
+ For opening the right options menu
+ */
+function forceCloseOptions(){
+    var navGear = $('#rightnavGear');
+    var navMenu = $('#rightnavMenu');
+        navGear.animate({"right": "0"});
+        navMenu.animate({"right": "-500px"});
+        navGear.removeClass("open");
 }
 
 /*

@@ -2,19 +2,19 @@
 
     <p>
         <label  >Name</label>
-        <input class="optionsInput" type="text" name="theName" id="theName" value="null" >
+        <input class="optionsInput assetUpdate" type="text" name="theName" id="theName" value="null" >
     </p>
     <p>
         <label>Tags</label>
-        <input class="optionsInput" type="text" value="null" id="theTags " name="theTags">
+        <input class="optionsInput assetUpdate" type="text" value="" id="theTags" name="theTags">
     </p>
     <p>
         <label>Shortcode</label>
-        <input class="optionsInput" type="text" value="null" id="theShortCode" name="theShortCode">
+        <input class="optionsInput assetUpdate" type="text" value="" id="theShortCode" name="theShortCode">
     </p>
     <p>
         <label for="theType">Type</label>
-        <select name="TheType" id="theType">
+        <select name="TheType" class="assetUpdate" id="theType">
             <option>
                 Information
             </option>
@@ -40,14 +40,14 @@
 
         </ul>
         <div id="Description">
-           <textarea name="theDescription"></textarea>
+           <textarea class="assetUpdate" name="theDescription" id="theDescription"></textarea>
         </div>
         <div id="Significance">
-            <textarea name="theSignificance"> </textarea>
+            <textarea class="assetUpdate" name="theSignificance" id="theSignificance"> </textarea>
         </div>
         <div id="Criticality">
-            <input type="checkbox" id="isCritical">Critical Asset <br>
-            <textarea name="Issue-textarea" readonly> </textarea>
+            <input  class="assetUpdate" type="checkbox" id="isCritical">Critical Asset <br>
+            <textarea class="assetUpdate" id="theCriticalRationale" name="theCriticalRationale" > </textarea>
         </div>
         <div id="Interfaces">
             <table id="editgoalsGoalsTable">
@@ -74,7 +74,7 @@
                 <li><a href="#AssociationsAssetsOptions">Fit Criterion</a></li>
             </ul>
             <div id="Properties" class="gearOptions clickable-table">
-                <table>
+                <table  class="assetUpdate">
                     <thead>
                     <tr><th>Property</th><th>Value</th><th>Rationale</th></tr>
                     </thead>
@@ -84,7 +84,7 @@
                 </table>
             </div>
             <div id="AssociationsAssetsOptions">
-                <table>
+                <table  class="assetUpdate">
                     <thead>
                     <tr><th>Nav</th><th>Type</th><th>Nry</th><th>Role</th><th>Tail Role</th><th>Tail Nry</th><th>Tail Type</th><th>Tail Nav</th><th>Tail Asset</th></tr>
                     </thead>
@@ -161,7 +161,7 @@
         <button id="cancelButtonAsset">
             Cancel
         </button>
-        <button>
+        <button >
             Update
         </button>
     </p>

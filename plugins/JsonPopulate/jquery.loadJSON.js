@@ -69,6 +69,8 @@ If edited this file, so it's not the same as the source. Raf Vandelaer
                     });
                     break;
                 case 'input':
+                    $(element).attr("innerText", value);
+                    break;
                 case 'select-one':
                 case 'text':
                 case 'hidden':

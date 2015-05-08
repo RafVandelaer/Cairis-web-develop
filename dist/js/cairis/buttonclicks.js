@@ -24,7 +24,7 @@ $("#addRow").click(function() {
                 break;
         }
         $("#reqTable").append(template);
-        sortTable();
+        sortTableByRow(0);
     }
 
 });
@@ -49,11 +49,7 @@ $("#gridReq").click(function(){
 
 //Just for debug
 $("#testingButton").click(function(){
-    data = { theName : "Test"};
-   $('#editAssetsOptionsform').loadJSON(data);
-    if ($("#editAssetsOptionsform").length > 0) {
-        console.log("Is found")
-    }
+   showPopup(true);
 });
 
 //For debug
@@ -105,9 +101,7 @@ $('#assetView').click(function(){
         },
         error: function (xhr, textStatus, errorThrown) {
             console.log(this.url);
-            var err = eval("(" + xhr.responseText + ")");
-            //alert(err.message);
-            console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     })});
 
@@ -127,13 +121,11 @@ $("#EditGoals").click(function(){
             setTableHeader();
             createEditGoalsTable(data);
             activeElement("reqTable");
-            sortTable();
+            sortTableByRow(0);
         },
         error: function (xhr, textStatus, errorThrown) {
             console.log(this.url);
-            var err = eval("(" + xhr.responseText + ")");
-            //alert(err.message);
-            console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     })
 
@@ -195,7 +187,7 @@ $(document).on('click', "button.editAssetsButton",function(){
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(this.url);
                             var err = eval("(" + xhr.responseText + ")");
-                            console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
                         }
                     });
                     //$('.clickable-rows').on('click', changeEnvironment());
@@ -204,8 +196,7 @@ $(document).on('click', "button.editAssetsButton",function(){
         },
         error: function (xhr, textStatus, errorThrown) {
             console.log(this.url);
-            var err = eval("(" + xhr.responseText + ")");
-            console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });
 });
@@ -220,7 +211,7 @@ optionsContent.on('click', '.clickable-environments', function(){
     getAssetDefinition(props);
 });
 /*
-For editing the defenetion properties
+For editing the definition properties
  */
 optionsContent.on('dblclick', '.clickable-properties', function(){
     var test = $(this);
@@ -245,9 +236,75 @@ optionsContent.on('dblclick', '.clickable-properties', function(){
 
 
 });
+optionsContent.on('change', "#theType",function (){
+  // alert($(this).val());
+    //$(this).val("selected", $(this).val());
+});
+
 optionsContent.on('click', '#cancelButtonAsset', function(){
     $("#editAssetsOptionsform").show();
     $("#editpropertiesWindow").hide();
+});
+optionsContent.on('click', '#UpdateAssetinGear',function(e){
+    e.preventDefault();
+    //alert($('#theName').val());
+   var AssetSon =  JSON.parse($.session.get("Asset"));
+    //TODO properties appart updaten zodra controller af is
+    //TODO cleanup
+    $(".assetUpdate").each(function() {
+        var updatable = false;
+        if(String($(this).prop("tagName")).toLowerCase() == "input" && String($(this).prop("type")).toLowerCase() == "text"){
+            if(AssetSon[String(this.id)] != $(this).val()){
+              //  console.log(String(this.id) + " has changed in input(text) to " + String($(this).val()) + " and was " +  AssetSon[String(this.id)]);
+                AssetSon[String(this.id)] = String($(this).val());
+                updatable = true;
+            }
+        }
+        else if(String($(this).prop("tagName")).toLowerCase() == "input" && String($(this).prop("type")).toLowerCase() == "checkbox"){
+            var checked = $(this).is(":checked") ? 1 : 0;
+            if(AssetSon[String(this.id)] != $(this).val()){
+                //console.log(String(this.id) + " has changed in input(checkbox) to " + checked + " and was " +  AssetSon[String(this.id)]);
+                AssetSon[String(this.id)] = checked;
+                updatable = true;
+            }
+        }
+       else if(String($(this).prop("tagName")).toLowerCase() == "select") {
+            if(AssetSon[String(this.id)] != $(this).val()){
+                //console.log(String(this.id) + " has changed in select to " + String($(this).val()) + " and was " +  AssetSon[String(this.id)]);
+                AssetSon[String(this.id)] = String($(this).val());
+                updatable = true;
+            }
+        }
+        else if(String($(this).prop("tagName")).toLowerCase() == "textarea") {
+            if(AssetSon[String(this.id)] != $(this).val()){
+                //console.log(String(this.id) + " has changed in textArea to " + String($(this).val()) + " and was " +  AssetSon[String(this.id)]);
+                AssetSon[String(this.id)] = String($(this).val());
+                updatable = true;
+            }
+        }
+        if(updatable){
+            stringData = "session_id=" +String($.session.get('sessionID')) +"&body=" + JSON.stringify(AssetSon);
+            $.ajax({
+                type: "PUT",
+                dataType: "json",
+                contentType: "application/json",
+                accept: "application/json",
+                data: stringData,
+                crossDomain: true,
+                url: serverIP + "/api/assets/name/" + AssetSon["theName"] ,
+                success: function (data) {
+                    showPopup(true);
+                    forceCloseOptions
+
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    showPopup(false);
+                    console.log(this.url);
+                    console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                }
+            });
+        }
+    });
 });
 
 $("#reqTable").on("click", "td", function() {
@@ -268,14 +325,19 @@ $("#editAssetsClick").click(function(){
         success: function (data) {
             window.activeTable = "Assets";
             setTableHeader();
-            createAssetsTable(data);
+            createAssetsTable(data, function(){
+                newSorting(1);
+            });
             activeElement("reqTable");
-            sortTable();
+
         },
         error: function (xhr, textStatus, errorThrown) {
             console.log(this.url);
-            var err = eval("(" + xhr.responseText + ")");
-            console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });
 });
+
+/*
+For updating the Assets
+ */

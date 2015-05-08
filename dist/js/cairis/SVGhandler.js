@@ -71,7 +71,7 @@ $( document ).ajaxComplete(function() {
                             console.log(this.url);
                             var err = eval("(" + xhr.responseText + ")");
                             //alert(err.message);
-                            console.log("error: " + err + ", textstatus: "  +textStatus + ", thrown: "+ errorThrown);
+                            console.log("error: " + xhr.responseText +  ", textstatus: "  +textStatus + ", thrown: "+ errorThrown);
                         }
 
                     });
@@ -83,7 +83,7 @@ $( document ).ajaxComplete(function() {
                 error: function (xhr, textStatus, errorThrown) {
                     console.log(this.url);
                     var err = eval("(" + xhr.responseText + ")");
-                    console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                    console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
                 }
 
             });

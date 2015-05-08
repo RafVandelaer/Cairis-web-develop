@@ -36,7 +36,7 @@ var dialogwindow = $( "#dialogContent" ).dialog({
                 },
                 error: function(data, status, xhr) {
                     var err = eval("(" + xhr.responseText + ")");
-                    console.log("error: " + err + ", textstatus: " + status + ", data: " + JSON.stringify(data));
+                    console.log("error: " + xhr.responseText +  ", textstatus: " + status + ", data: " + JSON.stringify(data));
                     alert("There is a problem with the server...");
                 }
             });
@@ -115,7 +115,7 @@ $('#assetsbox').change(function() {
                     console.log(this.url);
                     var err = eval("(" + xhr.responseText + ")");
                     //alert(err.message);
-                    console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                    console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
                 }
 
             });
@@ -139,8 +139,7 @@ $('#environmentsbox').change(function() {
             dataType: "json",
             accept: "application/json",
             data: {
-                session_id: String($.session.get('sessionID')),
-                is_asset: 0
+                session_id: String($.session.get('sessionID'))
             },
             crossDomain: true,
             url: serverIP + "/api/requirements/environment/" + encodeURIComponent(selection),
@@ -149,9 +148,7 @@ $('#environmentsbox').change(function() {
             },
             error: function (xhr, textStatus, errorThrown) {
                 console.log(this.url);
-                var err = eval("(" + xhr.responseText + ")");
-                //alert(err.message);
-                console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
             }
 
         });
@@ -177,9 +174,8 @@ function getAssetview(environment){
         },
         error: function(xhr, textStatus, errorThrown) {
             console.log(this.url);
-            var err = eval("(" + xhr.responseText + ")");
-            //alert(err.message);
-            console.log("error: " + err + ", textstatus: "  +textStatus + ", thrown: "+ errorThrown);
+
+            console.log("error: " + xhr.responseText +  ", textstatus: "  +textStatus + ", thrown: "+ errorThrown);
         }
 
     });
@@ -287,7 +283,7 @@ function createEditGoalsTable(data){
     theTable.css("visibility","visible");
 }
 
-function createAssetsTable(data){
+function createAssetsTable(data, callback){
 
     var theTable = $(".theTable");
     var textToInsert = [];
@@ -315,6 +311,8 @@ function createAssetsTable(data){
 
     });
     theTable.append(textToInsert.join(''));
+    callback();
+
 
 }
 
@@ -349,7 +347,7 @@ var sess = String($.session.get('sessionID'));
             error: function (xhr, textStatus, errorThrown) {
                 console.log(this.url);
                 var err = eval("(" + xhr.responseText + ")");
-                console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
             }
 
         });
@@ -378,7 +376,7 @@ var sess = String($.session.get('sessionID'));
                 console.log(this.url);
                 var err = eval("(" + xhr.responseText + ")");
                 //alert(err.message);
-                console.log("error: " + err + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
             }
 
         });
@@ -405,9 +403,8 @@ function startingTable(){
         },
         error: function(xhr, textStatus, errorThrown) {
             console.log(this.url);
-            var err = eval("(" + xhr.responseText + ")");
-            //alert(err.message);
-            console.log("error: " + err + ", textstatus: "  +textStatus + ", thrown: "+ errorThrown);
+
+            console.log("error: " + xhr.responseText +  ", textstatus: "  +textStatus + ", thrown: "+ errorThrown);
         }
     });
 }
@@ -427,6 +424,9 @@ function activeElement(elementid){
        //If it is the table, we need to see which table it is
         setActiveOptions();
     }
+    //////ADDED
+    setActiveOptions();
+
     elementid = "#" + elementid;
     $(elementid).show();
 
@@ -557,6 +557,41 @@ function sortTable(){
     store = null;
 }
 
+function sortTableByRow(rownumber){
+    var tbl = document.getElementById("reqTable").tBodies[0];
+    var store = [];
+    for(var i=0, len=tbl.rows.length; i<len; i++){
+        var row = tbl.rows[i];
+        var sortnr = parseFloat(row.cells[rownumber].textContent || row.cells[rownumber].innerText);
+        if(!isNaN(sortnr)) store.push([sortnr, row]);
+    }
+    store.sort(function(x,y){
+        return x[0] - y[0];
+    });
+    for(var i=0, len=store.length; i<len; i++){
+        tbl.appendChild(store[i][1]);
+    }
+    store = null;
+}
+
+function newSorting(rownr){
+    var $sort = this;
+    var $table = $('#reqTable');
+    var $rows = $('tbody &gt; tr',$table);
+    $rows.sort(function(a, b){
+        var keyA = $('td:eq('+rownr+')',a).text();
+        var keyB = $('td:eq('+rownr+')',b).text();
+        if($($sort).hasClass('asc')){
+            return (keyA > keyB) ? 1 : 0;
+        } else {
+            return (keyA < keyB) ? 1 : 0;
+        }
+    });
+    $.each($rows, function(index, row){
+        $table.append(row);
+    });
+}
+
 /*
 for edit assets
  */
@@ -578,4 +613,30 @@ function getAssetDefinition(props){
     });
     $('#Properties').find('tbody').append(textToInsert.join(''));
 
+}
+
+function showPopup(succes){
+
+    if ($('.popupMessage').is(':visible')) {
+
+    }else{
+        $('.popupMessage').show();
+    }
+    if(succes){
+        $(".popupMessage").css("width","175px");
+        $(".Succes").show();
+        $(".Fail").hide();
+    }
+    else{
+        $(".popupMessage").css("width","350px");
+        $(".Fail").show();
+        $(".Succes").hide();
+    }
+    $(".popupMessage").css("margin-left",$( document).width()/2);
+    $(".popupMessage").animate({
+        bottom: '100px'
+    }, 1500).delay(3000).fadeOut("slow",function(){
+        //bottom: '-100px'
+        $(".popupMessage").css("bottom","-100px");
+    });
 }
