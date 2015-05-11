@@ -63,7 +63,15 @@ $.fn.editableTableWidget = function (options) {
                 //This function is for our Ajax calls
                 console.log("Name: " + active.attr("Name"));
                 console.log("The Row is: " + $(active).parent().index());
-                //TODO ajax calls met POST
+                switch (window.activeTable){
+                    case "Requirements":
+                        var rows = $('tr', "#reqTable");
+                        var row = rows.eq($(active).parent().index());
+                        updateRequirement(row);
+                        break;
+                    //TODO other tables!!!!!
+                }
+
 /*$(this).find('td').each (function() {
  // do your cool stuff
  });

@@ -191,6 +191,8 @@ function createRequirementsTable(data){
     $(".theTable tr").not(function(){if ($(this).has('th').length){return true}}).remove();
     //var arr = reallyLongArray;
     var textToInsert = [];
+    var  originator, rationale, fitCriterion, type = "";
+
     var theRows = [];
     var i = 0;
     var j = 0;
@@ -215,10 +217,31 @@ function createRequirementsTable(data){
         textToInsert[i++] = item.theId;
         textToInsert[i++] = '</td>';
 
+        textToInsert[i++] = '<td name="theVersion"  style="display:none;">';
+        textToInsert[i++] = item.theVersion;
+        textToInsert[i++] = '</td>';
+
         var datas = eval(item.attrs);
         for (var key in datas) {
             if (datas.hasOwnProperty(key)) {
-                if(key == ("originator") || key == ("rationale") || key == ("fitCriterion") || key == ("type")) {
+                /*
+                Made this so the TD's are in the right order.
+                 */
+                switch(key){
+                    case "originator":
+                        originator =   '<td name=' + key + ' contenteditable=true >'+ datas[key] + '</td>';
+                        break;
+                    case "rationale":
+                        rationale =   '<td name=' + key + ' contenteditable=true >'+ datas[key] + '</td>';
+                        break;
+                    case "fitCriterion":
+                        fitCriterion =   '<td name=' + key + ' contenteditable=true >'+ datas[key] + '</td>';
+                        break;
+                    case "type":
+                        type =   '<td name=' + key + ' contenteditable=true >'+ datas[key] + '</td>';
+                        break;
+                }
+              /*  if(key == ("originator") || key == ("rationale") || key == ("fitCriterion") || key == ("type")) {
                     // alert(key+': '+datas[key]); // this will show each key with it's value
                     // tre.append("<td name=" + key + " contenteditable=true >" + datas[key] + "</td>");
                     textToInsert[i++] = '<td name=';
@@ -227,9 +250,13 @@ function createRequirementsTable(data){
                     textToInsert[i++] = datas[key];
                     textToInsert[i++] = '</td>';
 
-                }
+                }*/
             }
         }
+        textToInsert[i++] = rationale;
+        textToInsert[i++] = fitCriterion;
+        textToInsert[i++] = originator;
+        textToInsert[i++] = type;
         textToInsert[i++] = '</tr>';
     });
 
@@ -577,7 +604,7 @@ function sortTableByRow(rownumber){
 function newSorting(rownr){
     var $sort = this;
     var $table = $('#reqTable');
-    var $rows = $('tbody &gt; tr',$table);
+    var $rows = $('tbody > tr',$table);
     $rows.sort(function(a, b){
         var keyA = $('td:eq('+rownr+')',a).text();
         var keyB = $('td:eq('+rownr+')',b).text();
@@ -600,7 +627,7 @@ function getAssetDefinition(props){
     $('#Properties').find('tbody').empty();
     var i = 0;
     var textToInsert = [];
-    $.each(props, function(key, value) {
+    /*$.each(props, function(key, value) {
         textToInsert[i++] = '<tr class="clickable-properties" ><td>';
         textToInsert[i++] = key;
         textToInsert[i++] = '</td>';
@@ -610,7 +637,26 @@ function getAssetDefinition(props){
             textToInsert[i++] = '</td>';
         });
         textToInsert[i++] = '</tr>';
-    });
+    });*/
+    $.each(props, function(index, object) {
+             textToInsert[i++] = '<tr class="clickable-properties" ><td style="display:none;">';
+             textToInsert[i++] = object.id;
+             textToInsert[i++] = '</td>';
+
+             textToInsert[i++] = '<td>';
+             textToInsert[i++] = object.name;
+             textToInsert[i++] = '</td>';
+
+        textToInsert[i++] = '<td>';
+        textToInsert[i++] = object.value;
+        textToInsert[i++] = '</td>';
+
+        textToInsert[i++] = '<td>';
+        textToInsert[i++] = object.rationale;
+        textToInsert[i++] = '</td>';
+
+         textToInsert[i++] = '</tr>';
+     });
     $('#Properties').find('tbody').append(textToInsert.join(''));
 
 }

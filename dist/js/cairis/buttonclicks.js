@@ -5,16 +5,34 @@
  Function for adding a row to the table
  */
 $("#addRow").click(function() {
+    var kind  = "";
+
     //var clonedRow = $("#reqTable tr:last").clone();
     if($( "#assetsbox").find("option:selected" ).text() == "All" && $( "#environmentsbox").find("option:selected" ).text() == "All"){
         alert("Please select an asset or an environment");
     }
     else{
+        if($( "#assetsbox").find("option:selected" ).text() != "All"){
+            kind = "asset:" + $( "#assetsbox").find("option:selected" ).text();
+        }else{
+            kind = "environment:"+$( "#environmentsbox").find("option:selected" ).text();
+        }
         var template = "";
         var num = findLabel();
         switch (window.activeTable) {
             case "Requirements":
-                template = '<tr> <td name="theLabel">' + num + '</td> <td name="theName" contenteditable="true"></td> <td name="theDescription" contenteditable="true"></td> <td name="thePriority" contenteditable="true">1</td><td name="theId" style="display:none;"></td><td name="originator" contenteditable="true"></td> <td name="fitCriterion" contenteditable="true">None</td> <td name="rationale" contenteditable="true">None</td> <td name="type" contenteditable="true">Functional</td> </tr>';
+                template = '<tr class="' + kind + '">' +
+                    '<td name="theLabel">' + num + '</td>' +
+                '<td name="theName" contenteditable="true"></td>'+
+                '<td name="theDescription" contenteditable="true"></td>'+
+                '<td name="thePriority" contenteditable="true">1</td>'+
+                '<td name="theId" style="display:none;"></td>'+
+                '<td name="theVersion" style="display:none;"></td>'+
+                '<td name="rationale" contenteditable="true">None</td>'+
+                '<td name="fitCriterion" contenteditable="true">None</td>'+
+                '<td name="originator" contenteditable="true"></td>'+
+                '<td name="type" contenteditable="true">Functional</td>'+
+                '</tr>';
                 break;
             case "Goals":
                 template = '<tr><td name="theLabel">' + num + '</td><td name="theName" contenteditable="true" ></td><td name="theDefinition" contenteditable="true"></td><td name="theCategory" contenteditable="true">Maintain</td><td name="thePriority" contenteditable="true">Low</td><td name="theId" style="display:none;"></td><td name="fitCriterion" contenteditable="true" >None</td><td  name="theIssue" contenteditable="true">None</td><td name="originator" contenteditable="true"></td></tr>';
@@ -149,7 +167,7 @@ $(document).on('click', "button.editAssetsButton",function(){
            // console.log(JSON.stringify(rawData));
             fillOptionMenu("../../CAIRIS/fastTemplates/EditAssetsOptions.html","#optionsContent",null,true,true, function(){
 
-                    //TODO Tables etc invullen
+                    //TODO Updaten naar new output
                     var newdata = rawData;
                     //Holding asset in Session so it's easy update-able
                     $.session.set("Asset", JSON.stringify(newdata));
@@ -175,12 +193,21 @@ $(document).on('click', "button.editAssetsButton",function(){
                             session_id: String($.session.get('sessionID'))
                         },
                         crossDomain: true,
-                        url: serverIP + "/api/assets/id/" + rawData.theId + "/properties",
+                        url: serverIP + "/api/assets/name/" + rawData.theName + "/properties",
                         success: function (data) {
                             $.session.set("AssetProperties", JSON.stringify(data));
                             var env = $( "#theEnvironmentDictionary").find("tbody tr:eq(0) > td:eq(0)").text();
-                            var props = data[env];
+                            var props;
+                            $.each(data, function(arrayID,group) {
+                                if(group.environment == env){
+                                   // console.log(group.attributes[0].name);
+                                    props = group.attributes;
+                                    $.session.set("rightEnvironment", JSON.stringify(group));
+                                }
+                            });
+
                             $.session.set("UsedProperties", JSON.stringify(props));
+
                           //  console.log("dsf");
                             getAssetDefinition(props);
                         },
@@ -206,33 +233,57 @@ $(document).on('click', "button.editAssetsButton",function(){
 var optionsContent = $('#optionsContent');
 optionsContent.on('click', '.clickable-environments', function(){
     var assts = JSON.parse($.session.get("AssetProperties"));
-    var props = assts[$(this).find("td").text()];
+    var text = $(this).find("td").text();
+    var props;
+    $.each(assts, function(arrayID,group) {
+        if(group.environment == text){
+            // console.log(group.attributes[0].name);
+            props = group.attributes;
+
+        }
+    });
     $.session.set("UsedProperties", JSON.stringify(props));
     getAssetDefinition(props);
 });
+
+optionsContent.on("click", "#updateButtonAsset", function(){
+    props = JSON.parse($.session.get("theRightProp"));
+    //-Do
+    props.name =   $("#property").find("option:selected").text().trim();
+    props.value =  $("#value").find("option:selected").text().trim();
+    props.rationale = $("#rationale").val();
+
+    putAssetProperty(props);
+
+});
+
 /*
 For editing the definition properties
  */
 optionsContent.on('dblclick', '.clickable-properties', function(){
     var test = $(this);
     $("#editAssetsOptionsform").hide();
+    var label = test[0].children[1].innerText;
+
     $("#editpropertiesWindow").show(function(){
         var jsonn = JSON.parse($.session.get("UsedProperties"));
-        $.each(jsonn, function (key, data) {
-            //DO NOT DESTROY
-            if(test[0].firstElementChild.innerHTML == key) {
-                $("#property:selected").removeAttr("selected");
-                $("#property").find("option").each(function() {
-                     if($(this)[0].label == key){
-                         $("#property").val(key);
-                     }
-                 });
+        var theRightprop
+        $.each(jsonn,function(arrayID,data){
+            if(data.name == label){
+                theRightprop = data;
+                $.session.set("theRightProp", JSON.stringify(theRightprop));
             }
-            $('#editpropertiesWindow').loadJSON(data,null);
         });
 
+        $("#property:selected").removeAttr("selected");
+        $("#property").find("option").each(function() {
+            if(label.toLowerCase() == theRightprop.name.toLowerCase()){
+                $("#property").val(theRightprop.name);
+            }
+        });
+        $('#editpropertiesWindow').loadJSON(theRightprop,null);
     });
-    console.log($.session.get("UsedProperties"));
+    //console.log(    $.session.get("UsedProperties"));
 
 
 });
@@ -308,7 +359,10 @@ optionsContent.on('click', '#UpdateAssetinGear',function(e){
 });
 
 $("#reqTable").on("click", "td", function() {
-    console.log(getActiveindex());
+   // console.log(getActiveindex());
+    if(window.activeTable == "Requirements"){
+
+    }
     //$('#reqTable').find('td:last').focus();
     $('#reqTable tr').eq(getActiveindex()).find('td:first').focus();
 });
