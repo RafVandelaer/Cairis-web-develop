@@ -30,7 +30,6 @@ $( document ).ajaxComplete(function() {
                     dataArr["#theSignificance"] = String(data.theSignificance);
                     var theTableArr =[];
 
-                    //TODO AJAX IN AJAX
                     $.ajax({
                         type:"GET",
                         dataType: "json",
@@ -75,9 +74,6 @@ $( document ).ajaxComplete(function() {
                         }
 
                     });
-
-
-
 
                 },
                 error: function (xhr, textStatus, errorThrown) {

@@ -1,6 +1,9 @@
 /**
  * Created by Raf on 30/04/2015.
  */
+
+
+
 /*
  Function for adding a row to the table
  */
@@ -153,6 +156,7 @@ console.log(getActiveindex());
 });
 $(document).on('click', "button.editAssetsButton",function(){
     var name = $(this).attr("value");
+    $.session.set("AssetName", name.trim());
 
     $.ajax({
         type: "GET",
@@ -163,27 +167,17 @@ $(document).on('click', "button.editAssetsButton",function(){
         },
         crossDomain: true,
         url: serverIP + "/api/assets/name/" + name.replace(" ", "%20"),
-        success: function (rawData) {
+        success: function (newdata) {
            // console.log(JSON.stringify(rawData));
             fillOptionMenu("../../CAIRIS/fastTemplates/EditAssetsOptions.html","#optionsContent",null,true,true, function(){
 
-                    //TODO Updaten naar new output
-                    var newdata = rawData;
                     //Holding asset in Session so it's easy update-able
                     $.session.set("Asset", JSON.stringify(newdata));
                     //console.log(JSON.stringify(newdata));
                    $('#editAssetsOptionsform').loadJSON(newdata,null);
-                    var environments = newdata.theEnvironmentDictionary;
-
-                    var i = 0;
-                    var textToInsert = [];
-                    $.each(environments, function(key, value) {
-                        textToInsert[i++] = '<tr class="clickable-environments" ><td>';
-                        textToInsert[i++] = key;
-                        textToInsert[i++] = '</td></tr>';
-                    });
+                    $.session.set("UsedAssetObject", JSON.stringify(newdata));
                     forceOpenOptions();
-                    $('#theEnvironmentDictionary').append(textToInsert.join(''));
+                    //$('#theEnvironmentDictionary').append(textToInsert.join(''));
 
                     $.ajax({
                         type: "GET",
@@ -193,23 +187,11 @@ $(document).on('click', "button.editAssetsButton",function(){
                             session_id: String($.session.get('sessionID'))
                         },
                         crossDomain: true,
-                        url: serverIP + "/api/assets/name/" + rawData.theName + "/properties",
+                        url: serverIP + "/api/assets/name/" + newdata.theName + "/properties",
                         success: function (data) {
                             $.session.set("AssetProperties", JSON.stringify(data));
-                            var env = $( "#theEnvironmentDictionary").find("tbody tr:eq(0) > td:eq(0)").text();
-                            var props;
-                            $.each(data, function(arrayID,group) {
-                                if(group.environment == env){
-                                   // console.log(group.attributes[0].name);
-                                    props = group.attributes;
-                                    $.session.set("rightEnvironment", JSON.stringify(group));
-                                }
-                            });
+                            fillEditAssetsEnvironment();
 
-                            $.session.set("UsedProperties", JSON.stringify(props));
-
-                          //  console.log("dsf");
-                            getAssetDefinition(props);
                         },
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(this.url);
@@ -227,36 +209,267 @@ $(document).on('click', "button.editAssetsButton",function(){
         }
     });
 });
+/*$('.clickable-environments').mousedown(function(event) {
+    switch (event.which) {
+        case 1:
+            alert('Left mouse button pressed');
+            break;
+        case 2:
+            alert('Middle mouse button pressed');
+            break;
+        case 3:
+            alert('Right mouse button pressed');
+            break;
+        default:
+            alert('You have a strange mouse');
+    }
+});*/
+
+
+function fillEditAssetsEnvironment(){
+    var data = JSON.parse( $.session.get("AssetProperties"));
+    var props;
+
+    var i = 0;
+    var textToInsert = [];
+    $.each(data, function(arrayindex, value) {
+        textToInsert[i++] = '<tr class="clickable-environments" ><td>';
+        textToInsert[i++] = value.environment;
+        textToInsert[i++] = '</td></tr>';
+    });
+    $('#theEnvironmentDictionary').find("tbody").empty();
+    $('#theEnvironmentDictionary').append(textToInsert.join(''));
+   // $(".clickable-environments").contextMenu(menu);
+
+    var env = $( "#theEnvironmentDictionary").find("tbody tr:eq(0) > td:eq(0)").text();
+    $.each(data, function(arrayID,group) {
+        if(group.environment == env){
+            props = group.attributes;
+            $.session.set("thePropObject", JSON.stringify(group));
+            $.session.set("Arrayindex",arrayID);
+
+        }
+    });
+
+    getAssetDefinition(props);
+}
 
 
 //This is delegation
 var optionsContent = $('#optionsContent');
-optionsContent.on('click', '.clickable-environments', function(){
-    var assts = JSON.parse($.session.get("AssetProperties"));
-    var text = $(this).find("td").text();
-    var props;
-    $.each(assts, function(arrayID,group) {
-        if(group.environment == text){
-            // console.log(group.attributes[0].name);
-            props = group.attributes;
+optionsContent.on('contextmenu', '.clickable-environments', function(){
+    return false;
+});
 
+optionsContent.on('click', '.clickable-environments', function(event){
+   // console.log("Left click");
+            //LEFT MOUSE
+            var assts = JSON.parse($.session.get("AssetProperties"));
+            var text = $(this).find("td").text();
+            var props;
+            $.each(assts, function(arrayID,group) {
+                if(group.environment == text){
+                    // console.log(group.attributes[0].name);
+                    props = group.attributes;
+                    $.session.set("thePropObject", JSON.stringify(group));
+                    $.session.set("Arrayindex", arrayID);
+
+                }
+            });
+            $.session.set("UsedProperties", JSON.stringify(props));
+            getAssetDefinition(props);
+});
+/*
+removing a prop
+ */
+ optionsContent.on("click",".deleteProperty", function(){
+
+     var removablerow = AssetEnvironmentPropertyAttribute;
+     $(this).closest('tr').find("td").each( function(index, object){
+
+         var attr = $(object).attr('name');
+         if (typeof attr !== typeof undefined && attr !== false) {
+             if (attr == "name" || attr == "rationale" || attr == "value") {
+                 removablerow[attr] = object.innerText;
+             }
+         }
+     });
+     var assts = JSON.parse($.session.get("AssetProperties"));
+     var props = assts[  $.session.get("Arrayindex")];
+     $.each(props.attributes, function(index, obj){
+         if (removablerow["name"] == obj["name"] &&  removablerow["value"] == obj["value"]){
+             props.attributes.splice(index, 1);
+             assts[  $.session.get("Arrayindex")] = props;
+             /*updating webpage & database*/
+             updateAssetEnvironment(assts);
+             $.session.set("AssetProperties", JSON.stringify(assts));
+             fillEditAssetsEnvironment();
+         }
+     });
+
+
+});
+/*
+Add an asset
+ */
+$(document).on('click', "#addNewAsset",function(){
+    fillOptionMenu("../../CAIRIS/fastTemplates/EditAssetsOptions.html","#optionsContent",null,true,true,function(){
+    forceOpenOptions();
+        //TODO: wanneer update, nieuwe herkenne en in default object steken. Objects zitten in apparte call.
+    });
+});
+
+/*
+Delete an asset
+ */
+$(document).on('click', "button.deleteAssetButton",function(){
+    var name = $(this).attr("value");
+    $.ajax({
+        type: "DELETE",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID')),
+            name: name
+        },
+        crossDomain: true,
+        url: serverIP + "/api/assets/name/" + newdata.theName + "/properties",
+        success: function (data) {
+            $.ajax({
+                type: "GET",
+                dataType: "json",
+                accept: "application/json",
+                data: {
+                    session_id: String($.session.get('sessionID'))
+                },
+                crossDomain: true,
+                url: serverIP + "/api/assets",
+                success: function (data) {
+                    window.activeTable = "Assets";
+                    setTableHeader();
+                    createAssetsTable(data, function(){
+                        newSorting(1);
+                    });
+                    activeElement("reqTable");
+
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log(this.url);
+                    console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                }
+            });
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log(this.url);
+            var err = eval("(" + xhr.responseText + ")");
+            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });
-    $.session.set("UsedProperties", JSON.stringify(props));
-    getAssetDefinition(props);
 });
 
+
+/*
+Updating asset
+ */
 optionsContent.on("click", "#updateButtonAsset", function(){
-    props = JSON.parse($.session.get("theRightProp"));
-    //-Do
-    props.name =   $("#property").find("option:selected").text().trim();
-    props.value =  $("#value").find("option:selected").text().trim();
-    props.rationale = $("#rationale").val();
+    var allprops = JSON.parse($.session.get("AssetProperties"));
+    var props;
 
-    putAssetProperty(props);
+    //if new prop
+    if($("#editpropertiesWindow").hasClass("newProperty")){
+        props =  jQuery.extend(true, {},AssetEnvironmentPropertyAttribute );
+        props.name =   $("#property").find("option:selected").text().trim();
+        props.value =  $("#value").find("option:selected").text().trim();
+        props.rationale = $("#rationale").val();
+        allprops.push(props);
+
+    }else {
+         props = JSON.parse($.session.get("thePropObject"));
+        props.name =   $("#property").find("option:selected").text().trim();
+        props.value =  $("#value").find("option:selected").text().trim();
+        props.rationale = $("#rationale").val();
+        props.id = parseInt($("#id").val());
+        $.each(allprops[$.session.get("Arrayindex")].attributes, function(index, object){
+            if(object.id == props.id){
+                allprops[$.session.get("Arrayindex")].attributes[index] = props;
+            }
+        });
+    }
+
+    updateAssetEnvironment(allprops);
+    $.session.set("AssetProperties", JSON.stringify(allprops));
+    fillEditAssetsEnvironment();
 
 });
 
+/* adding env
+ */
+optionsContent.on('click', '.addEnvironmentPlus',function(){
+
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+
+        },
+        crossDomain: true,
+        url: serverIP + "/api/environments/all/names",
+        success: function (data) {
+
+            $("#comboboxDialogSelect").empty();
+            var none = true;
+            $.each(data, function(i, item) {
+                var found = false;
+                $(".clickable-environments  td").each(function() {
+                    if(this.innerHTML.trim() == item){
+                        found = true
+                    }
+                });
+                //if not found in environments
+                if(!found) {
+                    $("#comboboxDialogSelect").append("<option value=" + item + ">" + item + "</option>");
+                    none = false;
+                }
+            });
+            if(!none) {
+
+                $("#comboboxDialog").dialog({
+                    modal: true,
+                    buttons: {
+                        Ok: function () {
+                            $(this).dialog("close");
+                            //Created a function, for readability
+                           //$( "#comboboxDialogSelect").find("option:selected" ).text()
+                            forceOpenOptions();
+                            $("#theEnvironmentDictionary").find("tbody").append("<tr><td class='clickable-environments'>" + $( "#comboboxDialogSelect").find("option:selected" ).text() +"</td></tr>")
+                           var Assetprops =  JSON.parse($.session.get("AssetProperties"));
+                            var newProp = jQuery.extend(true, {},AssetEnvironmentProperty );
+                            newProp.environment = $( "#comboboxDialogSelect").find("option:selected" ).text();
+                            Assetprops.push( newProp);
+                            $.session.set("AssetProperties", JSON.stringify(Assetprops));
+                        }
+                    }
+                });
+                $(".comboboxD").css("visibility", "visible");
+            }else {
+                alert("All environments are already added");
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log(this.url);
+            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    })
+});
+optionsContent.on("click", "#addNewProperty", function(){
+    $("#editAssetsOptionsform").hide();
+    $("#editpropertiesWindow").show(function(){
+            $(this).addClass("newProperty");
+    });
+
+});
 /*
 For editing the definition properties
  */
@@ -266,12 +479,14 @@ optionsContent.on('dblclick', '.clickable-properties', function(){
     var label = test[0].children[1].innerText;
 
     $("#editpropertiesWindow").show(function(){
-        var jsonn = JSON.parse($.session.get("UsedProperties"));
-        var theRightprop
-        $.each(jsonn,function(arrayID,data){
+        //JUISTE PROPERTY INLADEN, NIET HELE ASSETPROP
+        var jsonn = JSON.parse($.session.get("thePropObject"));
+        var theRightprop;
+        $.each(jsonn.attributes,function(arrayID,data){
             if(data.name == label){
                 theRightprop = data;
-                $.session.set("theRightProp", JSON.stringify(theRightprop));
+                $.session.set("thePropObject", JSON.stringify(theRightprop));
+                $.session.set("Arrayindex", arrayID);
             }
         });
 
@@ -299,63 +514,10 @@ optionsContent.on('click', '#cancelButtonAsset', function(){
 optionsContent.on('click', '#UpdateAssetinGear',function(e){
     e.preventDefault();
     //alert($('#theName').val());
-   var AssetSon =  JSON.parse($.session.get("Asset"));
-    //TODO properties appart updaten zodra controller af is
-    //TODO cleanup
-    $(".assetUpdate").each(function() {
-        var updatable = false;
-        if(String($(this).prop("tagName")).toLowerCase() == "input" && String($(this).prop("type")).toLowerCase() == "text"){
-            if(AssetSon[String(this.id)] != $(this).val()){
-              //  console.log(String(this.id) + " has changed in input(text) to " + String($(this).val()) + " and was " +  AssetSon[String(this.id)]);
-                AssetSon[String(this.id)] = String($(this).val());
-                updatable = true;
-            }
-        }
-        else if(String($(this).prop("tagName")).toLowerCase() == "input" && String($(this).prop("type")).toLowerCase() == "checkbox"){
-            var checked = $(this).is(":checked") ? 1 : 0;
-            if(AssetSon[String(this.id)] != $(this).val()){
-                //console.log(String(this.id) + " has changed in input(checkbox) to " + checked + " and was " +  AssetSon[String(this.id)]);
-                AssetSon[String(this.id)] = checked;
-                updatable = true;
-            }
-        }
-       else if(String($(this).prop("tagName")).toLowerCase() == "select") {
-            if(AssetSon[String(this.id)] != $(this).val()){
-                //console.log(String(this.id) + " has changed in select to " + String($(this).val()) + " and was " +  AssetSon[String(this.id)]);
-                AssetSon[String(this.id)] = String($(this).val());
-                updatable = true;
-            }
-        }
-        else if(String($(this).prop("tagName")).toLowerCase() == "textarea") {
-            if(AssetSon[String(this.id)] != $(this).val()){
-                //console.log(String(this.id) + " has changed in textArea to " + String($(this).val()) + " and was " +  AssetSon[String(this.id)]);
-                AssetSon[String(this.id)] = String($(this).val());
-                updatable = true;
-            }
-        }
-        if(updatable){
-            stringData = "session_id=" +String($.session.get('sessionID')) +"&body=" + JSON.stringify(AssetSon);
-            $.ajax({
-                type: "PUT",
-                dataType: "json",
-                contentType: "application/json",
-                accept: "application/json",
-                data: stringData,
-                crossDomain: true,
-                url: serverIP + "/api/assets/name/" + AssetSon["theName"] ,
-                success: function (data) {
-                    showPopup(true);
-                    forceCloseOptions
+   //var AssetSon =  JSON.parse($.session.get("Asset"));
+    putAssetForm($("#editAssetsOptionsform"));
+    updateAssetEnvironment($.session.get("AssetProperties"));
 
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    showPopup(false);
-                    console.log(this.url);
-                    console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
-                }
-            });
-        }
-    });
 });
 
 $("#reqTable").on("click", "td", function() {

@@ -96,32 +96,96 @@ function postRequirementRow(row,whatKind,value){
  Updating the requirementsRow
  */
 function putAssetProperty(assetSON){
-    var ursl = serverIP + "/api/assets/name/"+ assetSON.name.replace(' ',"%20") + "/properties?session_id=" + String($.session.get('sessionID'));
+    var ursl = serverIP + "/api/assets/name/"+ $.session.get("AssetName").replace(' ',"%20") + "/properties?session_id=" + String($.session.get('sessionID'));
     //console.log("{ 'AssetEnvironmentPropertiesMessage': " + JSON.stringify(assetSON) + "}");
    // console.log($.session.get("UsedProperties"));
-    var propsJon = JSON.parse($.session.get("rightEnvironment")).attributes;
+    var propsJon = JSON.parse($.session.get("thePropObject")).attributes;
+    var theWholeObject = JSON.parse($.session.get("AssetProperties"));
 
     var index = -1;
     /// $.each(assts, function(arrayID,group) {
-    $.each(propsJon, function(i, obj){
+    /*$.each(propsJon, function(i, obj){
             if(obj.id == propsJon.id){
                 propsJon.attributes[i] = assetSON;
             }
+    });*/
+    var theEnvProps = JSON.parse($.session.get("thePropObject"));
+    theEnvProps.attributes[$.session.get("Arrayindex")] = assetSON;
+
+    $.each(theWholeObject, function(index, obje){
+       // alert(obje.environment);
+        if(obje.environment == theEnvProps.environment){
+            theWholeObject[index] = theEnvProps;
+        }
     });
-    var dats = JSON.parse($.session.get("rightEnvironment"));
-    dats.attributes = propsJon;
 
-    //console.log($.session.get("rightEnvironment"));
-    var output = '{ "object": ' + JSON.stringify(dats) + '}';
-    console.log(output);
+    $.session.set("AssetProperties", theWholeObject);
+    //console.log(output);
 
-    //TODO: alle, juiste objecten meegeven ($.session.get("rightEnvironment") is de juiste), enkel objects invullen
     $.ajax({
         type: "PUT",
         dataType: "json",
         contentType: "application/json",
         accept: "application/json",
         crossDomain: true,
+        origin: serverIP,
+        data: output,
+        url: ursl,
+        success: function (data) {
+            showPopup(true);
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            showPopup(false);
+            console.log(this.url);
+            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
+
+function putAsset(json){
+    var ursl = serverIP + "/api/assets/name/"+ $.session.get("AssetName").replace(' ',"%20") + "?session_id=" + String($.session.get('sessionID'));
+
+    var output = {};
+    output.object = json;
+    output = JSON.stringify(output);
+
+    //console.log(output);
+
+    $.ajax({
+        type: "PUT",
+        dataType: "json",
+        contentType: "application/json",
+        accept: "application/json",
+        crossDomain: true,
+        processData: false,
+        origin: serverIP,
+        data: output,
+        url: ursl,
+        success: function (data) {
+            showPopup(true);
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            showPopup(false);
+            console.log(this.url);
+            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
+function updateAssetEnvironment(json){
+    var ursl = serverIP + "/api/assets/name/"+ $.session.get("AssetName").replace(' ',"%20") + "/properties?session_id=" + String($.session.get('sessionID'));
+
+    var output = {};
+    output.object = json;
+    output = JSON.stringify(output);
+
+    $.ajax({
+        type: "PUT",
+        dataType: "json",
+        contentType: "application/json",
+        accept: "application/json",
+        crossDomain: true,
+        processData: false,
+        origin: serverIP,
         data: output,
         url: ursl,
         success: function (data) {

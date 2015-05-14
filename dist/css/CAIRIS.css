@@ -143,6 +143,11 @@ footer{
     width: 100%;
     min-width: 200px;
 }
+.scrollableTable{
+    overflow-x: scroll;
+    width: 100%;
+    min-width: 200px;
+}
 #AssociationsAssetsOptions > th, td { min-width: 75px; }
 #assetstabsID{
     width: 70%;
@@ -214,4 +219,22 @@ select#theType {
 }
 .popupMessage div .fa-exclamation{
      color: #fd0100;
+}
+.columnSmall{
+    border: 1px solid black;
+    overflow: hidden;
+    white-space:nowrap;
+    min-width: 10px;
+}
+.fa-plus{
+    color: green;
+}
+.fa-minus{
+    color: red;
+}
+.fillparent{
+    width: 100%;
+}
+.floatCenter{
+    margin: 0 auto;
 }

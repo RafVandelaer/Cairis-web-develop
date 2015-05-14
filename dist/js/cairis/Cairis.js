@@ -1,7 +1,7 @@
 /**
  * Created by Raf on 24/04/2015.
  */
-window.serverIP = "http://192.168.112.130:7071";
+window.serverIP = "http://192.168.112.132:7071";
 window.activeTable ="Requirements";
 window.boxesAreFilled = false;
 
@@ -320,7 +320,7 @@ function createAssetsTable(data, callback){
     $.each(data, function(count, item) {
         textToInsert[i++] = "<tr>"
 
-        textToInsert[i++] = '<td><button class="editAssetsButton" value="' + item.theName + '">' + 'Edit' + '</button></td>';
+        textToInsert[i++] = '<td><button class="editAssetsButton" value="' + item.theName + '">' + 'Edit' + '</button> <button class="deleteAssetButton" value="' + item.theName + '">' + 'Delete' + '</button></td>';
 
         textToInsert[i++] = '<td name="theName">';
         textToInsert[i++] = item.theName;
@@ -483,7 +483,7 @@ function setTableHeader(){
             break;
         case "Assets":
             console.log("Is Asset");
-            thead = "<th width='50px'></th><th>Name</th><th>Type</th>";
+            thead = "<th width='120px' id='addNewAsset'><i class='fa fa-plus floatCenter'></i></th><th>Name</th><th>Type</th>";
             break;
     }
     $("#reqTable").find("thead").empty();
@@ -639,19 +639,25 @@ function getAssetDefinition(props){
         textToInsert[i++] = '</tr>';
     });*/
     $.each(props, function(index, object) {
+        //fa-minus
+
              textToInsert[i++] = '<tr class="clickable-properties" ><td style="display:none;">';
              textToInsert[i++] = object.id;
              textToInsert[i++] = '</td>';
 
-             textToInsert[i++] = '<td>';
+        textToInsert[i++] = '<td>';
+        textToInsert[i++] = '<div class="fillparent deleteProperty"><i class="fa fa-minus"></i></div>';
+        textToInsert[i++] = '</td>';
+
+             textToInsert[i++] = '<td name="name">';
              textToInsert[i++] = object.name;
              textToInsert[i++] = '</td>';
 
-        textToInsert[i++] = '<td>';
+        textToInsert[i++] = '<td name="value">';
         textToInsert[i++] = object.value;
         textToInsert[i++] = '</td>';
 
-        textToInsert[i++] = '<td>';
+        textToInsert[i++] = '<td name="rationale">';
         textToInsert[i++] = object.rationale;
         textToInsert[i++] = '</td>';
 
@@ -659,6 +665,19 @@ function getAssetDefinition(props){
      });
     $('#Properties').find('tbody').append(textToInsert.join(''));
 
+}
+
+function deepEquals(o1, o2) {
+    var k1 = Object.keys(o1).sort();
+    var k2 = Object.keys(o2).sort();
+    if (k1.length != k2.length) return false;
+    return k1.zip(k2, function(keyPair) {
+        if(typeof o1[keyPair[0]] == typeof o2[keyPair[1]] == "object"){
+            return deepEquals(o1[keyPair[0]], o2[keyPair[1]])
+        } else {
+            return o1[keyPair[0]] == o2[keyPair[1]];
+        }
+    }).all();
 }
 
 function showPopup(succes){
@@ -686,3 +705,40 @@ function showPopup(succes){
         $(".popupMessage").css("bottom","-100px");
     });
 }
+function putAssetForm(data){
+   var json =  JSON.parse($.session.get("UsedAssetObject"));
+    //var data = $("#editAssetsOptionsform");
+    json["theDescription"] = $(data).find('#theDescription').val();
+    json["theSignificance"] = $(data).find('#theSignificance').val();
+    json["theCriticalRationale"] = $(data).find('#theCriticalRationale').val();
+    json["isCritical"] = +$("#isCritical").is( ':checked' );
+
+
+    $(data).children().each(function () {
+        if(String($(this).prop("tagName")).toLowerCase() == "p"){
+            $(this).children().each(function() {
+                if(String($(this).prop("tagName")).toLowerCase() == "input"){
+                    json[$(this).prop("name")] = $(this).val();
+                    // console.log($(this).prop("name") +" " +$(this).val());
+                }
+
+                if(String($(this).prop("tagName")).toLowerCase() == "select"){
+
+                    var id = $(this).attr('id');
+
+                    $(this).children().each(function() {
+                        var attr = $(this).attr('selected');
+                        if (typeof attr !== typeof undefined && attr !== false) {
+                            json[id] = $(this).val();
+                           // console.log( id + "  " +$(this).val());
+                        }
+                    });
+                }
+
+
+            });
+        }
+    });
+    putAsset(json);
+}
+

@@ -2,7 +2,7 @@
 
     <p>
         <label  >Name</label>
-        <input class="optionsInput assetUpdate" type="text" name="theName" id="theName" value="null" >
+        <input class="optionsInput assetUpdate" type="text" name="theName" id="theName">
     </p>
     <p>
         <label>Tags</label>
@@ -62,7 +62,7 @@
     <div class="inblock">
         <table class="left clickable-table" id="theEnvironmentDictionary">
             <thead>
-            <tr><th>Environment</th></tr>
+            <tr><th>Environment  <i class="fa fa-plus addEnvironmentPlus"></i></th></tr>
             </thead>
             <tbody>
 
@@ -73,10 +73,10 @@
                 <li><a href="#Properties">Definition</a></li>
                 <li><a href="#AssociationsAssetsOptions">Fit Criterion</a></li>
             </ul>
-            <div id="Properties" class="gearOptions clickable-table">
-                <table  class="assetUpdate">
+            <div id="Properties" class="gearOptions clickable-table scrollableTable">
+                <table  class="assetUpdate ">
                     <thead>
-                    <tr><th>Property</th><th>Value</th><th>Rationale</th></tr>
+                    <tr><th><div class="fillparent" id="addNewProperty"><i class="fa fa-plus"></i></div></th><th>Property</th><th>Value</th><th>Rationale</th></tr>
                     </thead>
                     <tbody>
 
@@ -157,6 +157,7 @@
         <textarea class="optionsInput" name="rationale" id="rationale"> </textarea>
     </label>
     </p>
+    <textarea id="id" name="id" style="display: none;"></textarea>
     <p>
         <button id="cancelButtonAsset">
             Cancel
