@@ -29,7 +29,7 @@ var dialogwindow = $( "#dialogContent" ).dialog({
                 success: function(data, status, xhr) {
                     // console.log("DB Settings saved");
                     console.log(data);
-                    sessionID = data.split("=")[1];
+                   var sessionID = data.session_id;
                     $.session.set("sessionID", sessionID);
                     startingTable();
 
@@ -705,13 +705,24 @@ function showPopup(succes){
         $(".popupMessage").css("bottom","-100px");
     });
 }
-function putAssetForm(data){
-   var json =  JSON.parse($.session.get("UsedAssetObject"));
+function assetFormToJSON(data, newAsset){
+    var json
+    if(newAsset){
+        json = jQuery.extend(true, {},mainAssetObject );
+
+    }
+    else{
+        json =  JSON.parse($.session.get("UsedAssetObject"));
+    }
+    json.theName = $(data).find('#theName').val();
+
     //var data = $("#editAssetsOptionsform");
     json["theDescription"] = $(data).find('#theDescription').val();
     json["theSignificance"] = $(data).find('#theSignificance').val();
     json["theCriticalRationale"] = $(data).find('#theCriticalRationale').val();
     json["isCritical"] = +$("#isCritical").is( ':checked' );
+
+    json.theType =  $(data).find( "#theType option:selected" ).text().trim();
 
 
     $(data).children().each(function () {
@@ -730,7 +741,7 @@ function putAssetForm(data){
                         var attr = $(this).attr('selected');
                         if (typeof attr !== typeof undefined && attr !== false) {
                             json[id] = $(this).val();
-                           // console.log( id + "  " +$(this).val());
+                            // console.log( id + "  " +$(this).val());
                         }
                     });
                 }
@@ -739,6 +750,20 @@ function putAssetForm(data){
             });
         }
     });
-    putAsset(json);
+    return json
 }
 
+function putAssetForm(data){
+    putAsset(assetFormToJSON(data));
+}
+
+function postAssetForm(data,callback){
+    //var allAssets = JSON.parse($.session.get("allAssets"));
+    var newAsset = assetFormToJSON(data,true);
+   var assetName = $(data).find('#theName').val();
+    var asobject = {};
+    asobject.object = newAsset
+    $.session.set("AssetName",assetName);
+    //allAssets[assetName] = newAsset;
+    postAsset(asobject,callback);
+}

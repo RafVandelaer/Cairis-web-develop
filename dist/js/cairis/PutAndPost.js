@@ -171,15 +171,15 @@ function putAsset(json){
         }
     });
 }
-function updateAssetEnvironment(json){
-    var ursl = serverIP + "/api/assets/name/"+ $.session.get("AssetName").replace(' ',"%20") + "/properties?session_id=" + String($.session.get('sessionID'));
 
-    var output = {};
-    output.object = json;
-    output = JSON.stringify(output);
+function postAsset(json,callback){
+    var ursl = serverIP + "/api/assets?session_id=" + String($.session.get('sessionID'));
+
+    var output = JSON.stringify(json);
+    //console.log(output);
 
     $.ajax({
-        type: "PUT",
+        type: "POST",
         dataType: "json",
         contentType: "application/json",
         accept: "application/json",
@@ -190,10 +190,82 @@ function updateAssetEnvironment(json){
         url: ursl,
         success: function (data) {
             showPopup(true);
+            if(typeof(callback) == "function"){
+                callback();
+            }
         },
         error: function (xhr, textStatus, errorThrown) {
             showPopup(false);
             console.log(this.url);
+            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
+function updateAssetEnvironment(jsonString,callback){
+    var ursl = serverIP + "/api/assets/name/"+ $.session.get("AssetName").replace(' ',"%20") + "/properties?session_id=" + String($.session.get('sessionID'));
+
+    var output = {};
+    output.object = JSON.parse(jsonString);
+    var output2 = JSON.stringify(output);
+
+    $.ajax({
+        type: "PUT",
+        dataType: "json",
+        contentType: "application/json",
+        accept: "application/json",
+        crossDomain: true,
+        processData: false,
+        origin: serverIP,
+        data: output2,
+        url: ursl,
+        success: function (data) {
+            showPopup(true);
+            if(jQuery.isFunction(callback)){
+                callback();
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            showPopup(false);
+            console.log(this.url);
+            console.log(output2);
+            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
+function newAssetEnvironment(jsonString,callback){
+    var ursl = serverIP + "/api/assets/name/"+ $.session.get("AssetName").replace(' ',"%20") + "/properties?session_id=" + String($.session.get('sessionID'));
+    var output = {};
+
+    if(typeof jsonString == 'undefined'){
+       output = jQuery.extend(true, {},AssetEnvironmentProperty );
+    }
+    else{
+        output.object = JSON.parse(jsonString);
+        var output2 = JSON.stringify(output);
+    }
+
+
+
+    $.ajax({
+        type: "PUT",
+        dataType: "json",
+        contentType: "application/json",
+        accept: "application/json",
+        crossDomain: true,
+        processData: false,
+        origin: serverIP,
+        data: output2,
+        url: ursl,
+        success: function (data) {
+            showPopup(true);
+            if(jQuery.isFunction(callback)){
+                callback();
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            showPopup(false);
+            console.log(this.url);
+            console.log(output2);
             console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });

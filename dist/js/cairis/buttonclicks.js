@@ -315,7 +315,10 @@ Add an asset
 $(document).on('click', "#addNewAsset",function(){
     fillOptionMenu("../../CAIRIS/fastTemplates/EditAssetsOptions.html","#optionsContent",null,true,true,function(){
     forceOpenOptions();
-        //TODO: wanneer update, nieuwe herkenne en in default object steken. Objects zitten in apparte call.
+       // empty it because new environment;
+        $.session.set("AssetProperties","");
+        $("#editAssetsOptionsform").addClass("new");
+
     });
 });
 
@@ -381,7 +384,8 @@ optionsContent.on("click", "#updateButtonAsset", function(){
         props.name =   $("#property").find("option:selected").text().trim();
         props.value =  $("#value").find("option:selected").text().trim();
         props.rationale = $("#rationale").val();
-        allprops.push(props);
+        allprops[$.session.get("Arrayindex")].attributes.push(props);
+
 
     }else {
          props = JSON.parse($.session.get("thePropObject"));
@@ -394,9 +398,14 @@ optionsContent.on("click", "#updateButtonAsset", function(){
                 allprops[$.session.get("Arrayindex")].attributes[index] = props;
             }
         });
+        updateAssetEnvironment(JSON.stringify(allprops),function(){
+            $("#editAssetsOptionsform").show();
+            $("#editpropertiesWindow").hide();
+            //OPenen van
+        });
     }
 
-    updateAssetEnvironment(allprops);
+
     $.session.set("AssetProperties", JSON.stringify(allprops));
     fillEditAssetsEnvironment();
 
@@ -515,8 +524,21 @@ optionsContent.on('click', '#UpdateAssetinGear',function(e){
     e.preventDefault();
     //alert($('#theName').val());
    //var AssetSon =  JSON.parse($.session.get("Asset"));
-    putAssetForm($("#editAssetsOptionsform"));
-    updateAssetEnvironment($.session.get("AssetProperties"));
+    //If new aset
+    if($("#editAssetsOptionsform").hasClass("new")){
+        alert("HasClass");
+        postAssetForm($("#editAssetsOptionsform"), function(){
+            //INHERE
+            newAssetEnvironment($.session.get("AssetProperties"));
+        });
+
+    }
+    else{
+        putAssetForm($("#editAssetsOptionsform"));
+        updateAssetEnvironment($.session.get("AssetProperties"));
+    }
+
+    fillAssetTable();
 
 });
 
@@ -529,6 +551,10 @@ $("#reqTable").on("click", "td", function() {
     $('#reqTable tr').eq(getActiveindex()).find('td:first').focus();
 });
 $("#editAssetsClick").click(function(){
+   fillAssetTable();
+});
+
+function fillAssetTable(){
     $.ajax({
         type: "GET",
         dataType: "json",
@@ -544,6 +570,7 @@ $("#editAssetsClick").click(function(){
             createAssetsTable(data, function(){
                 newSorting(1);
             });
+            $.session.set("allAssets", JSON.stringify(data));
             activeElement("reqTable");
 
         },
@@ -552,7 +579,7 @@ $("#editAssetsClick").click(function(){
             console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });
-});
+}
 
 /*
 For updating the Assets

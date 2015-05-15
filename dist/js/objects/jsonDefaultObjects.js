@@ -24,7 +24,7 @@ var mainAssetObject =
     "theDescription": "",
     "theAssetPropertyDictionary": {},
     "theSignificance": "",
-    "theId": 0,
+    "theId": -1,
     "theTags": [],
     "theCriticalRationale": "",
     "theInterfaces": [],
