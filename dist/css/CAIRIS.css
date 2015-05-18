@@ -184,6 +184,9 @@ table.clickable-table {
 select#theType {
     float: right;
 }
+.infoWidth{
+    width: 350px;
+}
 #editpropertiesWindow p label{
     width:100%
 }
