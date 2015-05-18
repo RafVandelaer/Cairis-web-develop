@@ -60,6 +60,12 @@ $.fn.editableTableWidget = function (options) {
             editor.hide();
         }).keydown(function (e) {
             if (e.which === ENTER) {
+                updateModels();
+                setActiveText();
+                editor.hide();
+                active.focus();
+                e.preventDefault();
+                e.stopPropagation();
                 //This function is for our Ajax calls
                 console.log("Name: " + active.attr("Name"));
                 console.log("The Row is: " + $(active).parent().index());
@@ -67,20 +73,11 @@ $.fn.editableTableWidget = function (options) {
                     case "Requirements":
                         var rows = $('tr', "#reqTable");
                         var row = rows.eq($(active).parent().index());
+
                         updateRequirement(row);
                         break;
                     //TODO other tables!!!!!
                 }
-
-/*$(this).find('td').each (function() {
- // do your cool stuff
- });
-
-                /*$('td').click(function(){
-                 var col = $(this).parent().children().index($(this));
-                 var row = $(this).parent().parent().children().index($(this).parent());
-                 alert('Row: ' + row + ', Column: ' + col);
-                 });*/
                 updateModels();
                 //
                 setActiveText();

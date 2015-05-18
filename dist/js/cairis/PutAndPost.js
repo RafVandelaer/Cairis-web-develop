@@ -23,13 +23,12 @@ function updateRequirement(row){
 
 function reqRowtoJSON(row){
     //TODO: cant replace in object!
-    row = row.replace('<tr>','');
-    row = row.replace('</tr>','');
+    /*row = row.replace('<tr>','');
+    row = row.replace('</tr>','');*/
     var json = {};
     json.attrs = {};
 
-    console.log(row);
-    $(row).filter('td').each(function (i, v) {
+    $.each(row[0].children, function (i, v) {
         name =  $(v).attr("name");
         if(name != "originator" && name != "rationale" && name != "type" && name != "fitCriterion"){
             json[name] =  v.innerHTML;
@@ -38,6 +37,18 @@ function reqRowtoJSON(row){
             json.attrs[name] = v.innerHTML;
         }
     });
+
+    //OLD method, not that good
+    /*console.log(row);
+    $(row).filter('td').each(function (i, v) {
+        name =  $(v).attr("name");
+        if(name != "originator" && name != "rationale" && name != "type" && name != "fitCriterion"){
+            json[name] =  v.innerHTML;
+        }
+        else{
+            json.attrs[name] = v.innerHTML;
+        }
+    });*/
     return json
 }
 
@@ -46,14 +57,19 @@ function reqRowtoJSON(row){
  Updating the requirementsRow
  */
 function putRequirementRow(row){
-   json = reqRowtoJSON(row);
+   var json = reqRowtoJSON(row);
+    var object = {};
+    object.object = json;
+    object.session_id= $.session.get('sessionID');
+       // console.log(object);
+    var objectoutput = JSON.stringify(object);
     $.ajax({
         type: "PUT",
         dataType: "json",
         contentType: "application/json",
         accept: "application/json",
         //TODO: DATA aanpassen voor PUT
-        data: json,
+        data: objectoutput,
         crossDomain: true,
         url: serverIP + "/api/requirements/update" ,
         success: function (data) {
@@ -61,7 +77,7 @@ function putRequirementRow(row){
         },
         error: function (xhr, textStatus, errorThrown) {
             showPopup(false);
-            console.log(this.url);
+            console.log(objectoutput);
             console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });
