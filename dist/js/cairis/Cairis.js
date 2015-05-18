@@ -712,6 +712,7 @@ function fillRolesTable(){
         crossDomain: true,
         url: serverIP + "/api/roles",
         success: function (json) {
+            $.session.set("allRoles", JSON.stringify(json));
             var i = 0;
             var textToInsert = [];
             $.each(json, function (key, value) {

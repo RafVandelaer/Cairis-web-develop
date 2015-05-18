@@ -161,53 +161,61 @@ debugLogger(getActiveindex());
 
 $(document).on('click', "button.editRoleButton",function() {
    var name = $(this).val();
-    $.ajax({
-        type: "GET",
-        dataType: "json",
-        accept: "application/json",
-        data: {
-            session_id: String($.session.get('sessionID'))
-        },
-        crossDomain: true,
-        url: serverIP + "/api/roles/name/" + name.replace(" ", "%20") ,
-        success: function (json) {
-            fillOptionMenu("../../CAIRIS/fastTemplates/EditRoleOptions.html","#optionsContent",null,true,true,function() {
-                forceOpenOptions();
-                var form = $('#editRoleOptionsform');
-                form.loadJSON(json,null);
-                $.session.set("RoleObject", JSON.stringify(json));
+    if(name == undefined || name == "") {
+        fillOptionMenu("../../CAIRIS/fastTemplates/EditRoleOptions.html", "#optionsContent", null, true, true, function () {
+            forceOpenOptions();
+            $("#editRoleOptionsform").addClass("newRole");
+        });
+    } else{
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            accept: "application/json",
+            data: {
+                session_id: String($.session.get('sessionID'))
+            },
+            crossDomain: true,
+            url: serverIP + "/api/roles/name/" + name.replace(" ", "%20"),
+            success: function (json) {
+                fillOptionMenu("../../CAIRIS/fastTemplates/EditRoleOptions.html", "#optionsContent", null, true, true, function () {
+                    forceOpenOptions();
+                    var form = $('#editRoleOptionsform');
+                    form.loadJSON(json, null);
+                    $.session.set("RoleObject", JSON.stringify(json));
 
-                $.ajax({
-                    type: "GET",
-                    dataType: "json",
-                    accept: "application/json",
-                    data: {
-                        session_id: String($.session.get('sessionID'))
-                    },
-                    crossDomain: true,
-                    url: serverIP + "/api/roles/name/" + name.replace(" ", "%20")+"/properties" ,
-                    success: function (json) {
-                        $.each(json, function (index, value) {
-                            $("#theEnvironments").find("tbody").append("<tr><td class='roleEnvironmentClick'>"+value.theEnvironmentName + "</td></tr>");
-                        });
-                        $.session.set("RoleEnvironments", JSON.stringify(json))
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
-                        showPopup(false);
-                        debugLogger(String(this.url));
-                        debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
-                    }
+                    $.ajax({
+                        type: "GET",
+                        dataType: "json",
+                        accept: "application/json",
+                        data: {
+                            session_id: String($.session.get('sessionID'))
+                        },
+                        crossDomain: true,
+                        url: serverIP + "/api/roles/name/" + name.replace(" ", "%20") + "/properties",
+                        success: function (json) {
+                            $.each(json, function (index, value) {
+                                $("#theEnvironments").find("tbody").append("<tr><td class='roleEnvironmentClick'>" + value.theEnvironmentName + "</td></tr>");
+                            });
+                            $.session.set("RoleEnvironments", JSON.stringify(json))
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            showPopup(false);
+                            debugLogger(String(this.url));
+                            debugLogger("error: " + xhr.responseText + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                        }
+                    });
+
+
                 });
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                showPopup(false);
+                debugLogger(String(this.url));
+                debugLogger("error: " + xhr.responseText + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            }
+        });
 
-
-            });
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
-            debugLogger(String(this.url));
-            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
-        }
-    });
+    }
 });
 
 
@@ -308,6 +316,9 @@ function fillEditAssetsEnvironment(){
 
     getAssetDefinition(props);
 }
+$("#reqTable").on("click", "#addNewRole", function () {
+    $("#reqTable").find("tbody").append('<tr><td><button class="editRoleButton" value="">Edit</button> <button class="deleteRoleButton" value="">Delete</button></td><td name="theName"></td><td name="theShortCode"></td><td name="theType"></td></tr>')
+});
 
 
 //This is delegation
@@ -321,21 +332,40 @@ updating a role
 optionsContent.on('click','#UpdateRole', function (event) {
     event.preventDefault();
 
-    var theRoleObject = JSON.parse($.session.get("RoleObject"));
-    var oldname = theRoleObject.theName;
-    theRoleObject.theName = optionsContent.find("#theName").val();
-    theRoleObject.theShortCode = optionsContent.find("#theShortCode").val();
-    theRoleObject.theDescription = optionsContent.find("#theDescription").val();
-    theRoleObject.theType =  optionsContent.find( "#theType option:selected" ).text().trim();
-    //debugLogger(JSON.stringify(theRoleObject));
-    if(theRoleObject.theName == "" || theRoleObject.theShortCode == "" || theRoleObject.theDescription == "" || theRoleObject.theType == ""){
-        alert("The Name, Shortcode, Description and Type must have a value");
-    }
-    else{
-        updateRole(theRoleObject, oldname, function () {
-            fillRolesTable();
-        });
-    }
+        if ($("#editRoleOptionsform").hasClass("newRole")) {
+            //NEW ROLE
+            //roleDefaultObject
+            var theRoleObject = jQuery.extend(true, {},roleDefaultObject );
+            theRoleObject.theName = optionsContent.find("#theName").val();
+            theRoleObject.theShortCode = optionsContent.find("#theShortCode").val();
+            theRoleObject.theDescription = optionsContent.find("#theDescription").val();
+            theRoleObject.theType = optionsContent.find("#theType option:selected").text().trim();
+            if (theRoleObject.theName == "" || theRoleObject.theShortCode == "" || theRoleObject.theDescription == "" || theRoleObject.theType == "") {
+                alert("The Name, Shortcode, Description and Type must have a value");
+            }else {
+                postRole(theRoleObject, function () {
+                    fillRolesTable();
+                });
+            }
+        } else {
+            //UPDATE ROLE
+            var theRoleObject = JSON.parse($.session.get("RoleObject"));
+            var oldname = theRoleObject.theName;
+            theRoleObject.theName = optionsContent.find("#theName").val();
+            theRoleObject.theShortCode = optionsContent.find("#theShortCode").val();
+            theRoleObject.theDescription = optionsContent.find("#theDescription").val();
+            theRoleObject.theType = optionsContent.find("#theType option:selected").text().trim();
+            //debugLogger(JSON.stringify(theRoleObject));
+            if (theRoleObject.theName == "" || theRoleObject.theShortCode == "" || theRoleObject.theDescription == "" || theRoleObject.theType == "") {
+                alert("The Name, Shortcode, Description and Type must have a value");
+            }else {
+                updateRole(theRoleObject, oldname, function () {
+                    fillRolesTable();
+                });
+            }
+        }
+
+
 
 
 });

@@ -34,3 +34,15 @@ var mainAssetObject =
     "theShortCode": "",
     "theEnvironmentProperties": []
 };
+var roleDefaultObject = {
+    "__python_obj__": "Role.Role",
+    "theEnvironmentDictionary": {},
+    "theEnvironmentProperties": [],
+    "theId": -1,
+    "costLookup": {
+    },
+    "theType": "",
+    "theName": "",
+    "theShortCode": "",
+    "theDescription": ""
+}
