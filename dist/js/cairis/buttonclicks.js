@@ -68,12 +68,12 @@ $("#gridReq").click(function(){
 });
 
 
-//Just for debug
+//Just for debugLogger
 $("#testingButton").click(function(){
    showPopup(true);
 });
 
-//For debug
+//For debugLogger
 $("#removesessionButton").click(function() {
     $.session.remove('sessionID');
     location.reload();
@@ -121,8 +121,8 @@ $('#assetView').click(function(){
             $(".comboboxD").css("visibility","visible");
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.log(this.url);
-            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     })});
 
@@ -145,14 +145,14 @@ $("#EditGoals").click(function(){
             sortTableByRow(0);
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.log(this.url);
-            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     })
 
 });
 $("#editGoalButton").click(function(){
-console.log(getActiveindex());
+debugLogger(getActiveindex());
 });
 $(document).on('click', "button.editAssetsButton",function(){
     var name = $(this).attr("value");
@@ -194,9 +194,8 @@ $(document).on('click', "button.editAssetsButton",function(){
 
                         },
                         error: function (xhr, textStatus, errorThrown) {
-                            console.log(this.url);
-                            var err = eval("(" + xhr.responseText + ")");
-                            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                            debugLogger(String(this.url));
+                            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
                         }
                     });
                     //$('.clickable-rows').on('click', changeEnvironment());
@@ -204,8 +203,8 @@ $(document).on('click', "button.editAssetsButton",function(){
             );
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.log(this.url);
-            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });
 });
@@ -357,15 +356,14 @@ $(document).on('click', "button.deleteAssetButton",function(){
 
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.log(this.url);
-                    console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                    debugLogger(String(this.url));
+                    debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
                 }
             });
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.log(this.url);
-            var err = eval("(" + xhr.responseText + ")");
-            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });
 });
@@ -467,8 +465,8 @@ optionsContent.on('click', '.addEnvironmentPlus',function(){
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.log(this.url);
-            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     })
 });
@@ -575,8 +573,8 @@ function fillAssetTable(){
 
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.log(this.url);
-            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });
 }

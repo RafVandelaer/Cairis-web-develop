@@ -4,8 +4,13 @@
 window.serverIP = "http://192.168.112.132:7071";
 window.activeTable ="Requirements";
 window.boxesAreFilled = false;
+window.debug = true;
 
-//var yetVisited = localStorage['visited'];
+function debugLogger(info){
+    if(debug){
+        console.log(info);
+    }
+}
 
 //The config window at start
 var dialogwindow = $( "#dialogContent" ).dialog({
@@ -18,7 +23,7 @@ var dialogwindow = $( "#dialogContent" ).dialog({
             var portArr  = json_text.match('port":"(.*)","user');
             var port = portArr[1];
             json_text = json_text.replace('"'+port+'"',port);
-            console.log(json_text);
+            debugLogger(json_text);
             $.ajax({
                 type: 'POST',
                 url: serverIP + '/api/user/config',
@@ -28,15 +33,15 @@ var dialogwindow = $( "#dialogContent" ).dialog({
                 contentType : "application/json",
                 success: function(data, status, xhr) {
                     // console.log("DB Settings saved");
-                    console.log(data);
+                    debugLogger(data);
                    var sessionID = data.session_id;
                     $.session.set("sessionID", sessionID);
                     startingTable();
 
                 },
                 error: function(data, status, xhr) {
-                    var err = eval("(" + xhr.responseText + ")");
-                    console.log("error: " + xhr.responseText +  ", textstatus: " + status + ", data: " + JSON.stringify(data));
+                    console.log(this.url);
+                    debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
                     alert("There is a problem with the server...");
                 }
             });
@@ -92,7 +97,7 @@ $.fn.serializeObject = function()
 // For the assetsbox, if filter is selected
 $('#assetsbox').change(function() {
     var selection = $(this).find('option:selected').text();
-    console.log("Selection: " + selection);
+    debugLogger("Selection: " + selection);
     // Clearing the environmentsbox
     $('#environmentsbox').prop('selectedIndex', -1);
 
@@ -112,10 +117,8 @@ $('#assetsbox').change(function() {
                     createRequirementsTable(data);
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.log(this.url);
-                    var err = eval("(" + xhr.responseText + ")");
-                    //alert(err.message);
-                    console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                    debugLogger(String(this.url));
+                    debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
                 }
 
             });
@@ -147,8 +150,8 @@ $('#environmentsbox').change(function() {
                 createRequirementsTable(data);
             },
             error: function (xhr, textStatus, errorThrown) {
-                console.log(this.url);
-                console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                debugLogger(String(this.url));
+                debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
             }
 
         });
@@ -173,9 +176,8 @@ function getAssetview(environment){
 
         },
         error: function(xhr, textStatus, errorThrown) {
-            console.log(this.url);
-
-            console.log("error: " + xhr.responseText +  ", textstatus: "  +textStatus + ", thrown: "+ errorThrown);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
 
     });
@@ -372,9 +374,8 @@ var sess = String($.session.get('sessionID'));
 
             },
             error: function (xhr, textStatus, errorThrown) {
-                console.log(this.url);
-                var err = eval("(" + xhr.responseText + ")");
-                console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                debugLogger(String(this.url));
+                debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
             }
 
         });
@@ -400,10 +401,8 @@ var sess = String($.session.get('sessionID'));
                 window.boxesAreFilled = true;
             },
             error: function (xhr, textStatus, errorThrown) {
-                console.log(this.url);
-                var err = eval("(" + xhr.responseText + ")");
-                //alert(err.message);
-                console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                debugLogger(String(this.url));
+                debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
             }
 
         });
@@ -429,9 +428,8 @@ function startingTable(){
             activeElement("reqTable");
         },
         error: function(xhr, textStatus, errorThrown) {
-            console.log(this.url);
-
-            console.log("error: " + xhr.responseText +  ", textstatus: "  +textStatus + ", thrown: "+ errorThrown);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });
 }
@@ -466,24 +464,28 @@ function setTableHeader(){
 
     switch (window.activeTable) {
         case "Requirements":
-            console.log("Is Requirement");
+            debugLogger("Is Requirement");
             thead = "<th width='50px'></th><th>Name</th><th>Description</th><th>Priority</th><th>Rationale</th><th>Fit Citerion</th><th>Originator</th><th>Type</th>";
             break;
         case "Goals":
-            console.log("Is Goal");
+           debugLogger("Is Goal");
             thead = "<th width='50px'></th><th>Name</th><th>Definition</th><th>Category</th><th>Priority</th><th>Fit Citerion</th><th>Issue</th><th>Originator</th>";
             break;
         case "Obstacles":
-            console.log("Is Obstacle");
+            debugLogger("Is Obstacle");
             thead = "<th width='50px'></th><th>Name</th><th>Definition</th><th>Category</th><th>Originator</th>";
             break;
         case "EditGoals":
-            console.log("Is EditGoals");
+            debugLogger("Is EditGoals");
             thead = "<th>Name</th><th>Originator</th><th>Status</th>";
             break;
         case "Assets":
-            console.log("Is Asset");
+            debugLogger("Is Asset");
             thead = "<th width='120px' id='addNewAsset'><i class='fa fa-plus floatCenter'></i></th><th>Name</th><th>Type</th>";
+            break;
+        case "Roles":
+           debugLogger("Is Goal");
+            thead = "<th width='120px' id='addNewRole'><i class='fa fa-plus floatCenter'></i></th><th>Name</th><th>Shortcode</th><th>Type</th>";
             break;
     }
     $("#reqTable").find("thead").empty();
@@ -510,6 +512,7 @@ function setActiveOptions(){
         case "Goals":
             break;
         case "Obstacles":
+        case "Roles":
             break;
         case "EditGoals":
             $("#editGoalsOptions").show();

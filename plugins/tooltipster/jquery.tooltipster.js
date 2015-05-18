@@ -1242,7 +1242,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 					multipleIsSet = args[0] && typeof args[0].multiple !== 'undefined',
 					// if the multiple option is set to true, or if it's not defined but set to true in the defaults
 					multiple = (multipleIsSet && args[0].multiple) || (!multipleIsSet && defaults.multiple),
-					// same for debug
+					// same for debugLogger
 					debugIsSet = args[0] && typeof args[0].debug !== 'undefined',
 					debug = (debugIsSet && args[0].debug) || (!debugIsSet && defaults.debug);
 				

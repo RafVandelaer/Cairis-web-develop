@@ -25,12 +25,12 @@ function fillOptionMenu(filePath,theElement,theData,createTabs,optionsHeader,cal
                     var testvar = eval(tablevars);
                     for(var prop in tablevars){
                         $("#" + key).append("<tr><td>" + prop + "</td><td>" + tablevars[prop] + "</td></tr>");
-                        console.log("ID: " + key + " the data: <tr><td>" + prop + "</td><td>" + tablevars[prop] + "</td></tr>");
+                      debugLogger("ID: " + key + " the data: <tr><td>" + prop + "</td><td>" + tablevars[prop] + "</td></tr>");
                     }
                 }else {
                     var value = theData[key];
                     // Use `key` and `value`
-                    console.log("ID: " + key + " Value: " + String(value));
+                    debugLogger("ID: " + key + " Value: " + String(value));
                     $(key).attr("value", String(value));
                 }
             }

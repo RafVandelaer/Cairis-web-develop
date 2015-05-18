@@ -77,8 +77,8 @@ function putRequirementRow(row){
         },
         error: function (xhr, textStatus, errorThrown) {
             showPopup(false);
-            console.log(objectoutput);
-            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });
 
@@ -101,8 +101,8 @@ function postRequirementRow(row,whatKind,value){
         },
         error: function (xhr, textStatus, errorThrown) {
             showPopup(false);
-            console.log(this.url);
-            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });
 
@@ -152,8 +152,8 @@ function putAssetProperty(assetSON){
         },
         error: function (xhr, textStatus, errorThrown) {
             showPopup(false);
-            console.log(this.url);
-            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });
 }
@@ -182,8 +182,8 @@ function putAsset(json){
         },
         error: function (xhr, textStatus, errorThrown) {
             showPopup(false);
-            console.log(this.url);
-            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });
 }
@@ -212,8 +212,8 @@ function postAsset(json,callback){
         },
         error: function (xhr, textStatus, errorThrown) {
             showPopup(false);
-            console.log(this.url);
-            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });
 }
@@ -242,9 +242,8 @@ function updateAssetEnvironment(jsonString,callback){
         },
         error: function (xhr, textStatus, errorThrown) {
             showPopup(false);
-            console.log(this.url);
-            console.log(output2);
-            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });
 }
@@ -280,9 +279,8 @@ function newAssetEnvironment(jsonString,callback){
         },
         error: function (xhr, textStatus, errorThrown) {
             showPopup(false);
-            console.log(this.url);
-            console.log(output2);
-            console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });
 }

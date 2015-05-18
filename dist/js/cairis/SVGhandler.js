@@ -40,12 +40,8 @@ $( document ).ajaxComplete(function() {
                         crossDomain: true,
                         url: serverIP + "/api/assets/id/"+ data.theId + "/properties",
                         success: function(data2){
-                            // console.log("in getAssetView " + data.innerHTML);
-                            // console.log(this.url);
-                           console.log("Test");
                             var jsonObj = eval(data2);
                             var theTableArr = [];
-//window.assetEnvironment
                             for (var key in jsonObj) {
                                 if (jsonObj.hasOwnProperty(key)) {
                                     if(key == window.assetEnvironment){
@@ -55,7 +51,7 @@ $( document ).ajaxComplete(function() {
                                             for (var k in goodData[ky]) {
                                                 if(k == "value"){
                                                     theTableArr[String(ky)] = String(goodData[ky][k]);
-                                                    console.log(String(ky) + " " + String(goodData[ky][k]));
+                                                    debugLogger(String(ky) + " " + String(goodData[ky][k]));
                                                 }
                                                 //console.log(goodData[ky][k] + " " + k);
                                             }
@@ -68,18 +64,15 @@ $( document ).ajaxComplete(function() {
                         },
                         error: function(xhr, textStatus, errorThrown) {
                             console.log(this.url);
-                            var err = eval("(" + xhr.responseText + ")");
-                            //alert(err.message);
-                            console.log("error: " + xhr.responseText +  ", textstatus: "  +textStatus + ", thrown: "+ errorThrown);
+                            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
                         }
 
                     });
 
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.log(this.url);
-                    var err = eval("(" + xhr.responseText + ")");
-                    console.log("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                    console.log(String(this.url));
+                    debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
                 }
 
             });

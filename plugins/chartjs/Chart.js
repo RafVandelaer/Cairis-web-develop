@@ -1145,7 +1145,7 @@
 			}
 
 
-			//Quick debug for bezier curve splining
+			//Quick debugLogger for bezier curve splining
 			//Highlights control points and the line between them.
 			//Handy for dev - stripped in the min version.
 

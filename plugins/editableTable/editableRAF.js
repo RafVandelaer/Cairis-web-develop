@@ -67,8 +67,8 @@ $.fn.editableTableWidget = function (options) {
                 e.preventDefault();
                 e.stopPropagation();
                 //This function is for our Ajax calls
-                console.log("Name: " + active.attr("Name"));
-                console.log("The Row is: " + $(active).parent().index());
+                debugLogger("Name: " + active.attr("Name"));
+                debugLogger("The Row is: " + $(active).parent().index());
                 switch (window.activeTable){
                     case "Requirements":
                         var rows = $('tr', "#reqTable");
@@ -160,11 +160,11 @@ function updateModels(){
 
     //var row = $(this).parent().parent().children().index($(this).parent()); (ZIE HIERBOVEN)
     if(asBox.find('option:selected').text() != "All" && (asBox.find('option:selected').text() != "")){
-        console.log("This can be updated as an asset");
+       debugLogger("This can be updated as an asset");
 
     }
     else if(environmentsbox.find('option:selected').text() != "All" && (environmentsbox.find('option:selected').text() != "")){
-        console.log("This can be updated as an environment");
+        debugLogger("This can be updated as an environment");
     }
 }
 function getActiveindex(){
