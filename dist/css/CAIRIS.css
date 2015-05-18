@@ -155,6 +155,9 @@ footer{
 .tabs textarea{
     width:100%;
 }
+.right{
+    float: right;
+}
 /*environmentstable*/
 #theEnvironmentDictionary{
     margin : 5px;

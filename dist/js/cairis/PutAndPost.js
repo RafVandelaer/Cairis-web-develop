@@ -258,9 +258,6 @@ function newAssetEnvironment(jsonString,callback){
         output.object = JSON.parse(jsonString);
         var output2 = JSON.stringify(output);
     }
-
-
-
     $.ajax({
         type: "PUT",
         dataType: "json",
@@ -271,6 +268,61 @@ function newAssetEnvironment(jsonString,callback){
         origin: serverIP,
         data: output2,
         url: ursl,
+        success: function (data) {
+            showPopup(true);
+            if(jQuery.isFunction(callback)){
+                callback();
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            showPopup(false);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
+function updateRole(role, oldName, callback){
+
+    output = {};
+    output.object = role;
+    output.session_id = $.session.get('sessionID');
+    output = JSON.stringify(output);
+    debugLogger(output);
+
+    $.ajax({
+        type: "PUT",
+        dataType: "json",
+        contentType: "application/json",
+        accept: "application/json",
+        crossDomain: true,
+        processData: false,
+        origin: serverIP,
+        data: output,
+        url: serverIP + "/api/roles/name/" + oldName.replace(" ","%20") + "?session_id=" + $.session.get('sessionID'),
+        success: function (data) {
+            showPopup(true);
+            if(jQuery.isFunction(callback)){
+                callback();
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            showPopup(false);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
+function deleteRole(roleName){
+    $.ajax({
+        type: "DELETE",
+        dataType: "json",
+        contentType: "application/json",
+        accept: "application/json",
+        crossDomain: true,
+        processData: false,
+        origin: serverIP,
+        data: roleName,
+        url: serverIP + "/api/roles/name/" + roleName.replace(" ","%20") + "?session_id=" + $.session.get('sessionID'),
         success: function (data) {
             showPopup(true);
             if(jQuery.isFunction(callback)){

@@ -88,6 +88,9 @@ $("#gridObstacles").click(function() {
     window.activeTable = "Obstacles";
     setTableHeader();
 });
+$("#showRolesButton").click(function () {
+   fillRolesTable();
+});
 /*
  When assetview is clicked
  */
@@ -154,6 +157,60 @@ $("#EditGoals").click(function(){
 $("#editGoalButton").click(function(){
 debugLogger(getActiveindex());
 });
+
+
+$(document).on('click', "button.editRoleButton",function() {
+   var name = $(this).val();
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crossDomain: true,
+        url: serverIP + "/api/roles/name/" + name.replace(" ", "%20") ,
+        success: function (json) {
+            fillOptionMenu("../../CAIRIS/fastTemplates/EditRoleOptions.html","#optionsContent",null,true,true,function() {
+                forceOpenOptions();
+                var form = $('#editRoleOptionsform');
+                form.loadJSON(json,null);
+                $.session.set("RoleObject", JSON.stringify(json));
+
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    accept: "application/json",
+                    data: {
+                        session_id: String($.session.get('sessionID'))
+                    },
+                    crossDomain: true,
+                    url: serverIP + "/api/roles/name/" + name.replace(" ", "%20")+"/properties" ,
+                    success: function (json) {
+                        $.each(json, function (index, value) {
+                            $("#theEnvironments").find("tbody").append("<tr><td class='roleEnvironmentClick'>"+value.theEnvironmentName + "</td></tr>");
+                        });
+                        $.session.set("RoleEnvironments", JSON.stringify(json))
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        showPopup(false);
+                        debugLogger(String(this.url));
+                        debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                    }
+                });
+
+
+            });
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            showPopup(false);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+});
+
+
 $(document).on('click', "button.editAssetsButton",function(){
     var name = $(this).attr("value");
     $.session.set("AssetName", name.trim());
@@ -191,7 +248,6 @@ $(document).on('click', "button.editAssetsButton",function(){
                         success: function (data) {
                             $.session.set("AssetProperties", JSON.stringify(data));
                             fillEditAssetsEnvironment();
-
                         },
                         error: function (xhr, textStatus, errorThrown) {
                             debugLogger(String(this.url));
@@ -259,6 +315,68 @@ var optionsContent = $('#optionsContent');
 optionsContent.on('contextmenu', '.clickable-environments', function(){
     return false;
 });
+/*
+updating a role
+ */
+optionsContent.on('click','#UpdateRole', function (event) {
+    event.preventDefault();
+
+    var theRoleObject = JSON.parse($.session.get("RoleObject"));
+    var oldname = theRoleObject.theName;
+    theRoleObject.theName = optionsContent.find("#theName").val();
+    theRoleObject.theShortCode = optionsContent.find("#theShortCode").val();
+    theRoleObject.theDescription = optionsContent.find("#theDescription").val();
+    theRoleObject.theType =  optionsContent.find( "#theType option:selected" ).text().trim();
+    //debugLogger(JSON.stringify(theRoleObject));
+    if(theRoleObject.theName == "" || theRoleObject.theShortCode == "" || theRoleObject.theDescription == "" || theRoleObject.theType == ""){
+        alert("The Name, Shortcode, Description and Type must have a value");
+    }
+    else{
+        updateRole(theRoleObject, oldname, function () {
+            fillRolesTable();
+        });
+    }
+
+
+});
+$("#reqTable").on('click','.deleteRoleButton', function (event) {
+    event.preventDefault();
+    var name = $(this).attr("value");
+    debugLogger("Delete: " + name + ".");
+    deleteRole( name, function () {
+        fillRolesTable();
+    });
+});
+
+optionsContent.on("click", '.roleEnvironmentClick', function () {
+    $("#theCounterMeasures").find('tbody').empty();
+     $("#theResponses").find('tbody').empty();
+
+
+       var text =  $(this).text();
+       var environments = JSON.parse($.session.get("RoleEnvironments"));
+    var textForCounterMeasures = [];
+    var textForResponses = [];
+    var i =0;
+     var j  = 0;
+    $.each(environments, function (index, obj) {
+        if(obj.theEnvironmentName == text){
+            $.each(obj.theCountermeasures, function (index, val) {
+                debugLogger("Found one" + val);
+                textForCounterMeasures[i++] = "<tr><td>"+ val + "</td><tr>";
+                //$("#theCounterMeasures").find('tbody').append( val );
+            });
+            var theResp = obj.theResponses;
+            $.each(theResp , function (index1, valu) {
+                textForResponses[j++] = "<tr><td>"+ valu.__python_tuple__[0] +"</td><td>"+ valu.__python_tuple__[1] +"</td></tr>";
+            });
+            $("#theCounterMeasures").find('tbody').append(textForCounterMeasures.join(''));
+            $("#theResponses").find('tbody').append(textForResponses.join(''));
+        }
+    })
+
+});
+
 
 optionsContent.on('click', '.clickable-environments', function(event){
    // console.log("Left click");

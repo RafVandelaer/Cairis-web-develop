@@ -1,7 +1,7 @@
 /**
  * Created by Raf on 24/04/2015.
  */
-window.serverIP = "http://192.168.112.132:7071";
+window.serverIP = "http://192.168.112.133:7071";
 window.activeTable ="Requirements";
 window.boxesAreFilled = false;
 window.debug = true;
@@ -484,7 +484,7 @@ function setTableHeader(){
             thead = "<th width='120px' id='addNewAsset'><i class='fa fa-plus floatCenter'></i></th><th>Name</th><th>Type</th>";
             break;
         case "Roles":
-           debugLogger("Is Goal");
+           debugLogger("Is Role");
             thead = "<th width='120px' id='addNewRole'><i class='fa fa-plus floatCenter'></i></th><th>Name</th><th>Shortcode</th><th>Type</th>";
             break;
     }
@@ -630,17 +630,6 @@ function getAssetDefinition(props){
     $('#Properties').find('tbody').empty();
     var i = 0;
     var textToInsert = [];
-    /*$.each(props, function(key, value) {
-        textToInsert[i++] = '<tr class="clickable-properties" ><td>';
-        textToInsert[i++] = key;
-        textToInsert[i++] = '</td>';
-        $.each(value, function(keys, values) {
-            textToInsert[i++] = '<td>';
-            textToInsert[i++] = values;
-            textToInsert[i++] = '</td>';
-        });
-        textToInsert[i++] = '</tr>';
-    });*/
     $.each(props, function(index, object) {
         //fa-minus
 
@@ -708,6 +697,52 @@ function showPopup(succes){
         $(".popupMessage").css("bottom","-100px");
     });
 }
+function fillRolesTable(){
+    window.activeTable = "Roles";
+    setTableHeader();
+    activeElement("reqTable");
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+
+        },
+        crossDomain: true,
+        url: serverIP + "/api/roles",
+        success: function (json) {
+            var i = 0;
+            var textToInsert = [];
+            $.each(json, function (key, value) {
+
+                textToInsert[i++] = "<tr>";
+                textToInsert[i++] = '<td><button class="editRoleButton" value="' + key + '">' + 'Edit' + '</button> <button class="deleteRoleButton" value="' + key + '">' + 'Delete' + '</button></td>';
+
+                textToInsert[i++] = '<td name="theName">';
+                textToInsert[i++] = value.theName;
+                textToInsert[i++] = '</td>';
+
+                textToInsert[i++] = '<td name="theShortCode">';
+                textToInsert[i++] = value.theShortCode;
+                textToInsert[i++] = '</td>';
+
+                textToInsert[i++] = '<td name="theType">';
+                textToInsert[i++] = value.theType;
+                textToInsert[i++] = '</td>';
+                textToInsert[i++] = '</tr>';
+            });
+            $("#reqTable").append(textToInsert.join(''));
+
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+    sortTableByRow(1);
+}
+
 function assetFormToJSON(data, newAsset){
     var json
     if(newAsset){
