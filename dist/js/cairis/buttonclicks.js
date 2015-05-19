@@ -272,6 +272,7 @@ $(document).on('click', "button.editAssetsButton",function(){
         }
     });
 });
+
 /*$('.clickable-environments').mousedown(function(event) {
     switch (event.which) {
         case 1:
@@ -287,7 +288,33 @@ $(document).on('click', "button.editAssetsButton",function(){
             alert('You have a strange mouse');
     }
 });*/
+$("#editEnvironmentsButton").click(function () {
 
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crossDomain: true,
+        url: serverIP + "/api/environments",
+        success: function (data) {
+            window.activeTable = "Environment";
+            setTableHeader();
+            createEnvironmentsTable(data, function(){
+                newSorting(1);
+            });
+            activeElement("reqTable");
+
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+
+});
 
 function fillEditAssetsEnvironment(){
     var data = JSON.parse( $.session.get("AssetProperties"));

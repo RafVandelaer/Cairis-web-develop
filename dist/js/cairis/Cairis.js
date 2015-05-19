@@ -1,7 +1,7 @@
 /**
  * Created by Raf on 24/04/2015.
  */
-window.serverIP = "http://192.168.112.133:7071";
+window.serverIP = "http://192.168.112.134:7071";
 window.activeTable ="Requirements";
 window.boxesAreFilled = false;
 window.debug = true;
@@ -344,6 +344,32 @@ function createAssetsTable(data, callback){
 
 
 }
+/*
+filling up the environment table
+ */
+function createEnvironmentsTable(data, callback){
+
+    var theTable = $("#reqTable");
+    var textToInsert = [];
+    var i = 0;
+
+    //var thedata = $.parseJSON(data);
+    $.each(data, function(count, item) {
+        textToInsert[i++] = "<tr>";
+        textToInsert[i++] = '<td><button class="editEnvironmentButton" value="' + item.theName + '">' + 'Edit' + '</button> <button class="deleteEnvironmentButton" value="' + item.theName + '">' + 'Delete' + '</button></td>';
+
+        textToInsert[i++] = '<td name="theName">';
+        textToInsert[i++] = item.theName;
+        textToInsert[i++] = '</td>';
+
+        textToInsert[i++] = '<td name="theType">';
+        textToInsert[i++] = item.theDescription;
+        textToInsert[i++] = '</td></tr>';
+    });
+    theTable.append(textToInsert.join(''));
+    callback();
+
+}
 
 /*
 Function for creating the comboboxes
@@ -486,6 +512,10 @@ function setTableHeader(){
         case "Roles":
            debugLogger("Is Role");
             thead = "<th width='120px' id='addNewRole'><i class='fa fa-plus floatCenter'></i></th><th>Name</th><th>Shortcode</th><th>Type</th>";
+            break;
+        case "Environment":
+            debugLogger("Is Environment");
+            thead = "<th width='120px' id='addNewEnvironment'><i class='fa fa-plus floatCenter'></i></th><th>Name</th><th>Description</th>";
             break;
     }
     $("#reqTable").find("thead").empty();
