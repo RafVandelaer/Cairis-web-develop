@@ -45,4 +45,11 @@ var roleDefaultObject = {
     "theName": "",
     "theShortCode": "",
     "theDescription": ""
-}
+};
+var tensionDefault = {
+    "__python_obj__": "tools.PseudoClasses.EnvironmentTensionModel",
+    "rationale": "",
+    "attr_id": -1,
+    "base_attr_id": -1,
+    "value": -1
+};
