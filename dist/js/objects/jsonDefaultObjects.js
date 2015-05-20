@@ -53,3 +53,12 @@ var tensionDefault = {
     "base_attr_id": -1,
     "value": -1
 };
+var environmentDefault = {"__python_obj__": "Environment.Environment",
+    "theId": -1,
+    "theDuplicateProperty": "",
+    "theTensions": [],
+    "theName": "",
+    "theEnvironments": [],
+    "theShortCode": "",
+    "theDescription": "",
+    "theOverridingEnvironment": ""}

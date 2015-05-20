@@ -836,3 +836,72 @@ function postAssetForm(data,callback){
     //allAssets[assetName] = newAsset;
     postAsset(asobject,callback);
 }
+
+function fillupEnvironmentObject(env){
+    env.theName = $("#theName").val();
+    env.theShortCode = $("#theShortCode").val();
+    env.theDescription = $("#theDescription").val();
+
+    env.theTensions = [];
+    env.theDuplicateProperty = "";
+
+    var tensions = [];
+    $("#tensionsTable").find("td").each(function() {
+        var attr = $(this).find("select").attr('rationale');
+        if(typeof attr !== typeof undefined && attr !== false) {
+            var select = $(this).find("select");
+            var tension = jQuery.extend(true, {}, tensionDefault);
+            tension.rationale = select.attr("rationale");
+            tension.value = parseInt(select.val());
+            var ids = select.attr("id");
+            values = ids.split('-');
+            tension.attr_id = parseInt(values[0]);
+            tension.base_attr_id = parseInt(values[1]);
+            env.theTensions.push(tension);
+        }
+    });
+
+    var envInEnv = [];
+    $("#envToEnvTable").find("tbody").find("tr .removeEnvinEnv").each(function () {
+        envInEnv.push($(this).next("td").text());
+    });
+    env.theEnvironments = envInEnv;
+    var theDupProp = $("input:radio[name ='duplication']:checked").val();
+    if(theDupProp == "" || theDupProp == undefined){
+        theDupProp = "None";
+    }
+
+    var theEnvinEnvArray = [];
+    env.theOverridingEnvironment = theDupProp;
+    $("#overrideCombobox").find("option").each(function (index, option) {
+        //This is for adding env to env, but wait!! first need to remove them when presssed minus!
+        theEnvinEnvArray.push($(option).text());
+    });
+    env.theEnvironments = theEnvinEnvArray;
+    return env;
+}
+function fillEnvironmentsTable(){
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crossDomain: true,
+        url: serverIP + "/api/environments",
+        success: function (data) {
+            window.activeTable = "Environment";
+            setTableHeader();
+            createEnvironmentsTable(data, function(){
+                newSorting(1);
+            });
+            activeElement("reqTable");
+
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}

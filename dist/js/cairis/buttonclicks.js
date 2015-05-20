@@ -274,93 +274,78 @@ $(document).on('click', "button.editAssetsButton",function(){
 });
 $(document).on('click', "button.editEnvironmentButton",function(){
     var name = $(this).attr("value");
-    $.session.set("EnvironmentName", name);
+    if(name == "AnewEnvironment"){
+        //TODO: NAAM ZETTEN IN SESSION VOOR LATER(Wanneer geupdate); (Best checken if session.get == null of undefinde)
+        fillOptionMenu("../../CAIRIS/fastTemplates/editEvironmentOptions.html", "#optionsContent", null, true, true, function () {
+            forceOpenOptions();
+            $("#editEnvironmentOptionsform").addClass("newEnvironment");
+        });
+    } else {
+        $.session.set("EnvironmentName", name);
 
-    $.ajax({
-        type: "GET",
-        dataType: "json",
-        accept: "application/json",
-        data: {
-            session_id: String($.session.get('sessionID'))
-        },
-        crossDomain: true,
-        url: serverIP + "/api/environments/name/" + name.replace(" ", "%20"),
-        success: function (data) {
-            // console.log(JSON.stringify(rawData));
-           fillOptionMenu("../../CAIRIS/fastTemplates/editEvironmentOptions.html","#optionsContent",null,true,true, function(){
-                   forceOpenOptions();
-                   $("#overrideCombobox").empty();
-                   $("#overrideCombobox").empty();
-                    //Holding asset in Session so it's easy update-able
-                   $.session.set("editableEnvironment", JSON.stringify(data));
-                    $('#editAssetsOptionsform').loadJSON(data,null);
-                    forceOpenOptions();
-                    //$('#theEnvironmentDictionary').append(textToInsert.join(''));
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            accept: "application/json",
+            data: {
+                session_id: String($.session.get('sessionID'))
+            },
+            crossDomain: true,
+            url: serverIP + "/api/environments/name/" + name.replace(" ", "%20"),
+            success: function (data) {
+                // console.log(JSON.stringify(rawData));
+                fillOptionMenu("../../CAIRIS/fastTemplates/editEvironmentOptions.html", "#optionsContent", null, true, true, function () {
+                        forceOpenOptions();
 
-                   $.each(data.theTensions, function (index, tension) {
+                        $.session.set("editableEnvironment", JSON.stringify(data));
+                        $('#editEnvironmentOptionsform').loadJSON(data, null);
 
-                       setTimeout(function () {
-                           var comboID = "#" + tension.attr_id + "-" + tension.base_attr_id;
-                           //debugLogger(comboID + "value: " + String(tension.value));
-                           $(comboID).val(String(tension.value));
-                           $(comboID).attr("rationale", tension.rationale);
-                        }, 10);
-                   });
-                   $.each(data.theEnvironments, function (index, env) {
-                       $("#envToEnvTable").append("<tr><td><i class='fa fa-minus'></i></td><td>" + env + "</td></tr>");
-                       $("#overrideCombobox").append($("<option />").text(env));
-                   });
-                    switch (data.theDuplicateProperty){
-                        case "Maximise":
-                            $("#MaximiseID").prop('checked', true);
-                            break;
-                        case "Override":
-                            $("#OverrideID").prop('checked', true);
-                            $("#overrideCombobox").prop("disabled", false);
+                        $.each(data.theTensions, function (index, tension) {
+                            setTimeout(function () {
+                                var comboID = "#" + tension.attr_id + "-" + tension.base_attr_id;
+                                $(comboID).val(String(tension.value));
+                                $(comboID).attr("rationale", tension.rationale);
+                            }, 10);
+                        });
+                        $.each(data.theEnvironments, function (index, env) {
+                            $("#envToEnvTable").append("<tr><td><i class='fa fa-minus'></i></td><td>" + env + "</td></tr>");
+                            $("#overrideCombobox").append($("<option />").text(env));
+                        });
+                        switch (data.theDuplicateProperty) {
+                            case "Maximise":
+                                $("#MaximiseID").prop('checked', true);
+                                break;
+                            case "Override":
+                                $("#OverrideID").prop('checked', true);
+                                $("#overrideCombobox").prop("disabled", false);
 
-                            break;
-                        case "None":
-                            $("#overrideCombobox").prop("disabled", false);
-                            $("#OverrideID").prop('checked', false);
-                            $("#MaximiseID").prop('checked', false);
-                            break;
+                                break;
+                            case "None":
+                                $("#overrideCombobox").prop("disabled", false);
+                                $("#OverrideID").prop('checked', false);
+                                $("#MaximiseID").prop('checked', false);
+                                break;
+                        }
                     }
-                }
-            );
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            debugLogger(String(this.url));
-            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
-        }
+                );
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                debugLogger(String(this.url));
+                debugLogger("error: " + xhr.responseText + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            }
+        });
+    }
+});
+$(document).on('click', "button.deleteEnvironmentButton",function(){
+    var name = $(this).attr("value");
+    deleteEnvironment(name, function () {
+        fillEnvironmentsTable();
     });
 });
 
-
 $("#editEnvironmentsButton").click(function () {
 
-    $.ajax({
-        type: "GET",
-        dataType: "json",
-        accept: "application/json",
-        data: {
-            session_id: String($.session.get('sessionID'))
-        },
-        crossDomain: true,
-        url: serverIP + "/api/environments",
-        success: function (data) {
-            window.activeTable = "Environment";
-            setTableHeader();
-            createEnvironmentsTable(data, function(){
-                newSorting(1);
-            });
-            activeElement("reqTable");
-
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            debugLogger(String(this.url));
-            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
-        }
-    });
+    fillEnvironmentsTable();
 
 });
 
@@ -401,15 +386,35 @@ var optionsContent = $('#optionsContent');
 optionsContent.on('contextmenu', '.clickable-environments', function(){
     return false;
 });
+/*
+ on evnironment radio change
+ */
 optionsContent.on('change', "#OverrideID", function () {
-    if($(this).is(':checked')) {
-        $('.overrideCombobox').prop("disabled", false);
-
-    } else{
-        $('.overrideCombobox').prop("disabled", true);
+    if($("#OverrideID").prop("checked")){
+        $("#overrideCombobox").prop("disabled",false);
+    }
+});
+optionsContent.on('change', "#MaximiseID", function () {
+    if($("#MaximiseID").prop("checked")){
+        $("#overrideCombobox").prop("disabled",true);
     }
 });
 
+optionsContent.on('click', ".removeEnvinEnv", function () {
+   var text = $(this).next().text();
+    $(this).closest("tr").remove();
+    $("#overrideCombobox").find("option").each(function () {
+        var optionText = $(this).text();
+        if(optionText == text){
+            $(this).remove();
+        }
+    });
+    if ($('#envToEnvTable').find("tbody").is(':empty')){
+        $("input:radio[name='duplication']").each(function(i) {
+            this.checked = false;
+        });
+    }
+});
 
 /* For the rationale in the environments edit*/
 optionsContent.on("click", ".tensionCombobox", function () {
@@ -454,8 +459,10 @@ optionsContent.on("click", "#addEnvtoEnv", function () {
                     modal: true,
                     buttons: {
                         Ok: function () {
+                            var text =  $( "#comboboxDialogSelect").find("option:selected" ).text();
+                            $("#envToEnvTable").append("<tr><td class='removeEnvinEnv'><i class='fa fa-minus'></i></td><td>"+ text +"</td></tr>");
+                            $("#overrideCombobox").append("<option value='" + text + "'>" + text + "</option>");
                             $(this).dialog("close");
-                            $("#envToEnvTable").append("<tr><td><i class='fa fa-minus'></i></td>" + $( "#comboboxDialogSelect").find("option:selected" ).text()+"<td></td></tr>");
                             //Only update when update is pressed!
                             /*var environment = JSON.parse($.session.get("editableEnvironment"));
                             environment.theEnvironments.push($( "#comboboxDialogSelect").find("option:selected" ).text());
@@ -476,35 +483,32 @@ optionsContent.on("click", "#addEnvtoEnv", function () {
 
 });
 optionsContent.on('click', "#updateButtonEnvironment", function () {
-    //TODO: Updaten van een environment
+if($("#editEnvironmentOptionsform").hasClass("newEnvironment")){
+    $("#editEnvironmentOptionsform").removeClass("newEnvironment");
+    var env = jQuery.extend(true, {}, environmentDefault);
+    env = fillupEnvironmentObject(env);
+    postEnvironment(env, function () {
+        fillEnvironmentsTable();
+    });
+
+
+}else{
     var env = JSON.parse($.session.get("editableEnvironment"));
-    env.Name = $("#theName").val();
-    env.theShortCode = $("#theShortCode").val();
-    env.theDescription = $("#theDescription").val();
-
-    var tensions = [];
-    $("#tensionsTable").find("td").each(function() {
-        var attr = $(this).find("select").attr('rationale');
-        if(typeof attr !== typeof undefined && attr !== false) {
-            var select = $(this).find("select");
-            var tension = jQuery.extend(true, {}, tensionDefault);
-            tension.rationale = select.attr("rationale");
-            tension.value = select.val();
-            var ids = select.attr("id");
-            values = ids.split('*');
-            tension.attr_id = values[0];
-            tension.base_attr_id = values[1];
-            env.theTensions.push(tension);
-        }
-
+    var oldName = env.theName;
+    env =  fillupEnvironmentObject(env);
+    putEnvironment(env, oldName, function () {
+        fillEnvironmentsTable();
     });
-    //TODO: environment removen in environment (Ja deze zin is juist) fieldset adden in object bij PUT
-
-    $("#overrideCombobox").find("option").each(function (index, option) {
-            //This is for adding env to env, but wait!! first need to remove them when presssed minus!
-    });
+}
 
 
+});
+
+
+$("#reqTable").on("click", "#addNewEnvironment", function () {
+    var tbody = $("#reqTable").find("tbody");
+
+    tbody.append('<tr><td><button class="editEnvironmentButton" value="AnewEnvironment">Edit</button> <button class="deleteEnvironmentButton" value="">Delete</button></td><td name="theName"></td><td name="theType"></td></tr>');
 });
 
 /*
