@@ -1,7 +1,7 @@
 /**
  * Created by Raf on 24/04/2015.
  */
-window.serverIP = "http://192.168.112.134:7071";
+window.serverIP = "http://192.168.112.128:7071";
 window.activeTable ="Requirements";
 window.boxesAreFilled = false;
 window.debug = true;
@@ -372,6 +372,38 @@ function createEnvironmentsTable(data, callback){
 }
 
 /*
+ A function for filling the table with Vulnerabilities
+ */
+function createVulnerabilityTable(data){
+    var theTable = $(".theTable");
+    $(".theTable tr").not(function(){if ($(this).has('th').length){return true}}).remove();
+    //var arr = reallyLongArray;
+    var textToInsert = [];
+    var i = 0;
+
+    $.each(data, function(count, item) {
+        textToInsert[i++] = "<tr>"
+        textToInsert[i++] = '<td><button class="editVulnerabilityButton" value="' + item.theVulnerabilityName + '">' + 'Edit' + '</button> <button class="deleteVulnerabilityButton" value="' + item.theVulnerabilityName + '">' + 'Delete' + '</button></td>';
+        textToInsert[i++] = '<td name="theVulnerabilityName">';
+        textToInsert[i++] = item.theVulnerabilityName;
+        textToInsert[i++] = '</td>';
+
+        textToInsert[i++] = '<td name="theVulnerabilityType">';
+        textToInsert[i++] = item.theVulnerabilityType;
+        textToInsert[i++] = '</td>';
+
+
+        textToInsert[i++] = '</tr>';
+    });
+
+    // theRows[j++]=textToInsert.join('');
+    theTable.append(textToInsert.join(''));
+
+    theTable.css("visibility","visible");
+}
+
+
+/*
 Function for creating the comboboxes
  */
 function createComboboxes(){
@@ -516,6 +548,10 @@ function setTableHeader(){
         case "Environment":
             debugLogger("Is Environment");
             thead = "<th width='120px' id='addNewEnvironment'><i class='fa fa-plus floatCenter'></i></th><th>Name</th><th>Description</th>";
+            break;
+        case "Vulnerability":
+            debugLogger("Is Vulnerability");
+            thead = "<th width='120px' id='addNewVulnerability'><i class='fa fa-plus floatCenter'></i></th><th>Name</th><th>Type</th>";
             break;
     }
     $("#reqTable").find("thead").empty();

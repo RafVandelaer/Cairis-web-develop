@@ -148,7 +148,7 @@ footer{
     width: 100%;
     min-width: 200px;
 }
-#AssociationsAssetsOptions > th, td { min-width: 75px; }
+#AssociationsAssetsOptions > th, td { /*min-width: 75px;*/ }
 #assetstabsID{
     width: 70%;
 }

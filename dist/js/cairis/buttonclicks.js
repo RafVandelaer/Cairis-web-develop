@@ -154,6 +154,31 @@ $("#EditGoals").click(function(){
     })
 
 });
+
+$("#vulnerabilitiesClick").click(function(){
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crfossDomain: true,
+        url: serverIP + "/api/vulnerabilities",
+        success: function (data) {
+            window.activeTable = "Vulnerability";
+            setTableHeader();
+            createVulnerabilityTable(data);
+            activeElement("reqTable");
+            sortTableByRow(0);
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    })
+
+});
 $("#editGoalButton").click(function(){
 debugLogger(getActiveindex());
 });
@@ -218,6 +243,40 @@ $(document).on('click', "button.editRoleButton",function() {
     }
 });
 
+$(document).on('click', "button.editVulnerabilityButton",function(){
+    var name = $(this).attr("value");
+    $.session.set("VulnerabilityName", name.trim());
+
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crossDomain: true,
+        url: serverIP + "/api/vulnerabilities/name/" + name.replace(" ", "%20"),
+        success: function (newdata) {
+            fillOptionMenu("../../CAIRIS/fastTemplates/editVulnerabilityOptions.html","#optionsContent",null,true,true, function(){
+                    $.session.set("Vulnerability", JSON.stringify(newdata));
+                    $('#editVulnerabilityOptionsform').loadJSON(newdata,null);
+                    var text ="";
+                    $.each(newdata.theTags, function (index, tag) {
+                        text.append(tag +", ");
+                    });
+                    $.each(newdata.theEnvironmentProperties, function (index, envprop) {
+                        $("#theVulEnvironments").append("<tr class='clickable-environments'><td><i class='fa fa-minus'></i></td><td class='vulEnvProperties'>"+ envprop.theEnvironmentName +"</td></tr>");
+                    });
+                    forceOpenOptions();
+                }
+            );
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+})
 
 $(document).on('click', "button.editAssetsButton",function(){
     var name = $(this).attr("value");
@@ -275,7 +334,6 @@ $(document).on('click', "button.editAssetsButton",function(){
 $(document).on('click', "button.editEnvironmentButton",function(){
     var name = $(this).attr("value");
     if(name == "AnewEnvironment"){
-        //TODO: NAAM ZETTEN IN SESSION VOOR LATER(Wanneer geupdate); (Best checken if session.get == null of undefinde)
         fillOptionMenu("../../CAIRIS/fastTemplates/editEvironmentOptions.html", "#optionsContent", null, true, true, function () {
             forceOpenOptions();
             $("#editEnvironmentOptionsform").addClass("newEnvironment");
@@ -414,6 +472,21 @@ optionsContent.on('click', ".removeEnvinEnv", function () {
             this.checked = false;
         });
     }
+});
+/*
+Watch env props in Vulnerability
+ */
+optionsContent.on("click", ".vulEnvProperties", function () {
+    var name = $(this).text();
+    var theVul = JSON.parse($.session.get("Vulnerability"));
+    $.each(theVul.theEnvironmentProperties, function (index, prop) {
+       if(prop.theEnvironmentName == name){
+            $("#theSeverity").val(prop.theSeverity);
+           $.each(prop.theAssets, function (index, asset) {
+               $("#vulnEnvAssets").find("tbody").append("<tr><td>"+ asset+"</td></tr>");
+           });
+       }
+    })
 });
 
 /* For the rationale in the environments edit*/
