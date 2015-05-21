@@ -407,33 +407,6 @@ $("#editEnvironmentsButton").click(function () {
 
 });
 
-function fillEditAssetsEnvironment(){
-    var data = JSON.parse( $.session.get("AssetProperties"));
-    var props;
-
-    var i = 0;
-    var textToInsert = [];
-    $.each(data, function(arrayindex, value) {
-        textToInsert[i++] = '<tr class="clickable-environments" ><td>';
-        textToInsert[i++] = value.environment;
-        textToInsert[i++] = '</td></tr>';
-    });
-    $('#theEnvironmentDictionary').find("tbody").empty();
-    $('#theEnvironmentDictionary').append(textToInsert.join(''));
-   // $(".clickable-environments").contextMenu(menu);
-
-    var env = $( "#theEnvironmentDictionary").find("tbody tr:eq(0) > td:eq(0)").text();
-    $.each(data, function(arrayID,group) {
-        if(group.environment == env){
-            props = group.attributes;
-            $.session.set("thePropObject", JSON.stringify(group));
-            $.session.set("Arrayindex",arrayID);
-
-        }
-    });
-
-    getAssetDefinition(props);
-}
 $("#reqTable").on("click", "#addNewRole", function () {
     $("#reqTable").find("tbody").append('<tr><td><button class="editRoleButton" value="">Edit</button> <button class="deleteRoleButton" value="">Delete</button></td><td name="theName"></td><td name="theShortCode"></td><td name="theType"></td></tr>')
 });
@@ -499,7 +472,6 @@ optionsContent.on("keyup", "#rationale", function () {
 });
 
 optionsContent.on("click", "#addEnvtoEnv", function () {
-
     $.ajax({
         type: "GET",
         dataType: "json",
@@ -665,12 +637,14 @@ optionsContent.on("click", '.roleEnvironmentClick', function () {
 
 });
 
+/*
 
-optionsContent.on('click', '.clickable-environments', function(event){
-   // console.log("Left click");
-            //LEFT MOUSE
+Clicking an asset Environment
+ */
+
+optionsContent.on('click', '.assetEnvironmetRow', function(event){
             var assts = JSON.parse($.session.get("AssetProperties"));
-            var text = $(this).find("td").text();
+            var text = $(this).text();
             var props;
             $.each(assts, function(arrayID,group) {
                 if(group.environment == text){
@@ -683,6 +657,22 @@ optionsContent.on('click', '.clickable-environments', function(event){
             });
             $.session.set("UsedProperties", JSON.stringify(props));
             getAssetDefinition(props);
+});
+
+optionsContent.on('click', '.removeEnvironment', function () {
+    var assetProps = JSON.parse($.session.get("AssetProperties"));
+    var text = $(this).next('td').text();
+    var theIndex = -1;
+    $.each(assetProps, function(arrayID,prop) {
+        if(prop.environment == text){
+            theIndex = arrayID;
+        }
+    });
+    //Splice = removes element at "theIndex", 1 = only one item
+    assetProps.splice(theIndex, 1);
+    debugLogger(JSON.stringify(assetProps));
+    $.session.set("AssetProperties", JSON.stringify(assetProps));
+
 });
 /*
 removing a prop
