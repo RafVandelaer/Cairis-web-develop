@@ -247,6 +247,9 @@ select#theType {
 .noPad > td{
     padding: 0px;
 }
+.ui-tabs-panel{
+    overflow-y: overlay;
+}
 .reset-this {
     animation : none;
     animation-delay : 0;

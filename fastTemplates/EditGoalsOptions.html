@@ -1,24 +1,26 @@
-<form xmlns="http://www.w3.org/1999/html" class="gearOptions">
+<form xmlns="http://www.w3.org/1999/html" id="editGoalOptionsForm" class="gearOptions">
     <p>
         <label>Name</label>
-        <input class="optionsInput" type="text" value="null" id="theName" name="theName" readonly>
+        <input class="optionsInput" type="text" id="theName" name="theName">
     </p>
     <p>
         <label>Tags</label>
-        <input class="optionsInput" type="text" value="null" id="theTags " name="theTags " readonly>
+        <input class="optionsInput" type="text" id="theTags " name="theTags">
     </p>
     <p>
         <label>Originator</label>
-        <input class="optionsInput" type="text" value="null" id="theOriginator" name="theOriginator" readonly>
+        <input class="optionsInput" type="text" id="theOriginator" name="theOriginator">
     </p>
-    <p>
-        <label for="goalEnvCombobox">Environment</label>
-        <select id="goalEnvCombobox">
-            <option>
-                !!!!!!çç!!!!!! ajax call
-            </option>
-        </select>
-    <div class="tabs">
+    <div class="inblock">
+        <table class="left clickable-table" id="theGoalEnvironments" style="width: auto;">
+            <thead>
+            <th id="addGoalEnvironment" style="width: 15px;"> <i class="fa fa-plus"></i></th><th>Environment</th>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    <div id="goalsProperties" class="tabs  right infoWidth">
         <ul>
             <li><a href="#Definition">Definition</a></li>
             <li><a href="#Fit-Criterion">Fit Criterion</a></li>
@@ -29,7 +31,9 @@
             <li><a href="#Concern-Associations">Concern Associations</a></li>
         </ul>
         <div id="Definition">
-            <p><label>Label</label> <input id="theLabel" readonly></p><p> <label>Category</label> <select id="theCategory" >
+            <p><label>Label</label> <input id="theLabel" name="theLabel" readonly></p>
+            <p>
+            <label>Category</label> <select id="theCategory" name="theCategory" >
                 <option>Maintain</option>
                 <option>Achieve</option>
                 <option>Avoid</option>
@@ -38,23 +42,23 @@
                 <option>Maximise</option>
                 <option>Minimise</option>
             </select></p>
-            <label>Priority</label><select id="thePriority" >
+            <label>Priority</label><select id="thePriority" name="thePriority" >
             <option>Low</option>
             <option>Medium</option>
             <option>High</option>
         </select>
             <br>
-            <label>Definition</label><textarea></textarea>
+            <label>Definition</label><textarea id="theDefinition" name="theDefinition"></textarea>
             <br>
             &nbsp;
             &nbsp;
             &nbsp;
         </div>
         <div id="Fit-Criterion">
-            <textarea id="Fit-criterion-textarea" readonly> </textarea>
+            <textarea id="theFitCriterion" name="theFitCriterion"> </textarea>
         </div>
         <div id="Issue">
-            <textarea id="Issue-textarea" readonly> </textarea>
+            <textarea id="theIssue" name="theIssue"> </textarea>
         </div>
         <div id="Goals">
             <table id="editgoalsGoalsTable">
@@ -62,17 +66,15 @@
                 <tr> <th>Goal</th><th>Type</th><th>Refinement</th><th>Alternative</th><th>Rationale</th></tr>
                 </thead>
                 <tbody>
-                !!!!!!!!!!! AJAX
                 </tbody>
             </table>
         </div>
         <div id="Sub-Goals">
-            <table id="editgoalsSubgoalsTable">
+            <table id="editgoalsSubgoalsTable" >
                 <thead>
                 <tr><th>Sub-Goals</th><th>Type</th><th>Refinement</th><th>Alternative</th><th>Rationale</th> </tr>
                 </thead>
                 <tbody>
-                !!!!!!!!!!! AJAX
                 </tbody>
             </table>
         </div>
@@ -82,7 +84,6 @@
                 <tr><th>Concern</th></tr>
                 </thead>
                 <tbody>
-                !!!!!!!!!!! AJAX
                 </tbody>
             </table>
         </div>
@@ -92,12 +93,10 @@
                 <tr><th>Source</th><th>n</th><th>Link Verb</th><th>n</th><th>Target</th> </tr>
                 </thead>
                 <tbody>
-                !!!!!!!!!!! AJAX
                 </tbody>
             </table>
         </div>
     </div>
-    </p>
-
+       </div>
 
 </form>

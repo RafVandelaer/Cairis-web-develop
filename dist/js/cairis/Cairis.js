@@ -309,16 +309,18 @@ function createEditGoalsTable(data){
     var i = 0;
 
     $.each(data, function(count, item) {
-        textToInsert[i++] = "<tr>"
-        textToInsert[i++] = '<td name="theName" contenteditable=true>';
+        textToInsert[i++] = "<tr>";
+        textToInsert[i++] = '<td><button class="editGoalsButton" value="' + item.theName + '">' + 'Edit' + '</button> <button class="deleteGoalButton" value="' + item.theName + '">' + 'Delete' + '</button></td>';
+
+        textToInsert[i++] = '<td name="theName">';
         textToInsert[i++] = item.theName;
         textToInsert[i++] = '</td>';
 
-        textToInsert[i++] = '<td name="theOriginator" contenteditable=true>';
+        textToInsert[i++] = '<td name="theOriginator">';
         textToInsert[i++] = item.theOriginator;
         textToInsert[i++] = '</td>';
 
-       textToInsert[i++] = '<td name="Status"  contenteditable=true>';
+       textToInsert[i++] = '<td name="Status">';
         if(item.theColour == 'black'){
             textToInsert[i++] = "Check";
         }else if(item.theColour == 'red'){
@@ -565,7 +567,7 @@ function setTableHeader(){
             break;
         case "EditGoals":
             debugLogger("Is EditGoals");
-            thead = "<th>Name</th><th>Originator</th><th>Status</th>";
+            thead = "<th width='120px' id='addNewGoal'><i class='fa fa-plus floatCenter'></i></th><th>Name</th><th>Originator</th><th>Status</th>";
             break;
         case "Assets":
             debugLogger("Is Asset");
