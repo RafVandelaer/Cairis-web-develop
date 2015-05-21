@@ -433,6 +433,61 @@ function createVulnerabilityTable(data){
 
     theTable.css("visibility","visible");
 }
+/*
+Dialog for choosing an environment
+ */
+function environmentDialogBox(haveEnv,callback){
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+
+        },
+        crossDomain: true,
+        url: serverIP + "/api/environments/all/names",
+        success: function (data) {
+
+            $("#comboboxDialogSelect").empty();
+            var none = true;
+            $.each(data, function(i, item) {
+                var found = false;
+                $.each(haveEnv,function(index, text) {
+                    if(text == item){
+                        found = true
+                    }
+                });
+                //if not found in environments
+                if(!found) {
+                    $("#comboboxDialogSelect").append("<option value=" + item + ">" + item + "</option>");
+                    none = false;
+                }
+            });
+            if(!none) {
+                $("#comboboxDialog").dialog({
+                    modal: true,
+                    buttons: {
+                        Ok: function () {
+                            var text =  $( "#comboboxDialogSelect").find("option:selected" ).text();
+                            if(jQuery.isFunction(callback)){
+                                callback(text);
+                            }
+                            $(this).dialog("close");
+                        }
+                    }
+                });
+                $(".comboboxD").css("visibility", "visible");
+            }else {
+                alert("All environments are already added");
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
 
 
 /*

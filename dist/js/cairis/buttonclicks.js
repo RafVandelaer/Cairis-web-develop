@@ -297,7 +297,7 @@ $(document).on('click', "button.editVulnerabilityButton",function(){
                         text.append(tag +", ");
                     });
                     $.each(newdata.theEnvironmentProperties, function (index, envprop) {
-                        $("#theVulEnvironments").append("<tr class='clickable-environments'><td><i class='fa fa-minus'></i></td><td class='vulEnvProperties'>"+ envprop.theEnvironmentName +"</td></tr>");
+                        $("#theVulEnvironments").append("<tr class='clickable-environments'><td class='deleteVulEnv'><i class='fa fa-minus'></i></td><td class='vulEnvProperties'>"+ envprop.theEnvironmentName +"</td></tr>");
                     });
                     forceOpenOptions();
                 }
@@ -449,6 +449,18 @@ var optionsContent = $('#optionsContent');
 optionsContent.on('contextmenu', '.clickable-environments', function(){
     return false;
 });
+optionsContent.on('click', '.deleteVulEnv', function () {
+   var propName = $(this).next("td").text();
+   var vuln = JSON.parse($.session.get("Vulnerability"));
+
+    $.each(vuln.theEnvironmentProperties, function (index, prop) {
+       if(prop.theEnvironmentName == propName){
+           vuln.theEnvironmentProperties.splice(index,1);
+       }
+    });
+    $(this).closest("tr").remove();
+
+});
 
 /*
 on environment in Goals edit
@@ -500,12 +512,13 @@ Watch env props in Vulnerability
  */
 optionsContent.on("click", ".vulEnvProperties", function () {
     var name = $(this).text();
+    $("#vulnEnvAssets").find("tbody").empty();
     var theVul = JSON.parse($.session.get("Vulnerability"));
     $.each(theVul.theEnvironmentProperties, function (index, prop) {
        if(prop.theEnvironmentName == name){
             $("#theSeverity").val(prop.theSeverity);
            $.each(prop.theAssets, function (index, asset) {
-               $("#vulnEnvAssets").find("tbody").append("<tr><td>"+ asset+"</td></tr>");
+               $("#vulnEnvAssets").find("tbody").append("<tr><td><i class='fa fa-minus'></i></td><td>"+ asset+"</td></tr>");
            });
        }
     })
@@ -684,6 +697,19 @@ optionsContent.on("click", '.roleEnvironmentClick', function () {
         }
     })
 
+});
+/*
+adding an asset env to the Vulne.
+ */
+optionsContent.on('click', "#addVulEnv", function () {
+    var hasEnv = [];
+    $(".vulEnvProperties").each(function (index, tag) {
+        hasEnv.push($(tag).text());
+    });
+    environmentDialogBox(hasEnv, function (text) {
+        $("#theVulEnvironments").find("tbody").append('<tr class="clickable-environments"><td class="deleteVulEnv"><i class="fa fa-minus"></i></td><td class="vulEnvProperties">'+text+'</td></tr>');
+    });
+    //TODO: Vuln > Env > Assets Adden en removen
 });
 
 /*
