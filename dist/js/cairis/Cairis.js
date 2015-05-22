@@ -721,6 +721,10 @@ function setTableHeader(){
             debugLogger("Is Vulnerability");
             thead = "<th width='120px' id='addNewVulnerability'><i class='fa fa-plus floatCenter'></i></th><th>Name</th><th>Type</th>";
             break;
+        case "Threats":
+            debugLogger("Is Threat");
+            thead = "<th width='120px' id='addNewThreat'><i class='fa fa-plus floatCenter'></i></th><th>Name</th><th>Type</th>";
+            break;
     }
     $("#reqTable").find("thead").empty();
    // $("#reqTable").empty();

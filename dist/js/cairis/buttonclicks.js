@@ -284,6 +284,30 @@ $(document).on('click', "button.editVulnerabilityButton",function(){
                         var jsondata = $.extend(true, {}, newdata);
                         jsondata.theTags = [];
                         $('#editVulnerabilityOptionsform').loadJSON(jsondata, null);
+
+                        $.ajax({
+                            type: "GET",
+                            dataType: "json",
+                            accept: "application/json",
+                            data: {
+                                session_id: String($.session.get('sessionID'))
+                            },
+                            crfossDomain: true,
+                            url: serverIP + "/api/vulnerabilities/types",
+                            success: function (data) {
+                                $.each(data, function (index, type) {
+                                    $('#theSeverity')
+                                        .append($("<option></option>")
+                                            .attr("value",type.theName)
+                                            .text(type.theName));
+                                });
+                            },
+                            error: function (xhr, textStatus, errorThrown) {
+                                debugLogger(String(this.url));
+                                debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                            }
+                        })
+
                         var text = "";
                         $.each(newdata.theTags, function (index, tag) {
                             text += tag + ", ";
@@ -549,7 +573,7 @@ optionsContent.on("click", ".vulEnvProperties", function () {
        if(prop.theEnvironmentName == name){
            if(prop.theSeverity == ""){
                //if new environment, choose first
-               $("#theSeverity").val("Negligible");
+               $("#theSeverity").val($("#theSeverity option:first").val());
            }else{
                $("#theSeverity").val(prop.theSeverity);
            }

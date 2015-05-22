@@ -10,31 +10,22 @@
     float: right;">
     </p>
     <p>
-        <label for='theVulnerabilityType'>Type</label>
-        <select name='theVulnerabilityType' id="theVulnerabilityType" style="float: right">
-            <option selected>
-                Implementation
-            </option>
-            <option>
-                Design
-            </option>
-            <option>
-                Configuration
-            </option>
+        <label for='theType'>Type</label>
+        <select name='theType' id="theType" style="float: right">
 
         </select>
     </p>
 
         <div id="Description">
-    <label for="theVulnerabilityDescription">Description</label>
-           <textarea class="right" name="theVulnerabilityDescription" id="theVulnerabilityDescription" style="width: 275px; margin-bottom: 15px;"></textarea>
+    <label for="theMethod">Description</label>
+           <textarea class="right" name="theMethod" id="theMethod" style="width: 275px; margin-bottom: 15px;"></textarea>
         </div>
     <br/>
 
     <div class="inblock">
-        <table class="left clickable-table" id="theVulEnvironments">
+        <table class="left clickable-table" id="theThreatEnvironments">
             <thead>
-            <tr><th id="addVulEnv" style="width: 15px;"> <i class="fa fa-plus"></i></th><th>Environment</th></tr>
+            <tr><th id="addThreatEnv" style="width: 15px;"> <i class="fa fa-plus"></i></th><th>Environment</th></tr>
             </thead>
             <tbody>
 
@@ -42,8 +33,8 @@
         </table>
         <div class="tabs right infoWidth" >
             <div id="Properties" class="gearOptions clickable-table scrollableTable" >
-                <label> Severity</label>
-                <select id="theSeverity">
+                <label> Likelihood</label>
+                <select id="theLikelihood">
 
                 </select>
                 <table id="vulnEnvAssets">
