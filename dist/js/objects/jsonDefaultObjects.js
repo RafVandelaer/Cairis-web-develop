@@ -61,4 +61,22 @@ var environmentDefault = {"__python_obj__": "Environment.Environment",
     "theEnvironments": [],
     "theShortCode": "",
     "theDescription": "",
-    "theOverridingEnvironment": ""}
+    "theOverridingEnvironment": ""
+};
+var vulnerabilityDefault = {
+    "__python_obj__": "Vulnerability.Vulnerability",
+    "theEnvironmentDictionary": {},
+    "theVulnerabilityName": "",
+    "theVulnerabilityType": "",
+    "theTags": [],
+    "theVulnerabilityDescription": "",
+    "theVulnerabilityId": -1,
+    "severityLookup": {},
+    "theEnvironmentProperties": []
+};
+var vulEnvironmentsDefault = {
+    "__python_obj__": "VulnerabilityEnvironmentProperties.VulnerabilityEnvironmentProperties",
+    "theEnvironmentName": "",
+    "theAssets": [],
+    "theSeverity": ""
+}

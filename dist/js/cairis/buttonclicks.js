@@ -156,29 +156,9 @@ $("#EditGoals").click(function(){
 });
 
 $("#vulnerabilitiesClick").click(function(){
-    $.ajax({
-        type: "GET",
-        dataType: "json",
-        accept: "application/json",
-        data: {
-            session_id: String($.session.get('sessionID'))
-        },
-        crfossDomain: true,
-        url: serverIP + "/api/vulnerabilities",
-        success: function (data) {
-            window.activeTable = "Vulnerability";
-            setTableHeader();
-            createVulnerabilityTable(data);
-            activeElement("reqTable");
-            sortTableByRow(0);
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            debugLogger(String(this.url));
-            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
-        }
-    })
-
+   createVulnerabilityTable()
 });
+
 $(document).on('click', "button.editGoalsButton",function() {
     //TODO ajax call voor GOAL
     var name = $(this).attr("value");
@@ -276,38 +256,56 @@ $(document).on('click', "button.editRoleButton",function() {
 });
 
 $(document).on('click', "button.editVulnerabilityButton",function(){
-    var name = $(this).attr("value");
-    $.session.set("VulnerabilityName", name.trim());
+    if($(this).hasClass("newVulnerability")){
+        var vul = jQuery.extend(true, {}, vulnerabilityDefault);
+        $.session.set("Vulnerability", JSON.stringify(vul));
+        fillOptionMenu("../../CAIRIS/fastTemplates/editVulnerabilityOptions.html", "#optionsContent", null, true, true, function () {
+                $("#UpdateVulnerability").addClass("newVulnerability");
+        });
+        forceOpenOptions();
+    }
+    else {
+        var name = $(this).attr("value");
+        $.session.set("VulnerabilityName", name.trim());
 
-    $.ajax({
-        type: "GET",
-        dataType: "json",
-        accept: "application/json",
-        data: {
-            session_id: String($.session.get('sessionID'))
-        },
-        crossDomain: true,
-        url: serverIP + "/api/vulnerabilities/name/" + name.replace(" ", "%20"),
-        success: function (newdata) {
-            fillOptionMenu("../../CAIRIS/fastTemplates/editVulnerabilityOptions.html","#optionsContent",null,true,true, function(){
-                    $.session.set("Vulnerability", JSON.stringify(newdata));
-                    $('#editVulnerabilityOptionsform').loadJSON(newdata,null);
-                    var text ="";
-                    $.each(newdata.theTags, function (index, tag) {
-                        text.append(tag +", ");
-                    });
-                    $.each(newdata.theEnvironmentProperties, function (index, envprop) {
-                        $("#theVulEnvironments").append("<tr class='clickable-environments'><td class='deleteVulEnv'><i class='fa fa-minus'></i></td><td class='vulEnvProperties'>"+ envprop.theEnvironmentName +"</td></tr>");
-                    });
-                    forceOpenOptions();
-                }
-            );
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            debugLogger(String(this.url));
-            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
-        }
-    });
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            accept: "application/json",
+            data: {
+                session_id: String($.session.get('sessionID'))
+            },
+            crossDomain: true,
+            url: serverIP + "/api/vulnerabilities/name/" + name.replace(" ", "%20"),
+            success: function (newdata) {
+                fillOptionMenu("../../CAIRIS/fastTemplates/editVulnerabilityOptions.html", "#optionsContent", null, true, true, function () {
+                        $.session.set("Vulnerability", JSON.stringify(newdata));
+                        //removing theTags, because LOADJSON does some strange things with them.
+                        var jsondata = $.extend(true, {}, newdata);
+                        jsondata.theTags = [];
+                        $('#editVulnerabilityOptionsform').loadJSON(jsondata, null);
+                        var text = "";
+                        $.each(newdata.theTags, function (index, tag) {
+                            text += tag + ", ";
+                        });
+                        $("#theTags").val(text);
+
+                        $.each(newdata.theEnvironmentProperties, function (index, envprop) {
+                            $("#theVulEnvironments").append("<tr class='clickable-environments'><td class='deleteVulEnv'><i class='fa fa-minus'></i></td><td class='vulEnvProperties'>" + envprop.theEnvironmentName + "</td></tr>");
+                        });
+
+                        forceOpenOptions();
+                        $("#theVulEnvironments").find(".vulEnvProperties:first").trigger('click');
+                        $.session.set("VulnEnvironmentName", $("#theVulEnvironments").find(".vulEnvProperties:first").text());
+                    }
+                );
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                debugLogger(String(this.url));
+                debugLogger("error: " + xhr.responseText + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            }
+        });
+    }
 });
 
 $(document).on('click', "button.editAssetsButton",function(){
@@ -442,7 +440,16 @@ $("#editEnvironmentsButton").click(function () {
 $("#reqTable").on("click", "#addNewRole", function () {
     $("#reqTable").find("tbody").append('<tr><td><button class="editRoleButton" value="">Edit</button> <button class="deleteRoleButton" value="">Delete</button></td><td name="theName"></td><td name="theShortCode"></td><td name="theType"></td></tr>')
 });
-
+//addNewVulnerability
+$("#reqTable").on("click", "#addNewVulnerability", function () {
+    $("#reqTable").find("tbody").append('<tr><td><button class="editVulnerabilityButton newVulnerability" value="">Edit</button> <button class="deleteVulnerabilityButton" value="">Delete</button></td><td name="theVulnerabilityName"></td><td name="theVulnerabilityType"></td></tr>');
+    var vul = jQuery.extend(true, {}, vulnerabilityDefault);
+    $.session.set("Vulnerability", JSON.stringify(vul));
+    fillOptionMenu("../../CAIRIS/fastTemplates/editVulnerabilityOptions.html", "#optionsContent", null, true, true, function () {
+        $("#UpdateVulnerability").addClass("newVulnerability");
+    });
+    forceOpenOptions();
+});
 
 //This is delegation
 var optionsContent = $('#optionsContent');
@@ -512,16 +519,99 @@ Watch env props in Vulnerability
  */
 optionsContent.on("click", ".vulEnvProperties", function () {
     var name = $(this).text();
+    $.session.set("VulnEnvironmentName", name);
     $("#vulnEnvAssets").find("tbody").empty();
     var theVul = JSON.parse($.session.get("Vulnerability"));
     $.each(theVul.theEnvironmentProperties, function (index, prop) {
        if(prop.theEnvironmentName == name){
-            $("#theSeverity").val(prop.theSeverity);
+           if(prop.theSeverity == ""){
+               //if new environment, choose first
+               $("#theSeverity").val("Negligible");
+           }else{
+               $("#theSeverity").val(prop.theSeverity);
+           }
+
            $.each(prop.theAssets, function (index, asset) {
-               $("#vulnEnvAssets").find("tbody").append("<tr><td><i class='fa fa-minus'></i></td><td>"+ asset+"</td></tr>");
+               $("#vulnEnvAssets").find("tbody").append("<tr><td class='removeVulnEnvAsset'><i class='fa fa-minus'></i></td><td>"+ asset+"</td></tr>");
            });
        }
     })
+});
+
+/*
+adding an Asset to an evironment of a Vulnerabilty
+ */
+optionsContent.on("click", "#addAssetToEnvFromVuln", function () {
+    if($("#theVulEnvironments").find("tbody").children().length == 0){
+        alert("First you have to add an environment");
+    }
+    else {
+        var hasAssets = [];
+        $(".removeVulnEnvAsset").next("td").each(function (index, tag) {
+            hasAssets.push($(tag).text());
+        });
+        assetsDialogBox(hasAssets, function (text) {
+            $("#vulnEnvAssets").find("tbody").append('<tr><td class="removeVulnEnvAsset"><i class="fa fa-minus"></i></td><td>' + text + '</td></tr>');
+            var theVul = JSON.parse($.session.get("Vulnerability"));
+            var EnvName = $.session.get("VulnEnvironmentName");
+            $.each(theVul.theEnvironmentProperties, function (index, prop) {
+                if (prop.theEnvironmentName == EnvName) {
+                    prop.theAssets.push(text);
+                }
+            });
+            debugLogger(theVul);
+            $.session.set("Vulnerability", JSON.stringify(theVul));
+        });
+    }
+});
+/*
+ removing an Asset to an evironment of a Vulnerabilty
+ */
+optionsContent.on("click", ".removeVulnEnvAsset", function () {
+    var name = $(this).next("td").text();
+    var theVul = JSON.parse($.session.get("Vulnerability"));
+    var EnvName =$.session.get("VulnEnvironmentName");
+    $.each(theVul.theEnvironmentProperties, function (index, prop) {
+        if(prop.theEnvironmentName == EnvName){
+            $.each(prop.theAssets, function (i, key) {
+               if(key == name){
+                   theVul.theEnvironmentProperties[index].theAssets.splice(i,1);
+                   $.session.set("Vulnerability", JSON.stringify(theVul));
+               }
+            });
+        }
+    });
+    $(this).closest("tr").remove();
+});
+
+optionsContent.on('click', '#UpdateVulnerability', function (e) {
+    e.preventDefault();
+
+    var theVul = JSON.parse($.session.get("Vulnerability"));
+    theVul.theVulnerabilityName = $("#theVulnerabilityName").val();
+   var arr = $("#theTags").val().split(", ")
+    arr = $.grep(arr,function(n){ return(n) });
+    theVul.TheType = arr;
+    theVul.theVulnerabilityDescription = $("#theVulnerabilityDescription").val();
+   // var test = $("#theVulnerabilityType");
+    theVul.theVulnerabilityType = $("#theVulnerabilityType").val();
+
+    var name = $.session.get("VulnEnvironmentName");
+    $.each(theVul.theEnvironmentProperties, function (index, key) {
+        if(key.theEnvironmentName == name){
+            theVul.theEnvironmentProperties[index].theSeverity= $("#theSeverity").val();
+        }
+    });
+    if($(this).hasClass("newVulnerability")){
+        postVulnerability(theVul, function () {
+            createVulnerabilityTable();
+        });
+    }
+    else {
+        putVulnerability(theVul, $.session.get("VulnerabilityName"), function () {
+            createVulnerabilityTable();
+        });
+    }
 });
 
 /* For the rationale in the environments edit*/
@@ -661,6 +751,15 @@ optionsContent.on('click','#UpdateRole', function (event) {
 
 
 });
+$("#reqTable").on('click','.deleteVulnerabilityButton', function (event) {
+    event.preventDefault();
+    var name = $(this).attr("value");
+    debugLogger("Delete: " + name + ".");
+    deleteVulnerability( name, function () {
+        createVulnerabilityTable();
+    });
+});
+
 $("#reqTable").on('click','.deleteRoleButton', function (event) {
     event.preventDefault();
     var name = $(this).attr("value");
@@ -708,6 +807,12 @@ optionsContent.on('click', "#addVulEnv", function () {
     });
     environmentDialogBox(hasEnv, function (text) {
         $("#theVulEnvironments").find("tbody").append('<tr class="clickable-environments"><td class="deleteVulEnv"><i class="fa fa-minus"></i></td><td class="vulEnvProperties">'+text+'</td></tr>');
+        var environment =  jQuery.extend(true, {},vulEnvironmentsDefault );
+        environment.theEnvironmentName = text;
+        var theVul = JSON.parse($.session.get("Vulnerability"));
+        theVul.theEnvironmentProperties.push(environment);
+        $.session.set("Vulnerability", JSON.stringify(theVul));
+        $.session.set("VulnEnvironmentName",text);
     });
     //TODO: Vuln > Env > Assets Adden en removen
 });

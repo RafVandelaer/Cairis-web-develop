@@ -437,7 +437,91 @@ function deleteEnvironment(name, callback){
         crossDomain: true,
         processData: false,
         origin: serverIP,
-        url: serverIP + "/api/environments/" + name + "?session_id=" + $.session.get('sessionID'),
+        url: serverIP + "/api/environments/name/" + name.replace(" ","%20") + "?session_id=" + $.session.get('sessionID'),
+        success: function (data) {
+            showPopup(true);
+            if(jQuery.isFunction(callback)){
+                callback();
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            showPopup(false);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
+function putVulnerability(vuln, oldName, callback){
+    output = {};
+    output.object = vuln;
+    output.session_id = $.session.get('sessionID');
+    output = JSON.stringify(output);
+    debugLogger(output);
+
+    $.ajax({
+        type: "PUT",
+        dataType: "json",
+        contentType: "application/json",
+        accept: "application/json",
+        crossDomain: true,
+        processData: false,
+        origin: serverIP,
+        data: output,
+        url: serverIP + "/api/vulnerabilities/name/" + oldName.replace(" ","%20") + "?session_id=" + $.session.get('sessionID'),
+        success: function (data) {
+            showPopup(true);
+            if(jQuery.isFunction(callback)){
+                callback();
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            showPopup(false);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
+function postVulnerability(vuln, callback){
+    output = {};
+    output.object = vuln;
+    output.session_id = $.session.get('sessionID');
+    output = JSON.stringify(output);
+    debugLogger(output);
+
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        accept: "application/json",
+        crossDomain: true,
+        processData: false,
+        origin: serverIP,
+        data: output,
+        url: serverIP + "/api/vulnerabilities" + "?session_id=" + $.session.get('sessionID'),
+        success: function (data) {
+            showPopup(true);
+            if(jQuery.isFunction(callback)){
+                callback();
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            showPopup(false);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
+function deleteVulnerability(name, callback){
+
+    $.ajax({
+        type: "DELETE",
+        dataType: "json",
+        contentType: "application/json",
+        accept: "application/json",
+        crossDomain: true,
+        processData: false,
+        origin: serverIP,
+        url: serverIP + "/api/vulnerabilities/name/" + name.replace(" ","%20") + "?session_id=" + $.session.get('sessionID'),
         success: function (data) {
             showPopup(true);
             if(jQuery.isFunction(callback)){

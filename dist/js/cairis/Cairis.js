@@ -41,7 +41,7 @@ var dialogwindow = $( "#dialogContent" ).dialog({
                 },
                 error: function(data, status, xhr) {
                     console.log(this.url);
-                    debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                    debugLogger("error: " + xhr.responseText +  ", textstatus: " + status + ", thrown: " + data);
                     alert("There is a problem with the server...");
                 }
             });
@@ -406,36 +406,115 @@ function createEnvironmentsTable(data, callback){
 /*
  A function for filling the table with Vulnerabilities
  */
-function createVulnerabilityTable(data){
-    var theTable = $(".theTable");
-    $(".theTable tr").not(function(){if ($(this).has('th').length){return true}}).remove();
-    //var arr = reallyLongArray;
-    var textToInsert = [];
-    var i = 0;
+function createVulnerabilityTable(){
 
-    $.each(data, function(count, item) {
-        textToInsert[i++] = "<tr>"
-        textToInsert[i++] = '<td><button class="editVulnerabilityButton" value="' + item.theVulnerabilityName + '">' + 'Edit' + '</button> <button class="deleteVulnerabilityButton" value="' + item.theVulnerabilityName + '">' + 'Delete' + '</button></td>';
-        textToInsert[i++] = '<td name="theVulnerabilityName">';
-        textToInsert[i++] = item.theVulnerabilityName;
-        textToInsert[i++] = '</td>';
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crfossDomain: true,
+        url: serverIP + "/api/vulnerabilities",
+        success: function (data) {
+            window.activeTable = "Vulnerability";
+            setTableHeader();
+            var theTable = $(".theTable");
+            $(".theTable tr").not(function(){if ($(this).has('th').length){return true}}).remove();
+            //var arr = reallyLongArray;
+            var textToInsert = [];
+            var i = 0;
 
-        textToInsert[i++] = '<td name="theVulnerabilityType">';
-        textToInsert[i++] = item.theVulnerabilityType;
-        textToInsert[i++] = '</td>';
+            $.each(data, function(count, item) {
+                textToInsert[i++] = "<tr>"
+                textToInsert[i++] = '<td><button class="editVulnerabilityButton" value="' + item.theVulnerabilityName + '">' + 'Edit' + '</button> <button class="deleteVulnerabilityButton" value="' + item.theVulnerabilityName + '">' + 'Delete' + '</button></td>';
+                textToInsert[i++] = '<td name="theVulnerabilityName">';
+                textToInsert[i++] = item.theVulnerabilityName;
+                textToInsert[i++] = '</td>';
+
+                textToInsert[i++] = '<td name="theVulnerabilityType">';
+                textToInsert[i++] = item.theVulnerabilityType;
+                textToInsert[i++] = '</td>';
 
 
-        textToInsert[i++] = '</tr>';
-    });
+                textToInsert[i++] = '</tr>';
+            });
 
-    // theRows[j++]=textToInsert.join('');
-    theTable.append(textToInsert.join(''));
+            // theRows[j++]=textToInsert.join('');
+            theTable.append(textToInsert.join(''));
 
-    theTable.css("visibility","visible");
+            theTable.css("visibility","visible");
+            activeElement("reqTable");
+            sortTableByRow(0);
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    })
+
+
 }
 /*
 Dialog for choosing an environment
  */
+function assetsDialogBox(haveEnv,callback){
+    var dialogwindow = $("#ChooseAssetDialog");
+    var select = dialogwindow.find("select");
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+
+        },
+        crossDomain: true,
+        url: serverIP + "/api/assets",
+        success: function (data) {
+
+            select.empty();
+            var none = true;
+            $.each(data, function(key, object) {
+                var found = false;
+                $.each(haveEnv,function(index, text) {
+                    if(text == key){
+                        found = true
+                    }
+                });
+                //if not found in assets
+                if(!found) {
+                    select.append("<option value=" + key + ">" + key + "</option>");
+                    none = false;
+                }
+            });
+            if(!none) {
+                //dialogwindow.show();
+                dialogwindow.dialog({
+                    modal: true,
+                    buttons: {
+                        Ok: function () {
+                            var text =  select.find("option:selected" ).text();
+                            if(jQuery.isFunction(callback)){
+                                callback(text);
+                            }
+                            $(this).dialog("close");
+                        }
+                    }
+                });
+                $(".comboboxD").css("visibility", "visible");
+            }else {
+                alert("All assets are already added");
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
+
 function environmentDialogBox(haveEnv,callback){
     $.ajax({
         type: "GET",
@@ -488,7 +567,6 @@ function environmentDialogBox(haveEnv,callback){
         }
     });
 }
-
 
 /*
 Function for creating the comboboxes
