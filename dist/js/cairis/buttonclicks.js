@@ -345,6 +345,29 @@ $(document).on('click', "button.editAssetsButton",function(){
                         success: function (data) {
                             $.session.set("AssetProperties", JSON.stringify(data));
                             fillEditAssetsEnvironment();
+                            $.ajax({
+                                type: "GET",
+                                dataType: "json",
+                                accept: "application/json",
+                                data: {
+                                    session_id: String($.session.get('sessionID'))
+                                },
+                                crossDomain: true,
+                                url: serverIP + "/api/assets/types",
+                                success: function (data) {
+                                    $.each(data, function (index, type) {
+                                        $('#theType')
+                                            .append($("<option></option>")
+                                                .attr("value",type.theName)
+                                                .text(type.theName));
+                                    });
+
+                                },
+                                error: function (xhr, textStatus, errorThrown) {
+                                    debugLogger(String(this.url));
+                                    debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                                }
+                            });
                         },
                         error: function (xhr, textStatus, errorThrown) {
                             debugLogger(String(this.url));

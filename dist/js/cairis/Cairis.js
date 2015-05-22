@@ -78,7 +78,7 @@ Filling the asset environment in the HTML
  */
 function fillEditAssetsEnvironment(){
     var data = JSON.parse( $.session.get("AssetProperties"));
-    var props;
+
 
     var i = 0;
     var textToInsert = [];
@@ -92,16 +92,19 @@ function fillEditAssetsEnvironment(){
     // $(".clickable-environments").contextMenu(menu);
 
     var env = $( "#theEnvironmentDictionary").find("tbody tr:eq(0) > td:eq(0)").text();
+
+    var props;
     $.each(data, function(arrayID,group) {
         if(group.environment == env){
-            props = group.attributes;
+            getAssetDefinition(group.attributes);
+            //props = group.attributes;
             $.session.set("thePropObject", JSON.stringify(group));
             $.session.set("Arrayindex",arrayID);
 
         }
     });
 
-    getAssetDefinition(props);
+
 }
 
 /*
