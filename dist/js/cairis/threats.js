@@ -59,3 +59,38 @@ function createThreatsTable(data){
 
     theTable.css("visibility","visible");
 }
+var optionsContent = $("#optionsContent");
+$(document).on('click', ".editThreatsButton", function () {
+    var name = $(this).val();
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crossDomain: true,
+        url: serverIP + "/api/threats/name/" + name.replace(" ", "%20"),
+        success: function (data) {
+            // console.log(JSON.stringify(rawData));
+            fillOptionMenu("../../CAIRIS/fastTemplates/editThreatOptions.html", "#optionsContent", null, true, true, function () {
+                    forceOpenOptions();
+
+                    //TODO: AJAX CALL for types, data in option steke
+                    $('#theType')
+                        .append($("<option></option>")
+                            .attr("value",type.theName)
+                            .text(type.theName));
+                   // $.session.set("editableEnvironment", JSON.stringify(data));
+                   // $('#editEnvironmentOptionsform').loadJSON(data, null);
+
+
+                }
+            );
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+});
