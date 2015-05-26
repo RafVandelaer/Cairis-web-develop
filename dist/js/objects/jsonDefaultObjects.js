@@ -88,3 +88,13 @@ var threatEnvironmentDefault = {"__python_obj__": "ThreatEnvironmentProperties.T
     "theRationale": [],
     "theProperties": []
 };
+var threatDefault = {
+    "__python_obj__": "Threat.Threat",
+    "theId": -1,
+    "theTags": [],
+    "theThreatName": "",
+    "theType": "",
+    "theMethod": "",
+    "theEnvironmentProperties": [],
+    "theProperties": []
+}

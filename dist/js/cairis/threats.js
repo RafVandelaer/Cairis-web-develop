@@ -5,6 +5,8 @@
 I've made this file to make it easier for me to program. everything (except PUT POST and DELETE) or the threats will be coded here
  It is possible that I will use some already developed functions inside some other files
  */
+
+//TODO: POST bekijken, 'unexpected token o', DELETE maken
 $("#threatsClick").click(function () {
    createThreatsTable()
 });
@@ -81,43 +83,31 @@ $(document).on('click', ".editThreatsButton", function () {
             fillOptionMenu("../../CAIRIS/fastTemplates/editThreatOptions.html", "#optionsContent", null, true, true, function () {
                     forceOpenOptions();
                     $("#addPropertyDiv").hide();
-                                $.ajax({
-                                    type: "GET",
-                                    dataType: "json",
-                                    accept: "application/json",
-                                    data: {
-                                        session_id: String($.session.get('sessionID'))
-                                    },
-                                    crossDomain: true,
-                                    url: serverIP + "/api/threats/types",
-                                    success: function (data2) {
-                                        $.each(data2, function (index, type) {
-                                            $('#theType')
-                                                .append($("<option></option>")
-                                                    .attr("value",type.theName)
-                                                    .text(type.theName));
-                                        });
+                    getThreatTypes(function createTypes(types) {
+                        $.each(types, function (index, type) {
+                            $('#theType')
+                                .append($("<option></option>")
+                                    .attr("value", type.theName)
+                                    .text(type.theName));
+                        });
+                        $("#theType").val(data.theType);
+                    });
 
-                                        $.session.set("theThreat", JSON.stringify(data));
-                                        var fillerJSON = data;
-                                        var tags = data.theTags;
-                                        fillerJSON.theTags = [];
-                                        var text = "";
-                                        $.each(tags, function (index, type) {
-                                            text += type + ", ";
-                                        });
-                                        $("#theTags").val(text);
-                                        $('#editThreatOptionsform').loadJSON(fillerJSON, null);
-                                        $.each(data.theEnvironmentProperties, function(index, env){
-                                            $("#theThreatEnvironments").append("<tr><td><i class='fa fa-minus'></i></td><td class='threatEnvironments'>" + env.theEnvironmentName + "</td></tr>");
-                                        });
-                                        $("#theThreatEnvironments").find(".threatEnvironments:first").trigger('click');
-                                    },
-                                    error: function (xhr, textStatus, errorThrown) {
-                                        debugLogger(String(this.url));
-                                        debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
-                                    }
-                                });
+                    $.session.set("theThreat", JSON.stringify(data));
+                    var fillerJSON = data;
+                    var tags = data.theTags;
+                    fillerJSON.theTags = [];
+                    var text = "";
+                    $.each(tags, function (index, type) {
+                        text += type + ", ";
+                    });
+                    $("#theTags").val(text);
+
+                    $('#editThreatOptionsform').loadJSON(fillerJSON, null);
+                    $.each(data.theEnvironmentProperties, function (index, env) {
+                        $("#theThreatEnvironments").append("<tr><td><i class='fa fa-minus'></i></td><td class='threatEnvironments'>" + env.theEnvironmentName + "</td></tr>");
+                    });
+                    $("#theThreatEnvironments").find(".threatEnvironments:first").trigger('click');
 
                 }
             );
@@ -126,6 +116,24 @@ $(document).on('click', ".editThreatsButton", function () {
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
+    });
+});
+$(document).on("click", "#addNewThreat", function () {
+    fillOptionMenu("../../CAIRIS/fastTemplates/editThreatOptions.html", "#optionsContent", null, true, true, function () {
+        $("#addPropertyDiv").hide();
+        $("#editThreatOptionsform").addClass("newThreat");
+        getThreatTypes(function createTypes(types) {
+            $.each(types, function (index, type) {
+                $('#theType')
+                    .append($("<option></option>")
+                        .attr("value", type.theName)
+                        .text(type.theName));
+            });
+        });
+
+        $.session.set("theThreat", jQuery.extend(true, {},threatDefault ));
+        forceOpenOptions();
+        //$("reqTable").find("tbody").append('<tr><td><button class="editThreatsButton" value="">Edit</button> <button class="deleteThreatsButton" value="Replay attack">Delete</button></td><td name="theName"></td><td name="theType"></td></tr>')
     });
 });
 optionsContent.on("click", ".threatEnvironments", function () {
@@ -248,7 +256,6 @@ optionsContent.on('click',"#UpdateThreatProperty", function () {
            }
        });
    } else{
-       //TODO ADDEN AAN SESSION
         var theRow = $(".changeAbleProp");
        var oldname = $(theRow).find("td:eq(1)").text();
        $(theRow).find("td:eq(1)").text(prop.name);
@@ -303,10 +310,16 @@ optionsContent.on('click', '#UpdateThreat', function (e) {
     threat.theTags = tags;
     threat.theType = $("#theType option:selected").text();
 
-   putThreat(threat, oldName, function () {
-       createThreatsTable();
-   });
-
+    //IF NEW THREAT
+    if($("#editThreatOptionsform").hasClass("newThreat")){
+        postThreat(threat, function () {
+            createThreatsTable();
+        });
+    } else {
+        putThreat(threat, oldName, function () {
+            createThreatsTable();
+        });
+    }
 });
 
 function fillThreatPropProperties(extra){
@@ -329,6 +342,27 @@ function fillThreatPropProperties(extra){
             .text(extra).val(extra));
         propBox.val(extra);
     }
+}
+function getThreatTypes(callback){
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crossDomain: true,
+        url: serverIP + "/api/threats/types",
+        success: function (data) {
+            if(jQuery.isFunction(callback)){
+                callback(data);
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
 }
 function toggleThreatOptions(){
     $("#editThreatOptionsform").toggle();
