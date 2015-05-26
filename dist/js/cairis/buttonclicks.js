@@ -861,7 +861,6 @@ optionsContent.on('click', "#addVulEnv", function () {
         $.session.set("Vulnerability", JSON.stringify(theVul));
         $.session.set("VulnEnvironmentName",text);
     });
-    //TODO: Vuln > Env > Assets Adden en removen
 });
 
 /*

@@ -535,3 +535,33 @@ function deleteVulnerability(name, callback){
         }
     });
 }
+function putThreat(threat, oldName, callback){
+    output = {};
+    output.object = threat;
+    output.session_id = $.session.get('sessionID');
+    output = JSON.stringify(output);
+    debugLogger(output);
+
+    $.ajax({
+        type: "PUT",
+        dataType: "json",
+        contentType: "application/json",
+        accept: "application/json",
+        crossDomain: true,
+        processData: false,
+        origin: serverIP,
+        data: output,
+        url: serverIP + "/api/threats/name/" + oldName.replace(" ","%20") + "?session_id=" + $.session.get('sessionID'),
+        success: function (data) {
+            showPopup(true);
+            if(jQuery.isFunction(callback)){
+                callback();
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            showPopup(false);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}

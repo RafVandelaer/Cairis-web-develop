@@ -460,7 +460,7 @@ function createVulnerabilityTable(){
 
 }
 /*
-Dialog for choosing an environment
+Dialog for choosing an asset
  */
 function assetsDialogBox(haveEnv,callback){
     var dialogwindow = $("#ChooseAssetDialog");
@@ -570,6 +570,69 @@ function environmentDialogBox(haveEnv,callback){
         }
     });
 }
+/*
+ Dialog for choosing an attacker
+ */
+function attackerDialogBox(haveEnv, environment ,callback){
+    var dialogwindow = $("#ChooseAssetDialog");
+    var select = dialogwindow.find("select");
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+
+        },
+        crossDomain: true,
+        url: serverIP + "/api/attackers",
+        success: function (data) {
+            select.empty();
+            var none = true;
+            $.each(data, function(key, attacker) {
+                var found = false;
+                $.each(haveEnv,function(index, text) {
+                    if(text == key){
+                        found = true
+                    }
+                });
+                //if not found in assets
+                if(!found) {
+                    $.each(attacker.theEnvironmentProperties, function (index, prop) {
+                        if(prop.theEnvironmentName == environment){
+                            select.append("<option value=" + key + ">" + key + "</option>");
+                            none = false;
+                        }
+                    });
+
+                }
+            });
+            if(!none) {
+                //dialogwindow.show();
+                dialogwindow.dialog({
+                    modal: true,
+                    buttons: {
+                        Ok: function () {
+                            var text =  select.find("option:selected" ).text();
+                            if(jQuery.isFunction(callback)){
+                                callback(text);
+                            }
+                            $(this).dialog("close");
+                        }
+                    }
+                });
+                $(".comboboxD").css("visibility", "visible");
+            }else {
+                alert("All possible attackers are already added");
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
+
 
 /*
 Function for creating the comboboxes

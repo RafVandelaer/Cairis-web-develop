@@ -1,8 +1,8 @@
-<form id="editVulnerabilityOptionsform" xmlns="http://www.w3.org/1999/html" >
+<form id="editThreatOptionsform" xmlns="http://www.w3.org/1999/html" >
 
     <p>
         <label>Name</label>
-        <input class="optionsInput" type="text" name="theVulnerabilityName" id="theVulnerabilityName">
+        <input class="optionsInput" type="text" name="theThreatName" id="theThreatName">
     </p>
     <p>
         <label>Tags</label>
@@ -17,7 +17,7 @@
     </p>
 
         <div id="Description">
-    <label for="theMethod">Description</label>
+    <label for="theMethod">The method</label>
            <textarea class="right" name="theMethod" id="theMethod" style="width: 275px; margin-bottom: 15px;"></textarea>
         </div>
     <br/>
@@ -35,7 +35,12 @@
             <div id="Properties" class="gearOptions clickable-table scrollableTable" >
                 <label> Likelihood</label>
                 <select id="theLikelihood">
-
+                    <option>Improbable</option>
+                    <option>Incredible</option>
+                    <option>Remote</option>
+                    <option>Occasional</option>
+                    <option>Probable</option>
+                    <option>Frequent</option>
                 </select>
                 <div class="inblock">
                 <table id="threatAttackers" class="left" style="width: 50%">
@@ -57,5 +62,27 @@
             </div>
         </div>
     </div>
-    <button id="UpdateVulnerability">Update</button>
+    <button id="UpdateThreat">Update</button>
 </form>
+<div id="addPropertyDiv">
+    <p>
+        <label>Property</label>
+        <select name='thePropName' id="thePropName" style="float: right">
+
+        </select>
+    </p>
+    <p>
+        <label>Value</label>
+        <select name='thePropValue' id="thePropValue" style="float: right">
+            <option value="None">None</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+        </select>
+    </p>
+    <p>
+        <label for='thePropRationale'>Rationale</label>
+        <textarea name="thePropRationale" id="thePropRationale" style="float: right;"> </textarea>
+    </p>
+    <button id="UpdateThreatProperty">Update</button>
+</div>

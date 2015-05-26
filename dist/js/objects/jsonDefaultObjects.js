@@ -79,4 +79,12 @@ var vulEnvironmentsDefault = {
     "theEnvironmentName": "",
     "theAssets": [],
     "theSeverity": ""
-}
+};
+var threatEnvironmentDefault = {"__python_obj__": "ThreatEnvironmentProperties.ThreatEnvironmentProperties",
+    "theAssets": [],
+    "theLikelihood": "",
+    "theEnvironmentName": "",
+    "theAttackers": [],
+    "theRationale": [],
+    "theProperties": []
+};
