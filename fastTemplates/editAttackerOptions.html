@@ -15,13 +15,13 @@
            <textarea class="right" name="theDescription" id="theDescription" style="width: 150px; margin-bottom: 15px;"></textarea>
         </div>
         </div>
-    <img id="theImage" src="" height="200" width="200" class="right" style="margin-bottom: 5px">
+    <img id="theImages" src="" height="200" width="200" class="right" style="margin-bottom: 5px">
     <br/>
 
     <div class="inblock">
         <table class="left clickable-table" id="theAttackerEnvironments">
             <thead>
-            <tr><th id="addThreatEnv" style="width: 15px;"> <i class="fa fa-plus"></i></th><th>Environment</th></tr>
+            <tr><th id="addAttackerEnv" style="width: 15px;"> <i class="fa fa-plus"></i></th><th>Environment</th></tr>
             </thead>
             <tbody>
 
@@ -30,19 +30,19 @@
         <div class="tabs right infoWidth" >
             <div id="Properties" class="gearOptions clickable-table scrollableTable" >
                 <div class="inblock">
-                <table id="threatAttackers" class="left" style="width: 50%">
-                    <thead><tr><th id="addAttackertoThreat" style="width: 15px;"> <i class="fa fa-plus"></i></th><th>Role</th></tr></thead>
+                <table id="attackerRole" class="left" style="width: 50%">
+                    <thead><tr><th id="addRoletoAttacker" style="width: 15px;"> <i class="fa fa-plus"></i></th><th>Role</th></tr></thead>
                     <tbody>
                     </tbody>
                 </table>
-                <table id="threatAssets" class="right" style="width: 50%">
-                    <thead><tr><th id="addAssettoThreat" style="width: 15px;"> <i class="fa fa-plus"></i></th><th>Motive</th></tr></thead>
+                <table id="attackerMotive" class="right" style="width: 50%">
+                    <thead><tr><th id="addMotivetoAttacker" style="width: 15px;"> <i class="fa fa-plus"></i></th><th>Motive</th></tr></thead>
                     <tbody>
                     </tbody>
                 </table>
                 </div>
-                <table id="threatProperties">
-                    <thead><tr><th id="addPropertytoThreat" style="width: 15px;"> <i class="fa fa-plus"></i></th><th>Capability</th><th>Value</th></tr></thead>
+                <table id="attackerCapability">
+                    <thead><tr><th id="addCapabilitytoAttacker" style="width: 15px;"> <i class="fa fa-plus"></i></th><th>Capability</th><th>Value</th></tr></thead>
                     <tbody>
                     </tbody>
                 </table>
@@ -51,10 +51,10 @@
     </div>
     <button id="UpdateAttacker">Update</button>
 </form>
-<div id="addPropertyDiv">
+<div id="addAttackerPropertyDiv" >
     <p>
         <label>Property</label>
-        <select name='thePropName' id="thePropName" style="float: right">
+        <select name='theCap' id="theCap" style="float: right">
 
         </select>
     </p>
@@ -67,9 +67,5 @@
             <option value="High">High</option>
         </select>
     </p>
-    <p>
-        <label for='thePropRationale'>Rationale</label>
-        <textarea name="thePropRationale" id="thePropRationale" style="float: right;"> </textarea>
-    </p>
-    <button id="UpdateThreatProperty">Update</button>
+    <button id="UpdateAttackerCapability">Update</button>
 </div>

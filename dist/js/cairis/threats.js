@@ -135,6 +135,7 @@ $(document).on("click", "#addNewThreat", function () {
     });
 });
 optionsContent.on("click", ".threatEnvironments", function () {
+    clearThreatEnvInfo();
 var threat = JSON.parse($.session.get("theThreat"));
     var envName = $(this).text();
     $.session.set("threatEnvironmentName", envName);
@@ -389,14 +390,19 @@ function toggleThreatOptions(){
     $("#addPropertyDiv").toggle();
 }
 function appendThreatEnvironment(environment){
-    $("#theThreatEnvironments").find("tbody").append('<tr><td class="deleteThreatEnv"><i class="fa fa-minus"></i></td><td class="threatEnvironments">'+environment+'</td></tr>');
+    $("#theThreatEnvironments").find("tbody").empty().append('<tr><td class="deleteThreatEnv"><i class="fa fa-minus"></i></td><td class="threatEnvironments">'+environment+'</td></tr>');
 }
 function appendThreatAsset(asset){
-    $("#threatAssets").find("tbody").append("<tr><td class='removeThreatAsset'><i class='fa fa-minus'></i></td><td class='threatAssets'>" + asset + "</td></tr>").animate('slow');
+    $("#threatAssets").find("tbody").empty().append("<tr><td class='removeThreatAsset'><i class='fa fa-minus'></i></td><td class='threatAssets'>" + asset + "</td></tr>").animate('slow');
 }
 function appendThreatAttacker(attacker){
-    $("#threatAttackers").find("tbody").append("<tr><td class='removeThreatAttacker' ><i class='fa fa-minus'></i></td><td class='threatAttackers'>" + attacker + "</td></tr>").animate('slow');
+    $("#threatAttackers").find("tbody").empty().append("<tr><td class='removeThreatAttacker' ><i class='fa fa-minus'></i></td><td class='threatAttackers'>" + attacker + "</td></tr>").animate('slow');
 }
 function appendThreatProperty(prop){
-    $("#threatProperties").find("tbody").append("<tr class='changeProperty'><td class='removeThreatProperty'><i class='fa fa-minus'></i></td><td class='threatProperties'>" + prop.name + "</td><td>"+ prop.value +"</td><td>"+ prop.rationale+"</td></tr>").animate('slow');;
+    $("#threatProperties").find("tbody").empty().append("<tr class='changeProperty'><td class='removeThreatProperty'><i class='fa fa-minus'></i></td><td class='threatProperties'>" + prop.name + "</td><td>"+ prop.value +"</td><td>"+ prop.rationale+"</td></tr>").animate('slow');;
+}
+function clearThreatEnvInfo(){
+    $("#threatProperties").find("tbody").empty();
+    $("#threatAttackers").find("tbody").empty();
+    $("#threatAssets").find("tbody").empty();
 }

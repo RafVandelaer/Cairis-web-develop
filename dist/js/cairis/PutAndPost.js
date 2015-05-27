@@ -37,18 +37,6 @@ function reqRowtoJSON(row){
             json.attrs[name] = v.innerHTML;
         }
     });
-
-    //OLD method, not that good
-    /*console.log(row);
-    $(row).filter('td').each(function (i, v) {
-        name =  $(v).attr("name");
-        if(name != "originator" && name != "rationale" && name != "type" && name != "fitCriterion"){
-            json[name] =  v.innerHTML;
-        }
-        else{
-            json.attrs[name] = v.innerHTML;
-        }
-    });*/
     return json
 }
 
@@ -68,7 +56,6 @@ function putRequirementRow(row){
         dataType: "json",
         contentType: "application/json",
         accept: "application/json",
-        //TODO: DATA aanpassen voor PUT
         data: objectoutput,
         crossDomain: true,
         url: serverIP + "/api/requirements/update" ,
@@ -111,6 +98,7 @@ function postRequirementRow(row,whatKind,value){
 /*
  Updating the requirementsRow
  */
+//TODO
 function putAssetProperty(assetSON){
     var ursl = serverIP + "/api/assets/name/"+ $.session.get("AssetName").replace(' ',"%20") + "/properties?session_id=" + String($.session.get('sessionID'));
     //console.log("{ 'AssetEnvironmentPropertiesMessage': " + JSON.stringify(assetSON) + "}");
