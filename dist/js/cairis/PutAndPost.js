@@ -595,3 +595,27 @@ function postThreat(threat, callback){
         }
     });
 }
+function deleteThreat(name, callback){
+
+    $.ajax({
+        type: "DELETE",
+        dataType: "json",
+        contentType: "application/json",
+        accept: "application/json",
+        crossDomain: true,
+        processData: false,
+        origin: serverIP,
+        url: serverIP + "/api/threats/name/" + name.replace(" ","%20") + "?session_id=" + $.session.get('sessionID'),
+        success: function (data) {
+            showPopup(true);
+            if(jQuery.isFunction(callback)){
+                callback();
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            showPopup(false);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}

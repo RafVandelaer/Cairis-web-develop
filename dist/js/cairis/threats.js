@@ -6,7 +6,7 @@ I've made this file to make it easier for me to program. everything (except PUT 
  It is possible that I will use some already developed functions inside some other files
  */
 
-//TODO: POST bekijken, 'unexpected token o', DELETE maken
+//TODO: DELETE maken
 $("#threatsClick").click(function () {
    createThreatsTable()
 });
@@ -131,7 +131,7 @@ $(document).on("click", "#addNewThreat", function () {
             });
         });
 
-        $.session.set("theThreat", jQuery.extend(true, {},threatDefault ));
+        $.session.set("theThreat", JSON.stringify(jQuery.extend(true, {},threatDefault )));
         forceOpenOptions();
         //$("reqTable").find("tbody").append('<tr><td><button class="editThreatsButton" value="">Edit</button> <button class="deleteThreatsButton" value="Replay attack">Delete</button></td><td name="theName"></td><td name="theType"></td></tr>')
     });
@@ -302,10 +302,11 @@ optionsContent.on("click", "#addThreatEnv", function () {
 });
 optionsContent.on('click', '#UpdateThreat', function (e) {
     e.preventDefault();
+    var test = $.session.get("theThreat");
     var threat = JSON.parse($.session.get("theThreat"));
     var oldName = threat.theThreatName;
     threat.theThreatName = $("#theThreatName").val();
-    threat.theDescription = $("#theMethod").val();
+    threat.theMethod = $("#theMethod").val();
     var tags = $("#theTags").text().split(", ");
     threat.theTags = tags;
     threat.theType = $("#theType option:selected").text();
@@ -320,6 +321,12 @@ optionsContent.on('click', '#UpdateThreat', function (e) {
             createThreatsTable();
         });
     }
+});
+$(document).on('click', '.deleteThreatsButton', function (e) {
+    e.preventDefault();
+    deleteThreat($(this).val(), function () {
+        createThreatsTable();
+    });
 });
 
 function fillThreatPropProperties(extra){
