@@ -39,7 +39,14 @@ $(window).load(function(){
 });
 
 $( window ).resize(function() {
-    resizable()
+    resizable();
+});
+
+/*
+Closing the options menu when a new controller is chosen
+ */
+$(".messages-menu").click(function () {
+   forceCloseOptions();
 });
 
 /*

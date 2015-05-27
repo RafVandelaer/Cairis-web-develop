@@ -1,7 +1,7 @@
 /**
  * Created by Raf on 24/04/2015.
  */
-window.serverIP = "http://192.168.112.128:7071";
+window.serverIP = "http://192.168.112.129:7071";
 window.activeTable ="Requirements";
 window.boxesAreFilled = false;
 window.debug = true;
@@ -27,7 +27,6 @@ var dialogwindow = $( "#dialogContent" ).dialog({
             $.ajax({
                 type: 'POST',
                 url: serverIP + '/api/user/config',
-                // data: $('#configForm').serializeArray(),
                 data: json_text,
                 accept:"application/json",
                 contentType : "application/json",
@@ -195,13 +194,12 @@ function getAssetview(environment){
     window.assetEnvironment = environment;
     $.ajax({
         type:"GET",
-        accept:"text/plain",
+        accept:"application/json",
         data: {
-            environment: environment,
             session_id: String($.session.get('sessionID'))
         },
         crossDomain: true,
-        url: serverIP + "/api/assets/view",
+        url: serverIP + "/api/assets/model/environment/" + environment.replace(" ","%20"),
         success: function(data){
           // console.log("in getAssetView " + data.innerHTML);
            // console.log(this.url);
@@ -787,6 +785,10 @@ function setTableHeader(){
         case "Threats":
             debugLogger("Is Threat");
             thead = "<th width='120px' id='addNewThreat'><i class='fa fa-plus floatCenter'></i></th><th>Name</th><th>Type</th>";
+            break;
+        case "Attackers":
+            debugLogger("Is Attacker");
+            thead = "<th width='120px' id='addNewAttacker'><i class='fa fa-plus floatCenter'></i></th><th>Name</th><th>Description</th>";
             break;
     }
     $("#reqTable").find("thead").empty();

@@ -2,13 +2,11 @@
  * Created by Raf on 22/05/2015.
  */
 /*
-I've made this file to make it easier for me to program. everything (except PUT POST and DELETE) or the threats will be coded here
+I've made this file to make it easier for me to program. everything (except PUT POST and DELETE) for the threats will be coded here
  It is possible that I will use some already developed functions inside some other files
  */
-
-//TODO: DELETE maken
 $("#threatsClick").click(function () {
-   createThreatsTable()
+   createThreatsTable();
 });
 
 /*
@@ -105,7 +103,7 @@ $(document).on('click', ".editThreatsButton", function () {
 
                     $('#editThreatOptionsform').loadJSON(fillerJSON, null);
                     $.each(data.theEnvironmentProperties, function (index, env) {
-                        $("#theThreatEnvironments").append("<tr><td><i class='fa fa-minus'></i></td><td class='threatEnvironments'>" + env.theEnvironmentName + "</td></tr>");
+                       appendThreatEnvironment(env.theEnvironmentName)
                     });
                     $("#theThreatEnvironments").find(".threatEnvironments:first").trigger('click');
 
@@ -222,6 +220,7 @@ optionsContent.on('click', '.removeThreatAsset', function () {
 });
 optionsContent.on('click','.removeThreatAttacker', function () {
     var attackerName = $(this).closest(".threatAttackers").text();
+    $(this).closest("tr").remove();
     var theEnvName = $.session.get("threatEnvironmentName");
         var threat = JSON.parse($.session.get("theThreat"));
         $.each(threat.theEnvironmentProperties, function (index, env) {
@@ -292,8 +291,8 @@ optionsContent.on("click", "#addThreatEnv", function () {
         hasEnv.push($(tag).text());
     });
     environmentDialogBox(hasEnv, function (text) {
-        $("#theThreatEnvironments").find("tbody").append('<tr><td class="deleteThreatEnv"><i class="fa fa-minus"></i></td><td class="threatEnvironments">'+text+'</td></tr>');
-       var environment =  jQuery.extend(true, {},threatEnvironmentDefault );
+        appendThreatEnvironment(text);
+           var environment =  jQuery.extend(true, {},threatEnvironmentDefault );
         environment.theEnvironmentName = text;
         var threat = JSON.parse($.session.get("theThreat"));
         threat.theEnvironmentProperties.push(environment);
@@ -321,6 +320,20 @@ optionsContent.on('click', '#UpdateThreat', function (e) {
             createThreatsTable();
         });
     }
+});
+optionsContent.on('click', ".removeThreatProperty", function () {
+    var attacker = $(this).closest(".threatAttackers").text();
+    $(this).closest("tr").remove();
+    var threat = JSON.parse($.session.get("theThreat"));
+    var theEnvName = $.session.get("threatEnvironmentName");
+    $.each(threat.theEnvironmentProperties, function (index, env) {
+        if(env.theEnvironmentName == theEnvName){
+            //y.splice( $.inArray(removeItem,y) ,1 );
+            env.theAttackers.splice( $.inArray(attacker,env.theAttackers) ,1 );
+            $.session.set("theThreat", JSON.stringify(threat));
+
+        }
+    });
 });
 $(document).on('click', '.deleteThreatsButton', function (e) {
     e.preventDefault();
@@ -374,6 +387,9 @@ function getThreatTypes(callback){
 function toggleThreatOptions(){
     $("#editThreatOptionsform").toggle();
     $("#addPropertyDiv").toggle();
+}
+function appendThreatEnvironment(environment){
+    $("#theThreatEnvironments").find("tbody").append('<tr><td class="deleteThreatEnv"><i class="fa fa-minus"></i></td><td class="threatEnvironments">'+environment+'</td></tr>');
 }
 function appendThreatAsset(asset){
     $("#threatAssets").find("tbody").append("<tr><td class='removeThreatAsset'><i class='fa fa-minus'></i></td><td class='threatAssets'>" + asset + "</td></tr>").animate('slow');
