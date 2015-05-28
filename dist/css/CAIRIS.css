@@ -250,6 +250,43 @@ select#theType {
 .ui-tabs-panel{
     overflow-y: overlay;
 }
+.bar {
+    height: 18px;
+    background: green;
+}
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+.progress{
+    position: absolute;
+    bottom: 10px;
+    width: 75%;
+    margin-left: 11%;
+    height: 10px;
+    border: 1px solid;
+}
+#theImages{
+   background-color:  rgba(244, 244, 244, 1);
+}
+#theImages:hover{
+    opacity: 0.6;
+}
 .reset-this {
     animation : none;
     animation-delay : 0;

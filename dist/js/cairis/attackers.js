@@ -85,6 +85,7 @@ $(document).on('click', ".editAttackerButton", function () {
                        appendAttackerEnvironment(env.theEnvironmentName);
                     });
                     $("#theAttackerEnvironments").find(".attackerEnvironment:first").trigger('click');
+                    $("#theImages").attr("src",data.theImage);
                 }
             );
         },
