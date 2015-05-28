@@ -516,6 +516,8 @@ function assetsDialogBox(haveEnv,callback){
     });
 }
 
+
+
 function environmentDialogBox(haveEnv,callback){
     $.ajax({
         type: "GET",

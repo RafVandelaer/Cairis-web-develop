@@ -135,10 +135,61 @@ optionsContent.on("click", "#addMotivetoAttacker", function () {
 
 optionsContent.on('click', "#addCapabilitytoAttacker", function () {
     $("#addAttackerPropertyDiv").addClass("new");
+    var hasCaps = [];
+    $("#attackerCapability").find(".attackerCapability").each(function(index, asset){
+        hasCaps.push($(asset).text());
+    });
+    capabilityfilling(hasCaps);
     attackerToggle();
 
 });
+/*
+filling Capability when changing
+*/
+function capabilityfilling(hasCap, original){
 
+    var select = $(document).find("#theCap");
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+
+        },
+        crossDomain: true,
+        url: serverIP + "/api/attackers/capabilities",
+        success: function (data) {
+            select.empty();
+            var none = true;
+            if(typeof original != 'undefined' ){
+                select.append("<option value=" + original + ">" + original + "</option>");
+            }
+            $.each(data, function(key, object) {
+                var found = false;
+                $.each(hasCap,function(index, text) {
+                    if(text == object.theName){
+                        found = true
+                    }
+                });
+                if(!found) {
+                    select.append("<option value=" + object.theName + ">" + object.theName + "</option>");
+                    none = false;
+                }
+            });
+            /*if(!none) {
+             //dialogwindow.show();
+
+             }else {
+             alert("All assets are already added");
+             }*/
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
 
 optionsContent.on('click', '#addRoletoAttacker', function () {
     var hasRole = [];
@@ -171,10 +222,116 @@ optionsContent.on('click', "#UpdateAttackerCapability", function () {
                 env.theCapabilities.push(prop);
                 $.session.set("Attacker", JSON.stringify(attacker));
                 appendAttackerCapability(prop);
+                attackerToggle();
             }
         });
     }
 });
+optionsContent.on("click", ".removeAttackerCapability", function () {
+    var text = $(this).closest('tr').find(".attackerCapability").text();
+    $(this).closest("tr").remove();
+    var attacker = JSON.parse($.session.get("Attacker"));
+    var theEnvName = $.session.get("attackerEnvironmentName");
+    $.each(attacker.theEnvironmentProperties, function (index, env) {
+        if(env.theEnvironmentName == theEnvName){
+            $.each(env.theCapabilities, function (index2, cap) {
+                if(cap.name == text){
+                    env.theCapabilities.splice( index2 ,1 );
+                    $.session.set("Attacker", JSON.stringify(attacker));
+                    return false;
+                }
+            });
+
+        }
+    });
+
+});
+
+/*
+Image uploading functions
+ */
+var uploading = false;
+$("#optionsContent").on('click', '#theImages', function () {
+    if(!uploading) {
+        $('#fileupload').trigger("click");
+    }
+});
+
+$("#optionsContent").on('change','#fileupload', function () {
+    uploading = true;
+    var test = $(document).find('#fileupload');
+    var fd = new FormData();
+    fd.append("file", test[0].files[0]);
+    var bar = $(".progress-bar");
+    var outerbar = $(".progress");
+    bar.css("width", 0);
+    outerbar.show("slide", { direction: "up" }, 750);
+
+    $.ajax({
+        xhr: function() {
+            var xhr = new window.XMLHttpRequest();
+            xhr.upload.addEventListener("progress", function(evt) {
+                if (evt.lengthComputable) {
+                    var percentComplete = evt.loaded / evt.total;
+                    console.log("Percentage: "+percentComplete);
+                    percentComplete = (percentComplete) * 150;
+                    console.log("Me: " + percentComplete);
+                    bar.css("width", percentComplete)
+                }
+            }, false);
+            return xhr;
+        },
+        type: "POST",
+        accept: "application/json",
+        processData:false,
+        contentType:false,
+        data: fd,
+        crossDomain: true,
+        url: serverIP + "/api/upload/image?session_id="+  String($.session.get('sessionID')),
+        success: function (data) {
+            outerbar.hide("slide", { direction: "down" }, 750);
+            uploading = false;
+            data = JSON.parse(data);
+            var directory =  serverIP + "/images/"+ data.filename;
+            $("#theImages").attr("src", directory);
+            resaleAgain($("#theImages"));
+
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            uploading = false;
+            outerbar.hide("slide", { direction: "down" }, 750);
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+
+});
+function postImage(imagedir) {
+    var attacker = JSON.parse($.session.get("Attacker"));
+
+    attacker.theImage = imagedir;
+    //TODO: IMAGE POSTEN
+
+    $.session.set("Attacker", JSON.stringify(attacker));
+    appendAttackerCapability(prop);
+
+}
+
+
+function resaleAgain(image){
+    var theImage = new Image();
+    theImage.src = image.attr("src");
+
+    var imageWidth = theImage.width;
+    var imageHeight = theImage.height;
+
+    var resizeNumber = imageWidth/200;
+    imageHeight = imageHeight/resizeNumber;
+    image.attr("width",200);
+    image.attr("height", imageHeight);
+}
+
+
 function attackerToggle(){
     $("#addAttackerPropertyDiv").toggle();
     $("#editAttackerOptionsForm").toggle();
