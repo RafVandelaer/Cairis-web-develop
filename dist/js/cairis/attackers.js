@@ -85,7 +85,8 @@ $(document).on('click', ".editAttackerButton", function () {
                        appendAttackerEnvironment(env.theEnvironmentName);
                     });
                     $("#theAttackerEnvironments").find(".attackerEnvironment:first").trigger('click');
-                    $("#theImages").attr("src",data.theImage);
+                    $("#theImages").attr("src",getImagedir(data.theImage));
+                    resaleAgain($("#theImages"));
                 }
             );
         },
@@ -164,6 +165,7 @@ function capabilityfilling(hasCap, original){
             var none = true;
             if(typeof original != 'undefined' ){
                 select.append("<option value=" + original + ">" + original + "</option>");
+                select.val(original);
             }
             $.each(data, function(key, object) {
                 var found = false;
@@ -188,8 +190,74 @@ function capabilityfilling(hasCap, original){
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
+
     });
+
 }
+optionsContent.on('click', ".removeAttackerMotive", function () {
+    var text = $(this).next(".attackerMotive").text();
+    $(this).closest("tr").remove();
+    var attacker = JSON.parse($.session.get("Attacker"));
+    var theEnvName = $.session.get("attackerEnvironmentName");
+    $.each(attacker.theEnvironmentProperties, function (index, env) {
+        if(env.theEnvironmentName == theEnvName){
+            $.each(env.theMotives, function (index2, mot) {
+                if(mot == text){
+                    env.theMotives.splice( index2 ,1 );
+                    $.session.set("Attacker", JSON.stringify(attacker));
+                    return false;
+                }
+            });
+        }
+    });
+});
+
+optionsContent.on('click', ".removeAttackerRole", function () {
+    var text = $(this).next(".attackerRole").text();
+    $(this).closest("tr").remove();
+    var attacker = JSON.parse($.session.get("Attacker"));
+    var theEnvName = $.session.get("attackerEnvironmentName");
+    $.each(attacker.theEnvironmentProperties, function (index, env) {
+        if(env.theEnvironmentName == theEnvName){
+            $.each(env.theRoles, function (index2, role) {
+                if(role == text){
+                    env.theRoles.splice( index2 ,1 );
+                    $.session.set("Attacker", JSON.stringify(attacker));
+                    return false;
+                }
+            });
+        }
+    });
+});
+
+optionsContent.on('click', ".deleteAttackerEnv", function () {
+    var envi = $(this).next(".attackerEnvironment").text();
+    $(this).closest("tr").remove();
+    var attacker = JSON.parse($.session.get("Attacker"));
+    $.each(attacker.theEnvironmentProperties, function (index, env) {
+        if(env.theEnvironmentName == envi){
+            attacker.theEnvironmentProperties.splice( index ,1 );
+            $.session.set("Attacker", JSON.stringify(attacker));
+            $("#theAttackerEnvironments").find(".attackerEnvironment:first").trigger('click');
+             return false;
+        }
+    });
+});
+
+optionsContent.on("click", "#addAttackerEnv", function () {
+    var hasEnv = [];
+    $(".attackerEnvironment").each(function (index, tag) {
+        hasEnv.push($(tag).text());
+    });
+    environmentDialogBox(hasEnv, function (text) {
+        appendAttackerEnvironment(text);
+        var environment =  jQuery.extend(true, {},attackerEnvDefault );
+        environment.theEnvironmentName = text;
+        var attacker = JSON.parse($.session.get("Attacker"));
+        attacker.theEnvironmentProperties.push(environment);
+        $.session.set("Attacker", JSON.stringify(attacker));
+    });
+});
 
 optionsContent.on('click', '#addRoletoAttacker', function () {
     var hasRole = [];
@@ -209,11 +277,41 @@ optionsContent.on('click', '#addRoletoAttacker', function () {
         });
     });
 });
-optionsContent.on('click', "#UpdateAttackerCapability", function () {
+optionsContent.on('click', '#UpdateAttacker', function (e) {
+    e.preventDefault();
+    var attacker = JSON.parse($.session.get("Attacker"));
+    var oldName = attacker.theName;
+    attacker.theName = $("#theName").val();
+    attacker.theDescription = $("#theDescription").val();
+    var tags = $("#theTags").text().split(", ");
+    if(tags[0] != ""){
+        attacker.theTags = tags;
+    }
+    //IF NEW THREAT
+    if($("#editAttackerOptionsForm").hasClass("new")){
+        postAttacker(attacker, function () {
+            createAttackersTable();
+            $("#editAttackerOptionsForm").removeClass("new")
+        });
+    } else {
+        putAttacker(attacker, oldName, function () {
+            createAttackersTable();
+        });
+    }
+});
+$(document).on("click", "#addNewAttacker", function () {
+    fillOptionMenu("../../CAIRIS/fastTemplates/editAttackerOptions.html", "#optionsContent", null, true, true, function () {
+        $("#addAttackerPropertyDiv").hide();
+        $("#editAttackerOptionsForm").addClass("new");
+        $.session.set("Attacker", JSON.stringify(jQuery.extend(true, {},attackerDefault )));
+        forceOpenOptions();
+    });
+});
 
+optionsContent.on('click', "#UpdateAttackerCapability", function () {
+    var attacker = JSON.parse($.session.get("Attacker"));
+    var theEnvName = $.session.get("attackerEnvironmentName");
     if($("#addAttackerPropertyDiv").hasClass("new")){
-        var attacker = JSON.parse($.session.get("Attacker"));
-        var theEnvName = $.session.get("attackerEnvironmentName");
         $.each(attacker.theEnvironmentProperties, function (index, env) {
             if(env.theEnvironmentName == theEnvName){
                var prop = {};
@@ -222,6 +320,21 @@ optionsContent.on('click', "#UpdateAttackerCapability", function () {
                 env.theCapabilities.push(prop);
                 $.session.set("Attacker", JSON.stringify(attacker));
                 appendAttackerCapability(prop);
+                attackerToggle();
+            }
+        });
+    }else{
+        var oldCapName = $.session.get("AttackerCapName");
+        $.each(attacker.theEnvironmentProperties, function (index, env) {
+            if(env.theEnvironmentName == theEnvName){
+                $.each(env.theCapabilities, function (index, cap) {
+                    if(oldCapName == cap.name){
+                        cap.name = $("#theCap option:selected").text();
+                        cap.value = $("#thePropValue option:selected").text();
+                    }
+                });
+                $.session.set("Attacker", JSON.stringify(attacker));
+                $("#theAttackerEnvironments").find(".attackerEnvironment:first").trigger('click');
                 attackerToggle();
             }
         });
@@ -246,14 +359,36 @@ optionsContent.on("click", ".removeAttackerCapability", function () {
     });
 
 });
-
+optionsContent.on('dblclick', ".changeCapability", function () {
+    var hasCaps = [];
+    var currentCap = $(this).find(".attackerCapability").text();
+    $.session.set("AttackerCapName", currentCap);
+    $("#attackerCapability").find(".attackerCapability").each(function(index, asset){
+       // if(asset != currentCap) {
+            hasCaps.push($(asset).text());
+        //}
+    });
+    capabilityfilling(hasCaps, currentCap);
+    attackerToggle();
+});
+//deleteAttackerButton
+$(document).on('click', '.deleteAttackerButton', function (e) {
+    e.preventDefault();
+    deleteAttacker($(this).val(), function () {
+        createAttackersTable();
+    });
+});
 /*
 Image uploading functions
  */
 var uploading = false;
 $("#optionsContent").on('click', '#theImages', function () {
+    //$("#addAttackerPropertyDiv").addClass("new");
     if(!uploading) {
         $('#fileupload').trigger("click");
+    }
+    else if($("#addAttackerPropertyDiv").hasClass("new")){
+        alert("First, update the attacker.");
     }
 });
 
@@ -292,9 +427,9 @@ $("#optionsContent").on('change','#fileupload', function () {
             outerbar.hide("slide", { direction: "down" }, 750);
             uploading = false;
             data = JSON.parse(data);
-            var directory =  serverIP + "/images/"+ data.filename;
-            $("#theImages").attr("src", directory);
-            resaleAgain($("#theImages"));
+
+            postImage(data.filename, getImagedir(data.filename));
+
 
         },
         error: function (xhr, textStatus, errorThrown) {
@@ -306,11 +441,14 @@ $("#optionsContent").on('change','#fileupload', function () {
     });
 
 });
-function postImage(imagedir) {
+function postImage(imagedir, actualDir) {
     var attacker = JSON.parse($.session.get("Attacker"));
 
     attacker.theImage = imagedir;
-    //TODO: IMAGE POSTEN
+    putAttacker(attacker, attacker.theName, false, function () {
+        $("#theImages").attr("src", actualDir);
+        resaleAgain($("#theImages"));
+    });
 
     $.session.set("Attacker", JSON.stringify(attacker));
     appendAttackerCapability(prop);
@@ -330,14 +468,16 @@ function resaleAgain(image){
     image.attr("width",200);
     image.attr("height", imageHeight);
 }
-
+function getImagedir(imageName){
+    return serverIP + "/images/"+ imageName;
+}
 
 function attackerToggle(){
     $("#addAttackerPropertyDiv").toggle();
     $("#editAttackerOptionsForm").toggle();
 }
 function appendAttackerEnvironment(environment){
-    $("#theAttackerEnvironments").find("tbody").append('<tr><td class="deleteThreatEnv"><i class="fa fa-minus"></i></td><td class="attackerEnvironment">'+environment+'</td></tr>');
+    $("#theAttackerEnvironments").find("tbody").append('<tr><td class="deleteAttackerEnv"><i class="fa fa-minus"></i></td><td class="attackerEnvironment">'+environment+'</td></tr>');
 }
 function appendAttackerRole(role){
     $("#attackerRole").find("tbody").append("<tr><td class='removeAttackerRole'><i class='fa fa-minus'></i></td><td class='attackerRole'>" + role + "</td></tr>").animate('slow');

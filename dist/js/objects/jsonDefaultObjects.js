@@ -97,4 +97,21 @@ var threatDefault = {
     "theMethod": "",
     "theEnvironmentProperties": [],
     "theProperties": []
-}
+};
+var attackerEnvDefault = {
+    "__python_obj__": "AttackerEnvironmentProperties.AttackerEnvironmentProperties",
+    "theRoles": [],
+    "theMotives": [],
+    "theCapabilities": [],
+    "theEnvironmentName": ""
+};
+var attackerDefault = {
+    "__python_obj__": "Attacker.Attacker",
+    "theDescription": "",
+    "theId": -1,
+    "theTags": [],
+    "isPersona": false,
+    "theName": "",
+    "theImage": "",
+    "theEnvironmentProperties": []
+};
