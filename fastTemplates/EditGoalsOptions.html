@@ -31,7 +31,7 @@
             <li><a href="#Concern-Associations">Concern Associations</a></li>
         </ul>
         <div id="Definition">
-            <p><label>Label</label> <input id="theLabel" name="theLabel" readonly></p>
+            <p><label>Label</label> <input id="theLabel" type="text" name="theLabel" readonly></p>
             <p>
             <label>Category</label> <select id="theCategory" name="theCategory" >
                 <option>Maintain</option>
@@ -63,7 +63,7 @@
         <div id="Goals">
             <table id="editgoalsGoalsTable">
                 <thead>
-                <tr> <th>Goal</th><th>Type</th><th>Refinement</th><th>Alternative</th><th>Rationale</th></tr>
+                <tr><th id="addGoaltoGoal" style="width: 15px;"> <i class="fa fa-plus"></i></th><th>Goal</th><th>Type</th><th>Refinement</th><th>Alternative</th><th>Rationale</th></tr>
                 </thead>
                 <tbody>
                 </tbody>
@@ -72,7 +72,7 @@
         <div id="Sub-Goals">
             <table id="editgoalsSubgoalsTable" >
                 <thead>
-                <tr><th>Sub-Goals</th><th>Type</th><th>Refinement</th><th>Alternative</th><th>Rationale</th> </tr>
+                <tr><th id="addSubGoaltoGoal" style="width: 15px;"> <i class="fa fa-plus"></i></th> <th>Sub-Goals</th><th>Type</th><th>Refinement</th><th>Alternative</th><th>Rationale</th> </tr>
                 </thead>
                 <tbody>
                 </tbody>
@@ -81,7 +81,7 @@
         <div id="Concerns">
             <table id="editgoalsConcernTable">
                 <thead>
-                <tr><th>Concern</th></tr>
+                <tr><th id="addConcerntoGoal" style="width: 15px;"> <i class="fa fa-plus"></i></th><th>Concern</th></tr>
                 </thead>
                 <tbody>
                 </tbody>
@@ -90,7 +90,7 @@
         <div id="Concern-Associations">
             <table id="editgoalsConcernassociationsTable">
                 <thead>
-                <tr><th>Source</th><th>n</th><th>Link Verb</th><th>n</th><th>Target</th> </tr>
+                <tr><th id="addConcernAssociationstoGoal" style="width: 15px;"> <i class="fa fa-plus"></i></th><th>Source</th><th>n</th><th>Link Verb</th><th>n</th><th>Target</th> </tr>
                 </thead>
                 <tbody>
                 </tbody>

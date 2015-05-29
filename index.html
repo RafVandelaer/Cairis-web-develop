@@ -519,11 +519,6 @@
 
                </select>
            </div>
-            <div id="editGoalsOptions">
-                <button id="addGoalButton">Add</button>
-                <button id="deleteGoalButton">Delete</button>
-                <button id="editGoalButton">Edit</button>
-            </div>
         </section>
         <!-- Main content -->
         <section id="maincontent" class="content">
@@ -591,7 +586,7 @@
     </select>
 </div>
 <div id="errorDialog" title="ERROR">
-    <p>You can't use CAIRIS without any settings</p>
+    <p style="color: black">You can't use CAIRIS without any settings</p>
 </div>
 <div class="popupMessage" style="display: none;">
     <div class="Succes"><i class="fa fa-check fa-2x"></i><div class="infoText">Success</div></div>
@@ -634,7 +629,7 @@
 <script src="plugins/slimScroll/jquery.slimscroll.js" type="text/javascript"></script>
 <script>
     LazyLoad.js(["dist/js/cairis/Cairis-UI.js","dist/js/cairis/buttonclicks.js", "dist/js/cairis/Cairis.js", "dist/js/cairis/readFile.js",
-        "dist/js/cairis/threats.js", "dist/js/cairis/attackers.js", "dist/js/cairis/assets.js",
+        "dist/js/cairis/threats.js", "dist/js/cairis/attackers.js", "dist/js/cairis/assets.js", "dist/js/cairis/goals.js",
         "dist/js/cairis/SVGhandler.js","dist/js/cairis/PutAndPost.js", "plugins/contextMenu/contextMenu.js", "dist/js/objects/jsonDefaultObjects.js"], function () {
 
        console.log("All Cairis JS loaded");

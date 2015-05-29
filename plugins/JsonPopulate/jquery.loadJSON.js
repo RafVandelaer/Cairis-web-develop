@@ -26,9 +26,8 @@ If edited this file, so it's not the same as the source. Raf Vandelaer
         function setElementValue(element, value, name) {
             //var type = element.type || element.tagName;
             var type = $(element).prop("tagName");
-            if(type.toLowerCase() == "input" || typeof  type  == 'undefined'){
+            if(type.toLowerCase() == "input" || typeof  type  == 'undefined' ){
                 type = $(element).attr('type').toLowerCase();
-                //console.log(type);
             }
             if (type == null) {
                 return;

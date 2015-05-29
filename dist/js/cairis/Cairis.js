@@ -921,9 +921,9 @@ function setActiveOptions(){
     //If chosen to create a new function for this, because this will increase readability
     //First disable them all
     $("#filtercontent").hide();
-    $("#editGoalsOptions").hide();
     $("#editAssetsOptions").hide();
 
+    //VERY OLD FUNCTION
     switch (window.activeTable) {
         case "Requirements":
             $("#filtercontent").show();
@@ -934,7 +934,6 @@ function setActiveOptions(){
         case "Roles":
             break;
         case "EditGoals":
-            $("#editGoalsOptions").show();
             break;
         case "Assets":
             $("#editAssetsOptions").show();

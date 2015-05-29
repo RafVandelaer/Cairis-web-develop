@@ -129,71 +129,13 @@ $('#assetView').click(function(){
         }
     })});
 
-$("#EditGoals").click(function(){
 
-    $.ajax({
-        type: "GET",
-        dataType: "json",
-        accept: "application/json",
-        data: {
-            session_id: String($.session.get('sessionID'))
-        },
-        crfossDomain: true,
-        url: serverIP + "/api/goals/coloured",
-        success: function (data) {
-            window.activeTable = "EditGoals";
-            setTableHeader();
-            createEditGoalsTable(data);
-            activeElement("reqTable");
-            sortTableByRow(0);
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            debugLogger(String(this.url));
-            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
-        }
-    })
-
-});
 
 $("#vulnerabilitiesClick").click(function(){
    createVulnerabilityTable()
 });
 
-$(document).on('click', "button.editGoalsButton",function() {
-    //TODO ajax call voor GOAL
-    var name = $(this).attr("value");
-    $.ajax({
-        type: "GET",
-        dataType: "json",
-        accept: "application/json",
-        data: {
-            session_id: String($.session.get('sessionID'))
-        },
-        crossDomain: true,
-        url: serverIP + "/api/goals/name/" + name.replace(" ", "%20"),
-        success: function (data) {
-            fillOptionMenu("../../CAIRIS/fastTemplates/editGoalsOptions.html","#optionsContent",null,true,true, function(){
-                   $.session.set("Goal", JSON.stringify(data));
-                    $('#editGoalOptionsForm').loadJSON(data,null);
 
-                    $.each(data.theTags, function (index, tag) {
-                        $("#theTags").append(tag + ", ");
-                    });
-                    $.each(data.theEnvironmentDictionary, function (key, object) {
-                        $("#theGoalEnvironments").append("<tr class='clickable-environments'><td><i class='fa fa-minus'></i></td><td class='goalEnvProperties'>"+ key +"</td></tr>");
-
-                    });
-                    forceOpenOptions();
-                }
-            );
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            debugLogger(String(this.url));
-            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
-        }
-    });
-
-});
 
 
 $(document).on('click', "button.editRoleButton",function() {
@@ -441,21 +383,7 @@ optionsContent.on('click', '.deleteVulEnv', function () {
 
 });
 
-/*
-on environment in Goals edit
- */
-optionsContent.on('click', ".goalEnvProperties", function () {
-    var goal = JSON.parse($.session.get("Goal"));
-    var name = $(this).text();
 
-    $.each(goal.theEnvironmentDictionary, function (key, object) {
-        if(key == name){
-            $('#goalsProperties').loadJSON(object,null);
-            //TODO: afwerken (whole goal model);
-        }
-
-    });
-});
 
 /*
  on evnironment radio change
