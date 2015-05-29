@@ -205,11 +205,11 @@ function postAsset(json,callback){
         }
     });
 }
-function updateAssetEnvironment(jsonString,callback){
+function updateAssetEnvironment(json,callback){
     var ursl = serverIP + "/api/assets/name/"+ $.session.get("AssetName").replace(' ',"%20") + "/properties?session_id=" + String($.session.get('sessionID'));
 
     var output = {};
-    output.object = JSON.parse(jsonString);
+    output.object = json;
     var output2 = JSON.stringify(output);
 
     $.ajax({

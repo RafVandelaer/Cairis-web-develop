@@ -77,13 +77,11 @@ Filling the asset environment in the HTML
  */
 function fillEditAssetsEnvironment(){
     var data = JSON.parse( $.session.get("AssetProperties"));
-
-
     var i = 0;
     var textToInsert = [];
     $.each(data, function(arrayindex, value) {
         textToInsert[i++] = '<tr><td class="removeEnvironment"><i class="fa fa-minus"></i></td><td class="clickable-environments assetEnvironmetRow">';
-        textToInsert[i++] = value.environment;
+        textToInsert[i++] = value.theEnvironmentName;
         textToInsert[i++] = '</td></tr>';
     });
     $('#theEnvironmentDictionary').find("tbody").empty();
@@ -98,11 +96,12 @@ function fillEditAssetsEnvironment(){
             getAssetDefinition(group.attributes);
             //props = group.attributes;
             $.session.set("thePropObject", JSON.stringify(group));
-            $.session.set("Arrayindex",arrayID);
+
+           // $.session.set("Arrayindex",arrayID);
 
         }
     });
-
+    $("#theEnvironmentDictionary").find(".assetEnvironmetRow:first").trigger('click');
 
 }
 
@@ -1052,28 +1051,30 @@ function getAssetDefinition(props){
     var textToInsert = [];
     $.each(props, function(index, object) {
         //fa-minus
+        if(object.value != "None") {
 
-             textToInsert[i++] = '<tr class="clickable-properties" ><td style="display:none;">';
-             textToInsert[i++] = object.id;
-             textToInsert[i++] = '</td>';
+            textToInsert[i++] = '<tr class="clickable-properties" ><td style="display:none;">';
+            textToInsert[i++] = object.id;
+            textToInsert[i++] = '</td>';
 
-        textToInsert[i++] = '<td>';
-        textToInsert[i++] = '<div class="fillparent deleteProperty"><i class="fa fa-minus"></i></div>';
-        textToInsert[i++] = '</td>';
+            textToInsert[i++] = '<td>';
+            textToInsert[i++] = '<div class="fillparent deleteProperty"><i class="fa fa-minus"></i></div>';
+            textToInsert[i++] = '</td>';
 
-             textToInsert[i++] = '<td name="name">';
-             textToInsert[i++] = object.name;
-             textToInsert[i++] = '</td>';
+            textToInsert[i++] = '<td class="theAssetPropName" name="name">';
+            textToInsert[i++] = object.name;
+            textToInsert[i++] = '</td>';
 
-        textToInsert[i++] = '<td name="value">';
-        textToInsert[i++] = object.value;
-        textToInsert[i++] = '</td>';
+            textToInsert[i++] = '<td name="value">';
+            textToInsert[i++] = object.value;
+            textToInsert[i++] = '</td>';
 
-        textToInsert[i++] = '<td name="rationale">';
-        textToInsert[i++] = object.rationale;
-        textToInsert[i++] = '</td>';
+            textToInsert[i++] = '<td name="rationale">';
+            textToInsert[i++] = object.rationale;
+            textToInsert[i++] = '</td>';
 
-         textToInsert[i++] = '</tr>';
+            textToInsert[i++] = '</tr>';
+        }
      });
     $('#Properties').find('tbody').append(textToInsert.join(''));
 
@@ -1171,7 +1172,7 @@ function assetFormToJSON(data, newAsset){
 
     }
     else{
-        json =  JSON.parse($.session.get("UsedAssetObject"));
+        json =  JSON.parse($.session.get("Asset"));
     }
     json.theName = $(data).find('#theName').val();
 

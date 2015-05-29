@@ -332,82 +332,7 @@ $(document).on('click', "button.editVulnerabilityButton",function(){
     }
 });
 
-$(document).on('click', "button.editAssetsButton",function(){
-    var name = $(this).attr("value");
-    $.session.set("AssetName", name.trim());
 
-    $.ajax({
-        type: "GET",
-        dataType: "json",
-        accept: "application/json",
-        data: {
-            session_id: String($.session.get('sessionID'))
-        },
-        crossDomain: true,
-        url: serverIP + "/api/assets/name/" + name.replace(" ", "%20"),
-        success: function (newdata) {
-           // console.log(JSON.stringify(rawData));
-            fillOptionMenu("../../CAIRIS/fastTemplates/EditAssetsOptions.html","#optionsContent",null,true,true, function(){
-
-                    //Holding asset in Session so it's easy update-able
-                    $.session.set("Asset", JSON.stringify(newdata));
-                    //console.log(JSON.stringify(newdata));
-                   $('#editAssetsOptionsform').loadJSON(newdata,null);
-                    $.session.set("UsedAssetObject", JSON.stringify(newdata));
-                    forceOpenOptions();
-                    //$('#theEnvironmentDictionary').append(textToInsert.join(''));
-
-                    $.ajax({
-                        type: "GET",
-                        dataType: "json",
-                        accept: "application/json",
-                        data: {
-                            session_id: String($.session.get('sessionID'))
-                        },
-                        crossDomain: true,
-                        url: serverIP + "/api/assets/name/" + newdata.theName + "/properties",
-                        success: function (data) {
-                            $.session.set("AssetProperties", JSON.stringify(data));
-                            fillEditAssetsEnvironment();
-                            $.ajax({
-                                type: "GET",
-                                dataType: "json",
-                                accept: "application/json",
-                                data: {
-                                    session_id: String($.session.get('sessionID'))
-                                },
-                                crossDomain: true,
-                                url: serverIP + "/api/assets/types",
-                                success: function (data) {
-                                    $.each(data, function (index, type) {
-                                        $('#theType')
-                                            .append($("<option></option>")
-                                                .attr("value",type.theName)
-                                                .text(type.theName));
-                                    });
-
-                                },
-                                error: function (xhr, textStatus, errorThrown) {
-                                    debugLogger(String(this.url));
-                                    debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
-                                }
-                            });
-                        },
-                        error: function (xhr, textStatus, errorThrown) {
-                            debugLogger(String(this.url));
-                            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
-                        }
-                    });
-                    //$('.clickable-rows').on('click', changeEnvironment());
-                }
-            );
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            debugLogger(String(this.url));
-            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
-        }
-    });
-});
 $(document).on('click', "button.editEnvironmentButton",function(){
     var name = $(this).attr("value");
     if(name == "AnewEnvironment"){
@@ -863,27 +788,6 @@ optionsContent.on('click', "#addVulEnv", function () {
     });
 });
 
-/*
-
-Clicking an asset Environment
- */
-
-optionsContent.on('click', '.assetEnvironmetRow', function(event){
-            var assts = JSON.parse($.session.get("AssetProperties"));
-            var text = $(this).text();
-            var props;
-            $.each(assts, function(arrayID,group) {
-                if(group.environment == text){
-                    // console.log(group.attributes[0].name);
-                    props = group.attributes;
-                    $.session.set("thePropObject", JSON.stringify(group));
-                    $.session.set("Arrayindex", arrayID);
-
-                }
-            });
-            $.session.set("UsedProperties", JSON.stringify(props));
-            getAssetDefinition(props);
-});
 
 optionsContent.on('click', '.removeEnvironment', function () {
     var assetProps = JSON.parse($.session.get("AssetProperties"));
@@ -991,45 +895,6 @@ $(document).on('click', "button.deleteAssetButton",function(){
 });
 
 
-/*
-Updating asset
- */
-optionsContent.on("click", "#updateButtonAsset", function(){
-    var allprops = JSON.parse($.session.get("AssetProperties"));
-    var props;
-
-    //if new prop
-    if($("#editpropertiesWindow").hasClass("newProperty")){
-        props =  jQuery.extend(true, {},AssetEnvironmentPropertyAttribute );
-        props.name =   $("#property").find("option:selected").text().trim();
-        props.value =  $("#value").find("option:selected").text().trim();
-        props.rationale = $("#rationale").val();
-        allprops[$.session.get("Arrayindex")].attributes.push(props);
-
-
-    }else {
-         props = JSON.parse($.session.get("thePropObject"));
-        props.name =   $("#property").find("option:selected").text().trim();
-        props.value =  $("#value").find("option:selected").text().trim();
-        props.rationale = $("#rationale").val();
-        props.id = parseInt($("#id").val());
-        $.each(allprops[$.session.get("Arrayindex")].attributes, function(index, object){
-            if(object.id == props.id){
-                allprops[$.session.get("Arrayindex")].attributes[index] = props;
-            }
-        });
-        updateAssetEnvironment(JSON.stringify(allprops),function(){
-            $("#editAssetsOptionsform").show();
-            $("#editpropertiesWindow").hide();
-            //OPenen van
-        });
-    }
-
-
-    $.session.set("AssetProperties", JSON.stringify(allprops));
-    fillEditAssetsEnvironment();
-
-});
 
 /* adding env
  */
@@ -1099,38 +964,7 @@ optionsContent.on("click", "#addNewProperty", function(){
     });
 
 });
-/*
-For editing the definition properties
- */
-optionsContent.on('dblclick', '.clickable-properties', function(){
-    var test = $(this);
-    $("#editAssetsOptionsform").hide();
-    var label = test[0].children[1].innerText;
 
-    $("#editpropertiesWindow").show(function(){
-        //JUISTE PROPERTY INLADEN, NIET HELE ASSETPROP
-        var jsonn = JSON.parse($.session.get("thePropObject"));
-        var theRightprop;
-        $.each(jsonn.attributes,function(arrayID,data){
-            if(data.name == label){
-                theRightprop = data;
-                $.session.set("thePropObject", JSON.stringify(theRightprop));
-                $.session.set("Arrayindex", arrayID);
-            }
-        });
-
-        $("#property:selected").removeAttr("selected");
-        $("#property").find("option").each(function() {
-            if(label.toLowerCase() == theRightprop.name.toLowerCase()){
-                $("#property").val(theRightprop.name);
-            }
-        });
-        $('#editpropertiesWindow').loadJSON(theRightprop,null);
-    });
-    //console.log(    $.session.get("UsedProperties"));
-
-
-});
 optionsContent.on('change', "#theType",function (){
   // alert($(this).val());
     //$(this).val("selected", $(this).val());
