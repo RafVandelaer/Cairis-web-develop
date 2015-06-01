@@ -16,7 +16,7 @@
         module.exports = factory(require('jquery'));
     } else if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
-        define(['jquery.knob'], factory);
+        define(['jquery.knob.js'], factory);
     } else {
         // Browser globals
         factory(jQuery);
