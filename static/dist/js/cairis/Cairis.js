@@ -1,7 +1,7 @@
 /**
  * Created by Raf on 24/04/2015.
  */
-window.serverIP = "http://192.168.112.130:7071";
+window.serverIP = "http://192.168.112.131:7071";
 window.activeTable ="Requirements";
 window.boxesAreFilled = false;
 window.debug = true;
@@ -984,7 +984,72 @@ function findLabel() {
    // console.log(i+1 + " is the number");
     return i+1;
 }
-
+function getAllAssets(callback) {
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crossDomain: true,
+        url: serverIP + "/api/assets",
+        success: function (data) {
+            if (jQuery.isFunction(callback)) {
+                callback(data);
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            return null;
+        }
+    })
+}
+function getAllRequirements(callback) {
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crossDomain: true,
+        url: serverIP + "/api/requirements",
+        success: function (data) {
+            if (jQuery.isFunction(callback)) {
+                callback(data);
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            return null;
+        }
+    })
+}
+function getAllgoals(callback) {
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crossDomain: true,
+        url: serverIP + "/api/goals",
+        success: function (data) {
+            if (jQuery.isFunction(callback)) {
+                callback(data);
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            return null;
+        }
+    })
+}
 
 
 function sortTable(){

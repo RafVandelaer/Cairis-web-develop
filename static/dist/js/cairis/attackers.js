@@ -445,13 +445,14 @@ function postImage(imagedir, actualDir) {
     var attacker = JSON.parse($.session.get("Attacker"));
 
     attacker.theImage = imagedir;
+    $("#theImages").attr("src", actualDir);
     putAttacker(attacker, attacker.theName, false, function () {
         $("#theImages").attr("src", actualDir);
         resaleAgain($("#theImages"));
     });
 
     $.session.set("Attacker", JSON.stringify(attacker));
-    appendAttackerCapability(prop);
+    //appendAttackerCapability(prop);
 
 }
 
