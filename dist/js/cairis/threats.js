@@ -78,7 +78,7 @@ $(document).on('click', ".editThreatsButton", function () {
         url: serverIP + "/api/threats/name/" + name.replace(" ", "%20"),
         success: function (data) {
             // console.log(JSON.stringify(rawData));
-            fillOptionMenu("../../CAIRIS/fastTemplates/editThreatOptions.html", "#optionsContent", null, true, true, function () {
+            fillOptionMenu("fastTemplates/editThreatOptions.html", "#optionsContent", null, true, true, function () {
                     forceOpenOptions();
                     $("#addPropertyDiv").hide();
                     getThreatTypes(function createTypes(types) {
@@ -117,7 +117,7 @@ $(document).on('click', ".editThreatsButton", function () {
     });
 });
 $(document).on("click", "#addNewThreat", function () {
-    fillOptionMenu("../../CAIRIS/fastTemplates/editThreatOptions.html", "#optionsContent", null, true, true, function () {
+    fillOptionMenu("fastTemplates/editThreatOptions.html", "#optionsContent", null, true, true, function () {
         $("#addPropertyDiv").hide();
         $("#editThreatOptionsform").addClass("newThreat");
         getThreatTypes(function createTypes(types) {

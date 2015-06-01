@@ -60,7 +60,7 @@ $( document ).ajaxComplete(function() {
                                 }
                             }
                             dataArr["assetproptable"] = theTableArr;
-                            fillOptionMenu("../../CAIRIS/fastTemplates/AssetOptions.html", "#optionsContent", dataArr,false,true);
+                            fillOptionMenu("fastTemplates/AssetOptions.html", "#optionsContent", dataArr,false,true);
                         },
                         error: function(xhr, textStatus, errorThrown) {
                             console.log(this.url);
@@ -78,7 +78,7 @@ $( document ).ajaxComplete(function() {
             });
         }else if(link.indexOf("personas") > -1) {
             forceOpenOptions();
-            fillOptionMenu("../../CAIRIS/fastTemplates/PersonaProperties.html", "#optionsContent",null,true,false);
+            fillOptionMenu("fastTemplates/PersonaProperties.html", "#optionsContent",null,true,false);
             $(function() {
                 $( ".tabs" ).tabs();
             });

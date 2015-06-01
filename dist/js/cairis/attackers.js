@@ -70,7 +70,7 @@ $(document).on('click', ".editAttackerButton", function () {
         url: serverIP + "/api/attackers/name/" + name.replace(" ", "%20"),
         success: function (data) {
             // console.log(JSON.stringify(rawData));
-            fillOptionMenu("../../CAIRIS/fastTemplates/editAttackerOptions.html", "#optionsContent", null, true, true, function () {
+            fillOptionMenu("fastTemplates/editAttackerOptions.html", "#optionsContent", null, true, true, function () {
                     forceOpenOptions();
                     $("#addAttackerPropertyDiv").hide();
                     $.session.set("Attacker", JSON.stringify(data));
@@ -300,7 +300,7 @@ optionsContent.on('click', '#UpdateAttacker', function (e) {
     }
 });
 $(document).on("click", "#addNewAttacker", function () {
-    fillOptionMenu("../../CAIRIS/fastTemplates/editAttackerOptions.html", "#optionsContent", null, true, true, function () {
+    fillOptionMenu("fastTemplates/editAttackerOptions.html", "#optionsContent", null, true, true, function () {
         $("#addAttackerPropertyDiv").hide();
         $("#editAttackerOptionsForm").addClass("new");
         $.session.set("Attacker", JSON.stringify(jQuery.extend(true, {},attackerDefault )));

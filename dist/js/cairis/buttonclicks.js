@@ -141,7 +141,7 @@ $("#vulnerabilitiesClick").click(function(){
 $(document).on('click', "button.editRoleButton",function() {
    var name = $(this).val();
     if(name == undefined || name == "") {
-        fillOptionMenu("../../CAIRIS/fastTemplates/EditRoleOptions.html", "#optionsContent", null, true, true, function () {
+        fillOptionMenu("fastTemplates/EditRoleOptions.html", "#optionsContent", null, true, true, function () {
             forceOpenOptions();
             $("#editRoleOptionsform").addClass("newRole");
         });
@@ -156,7 +156,7 @@ $(document).on('click', "button.editRoleButton",function() {
             crossDomain: true,
             url: serverIP + "/api/roles/name/" + name.replace(" ", "%20"),
             success: function (json) {
-                fillOptionMenu("../../CAIRIS/fastTemplates/EditRoleOptions.html", "#optionsContent", null, true, true, function () {
+                fillOptionMenu("fastTemplates/EditRoleOptions.html", "#optionsContent", null, true, true, function () {
                     forceOpenOptions();
                     var form = $('#editRoleOptionsform');
                     form.loadJSON(json, null);
@@ -203,7 +203,7 @@ $(document).on('click', "button.editVulnerabilityButton",function(){
     if($(this).hasClass("newVulnerability")){
         var vul = jQuery.extend(true, {}, vulnerabilityDefault);
         $.session.set("Vulnerability", JSON.stringify(vul));
-        fillOptionMenu("../../CAIRIS/fastTemplates/editVulnerabilityOptions.html", "#optionsContent", null, true, true, function () {
+        fillOptionMenu("fastTemplates/editVulnerabilityOptions.html", "#optionsContent", null, true, true, function () {
                 $("#UpdateVulnerability").addClass("newVulnerability");
         });
         forceOpenOptions();
@@ -222,7 +222,7 @@ $(document).on('click', "button.editVulnerabilityButton",function(){
             crossDomain: true,
             url: serverIP + "/api/vulnerabilities/name/" + name.replace(" ", "%20"),
             success: function (newdata) {
-                fillOptionMenu("../../CAIRIS/fastTemplates/editVulnerabilityOptions.html", "#optionsContent", null, true, true, function () {
+                fillOptionMenu("fastTemplates/editVulnerabilityOptions.html", "#optionsContent", null, true, true, function () {
                         $.session.set("Vulnerability", JSON.stringify(newdata));
                         //removing theTags, because LOADJSON does some strange things with them.
                         var jsondata = $.extend(true, {}, newdata);
@@ -280,7 +280,7 @@ $(document).on('click', "button.editVulnerabilityButton",function(){
 $(document).on('click', "button.editEnvironmentButton",function(){
     var name = $(this).attr("value");
     if(name == "AnewEnvironment"){
-        fillOptionMenu("../../CAIRIS/fastTemplates/editEvironmentOptions.html", "#optionsContent", null, true, true, function () {
+        fillOptionMenu("fastTemplates/editEvironmentOptions.html", "#optionsContent", null, true, true, function () {
             forceOpenOptions();
             $("#editEnvironmentOptionsform").addClass("newEnvironment");
         });
@@ -298,7 +298,7 @@ $(document).on('click', "button.editEnvironmentButton",function(){
             url: serverIP + "/api/environments/name/" + name.replace(" ", "%20"),
             success: function (data) {
                 // console.log(JSON.stringify(rawData));
-                fillOptionMenu("../../CAIRIS/fastTemplates/editEvironmentOptions.html", "#optionsContent", null, true, true, function () {
+                fillOptionMenu("fastTemplates/editEvironmentOptions.html", "#optionsContent", null, true, true, function () {
                         forceOpenOptions();
 
                         $.session.set("editableEnvironment", JSON.stringify(data));
@@ -361,7 +361,7 @@ $("#reqTable").on("click", "#addNewVulnerability", function () {
     $("#reqTable").find("tbody").append('<tr><td><button class="editVulnerabilityButton newVulnerability" value="">Edit</button> <button class="deleteVulnerabilityButton" value="">Delete</button></td><td name="theVulnerabilityName"></td><td name="theVulnerabilityType"></td></tr>');
     var vul = jQuery.extend(true, {}, vulnerabilityDefault);
     $.session.set("Vulnerability", JSON.stringify(vul));
-    fillOptionMenu("../../CAIRIS/fastTemplates/editVulnerabilityOptions.html", "#optionsContent", null, true, true, function () {
+    fillOptionMenu("fastTemplates/editVulnerabilityOptions.html", "#optionsContent", null, true, true, function () {
         $("#UpdateVulnerability").addClass("newVulnerability");
     });
     forceOpenOptions();
@@ -768,7 +768,7 @@ removing a prop
 Add an asset
  */
 $(document).on('click', "#addNewAsset",function(){
-    fillOptionMenu("../../CAIRIS/fastTemplates/EditAssetsOptions.html","#optionsContent",null,true,true,function(){
+    fillOptionMenu("fastTemplates/EditAssetsOptions.html","#optionsContent",null,true,true,function(){
     forceOpenOptions();
        // empty it because new environment;
         $.session.set("AssetProperties","");

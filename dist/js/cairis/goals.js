@@ -256,7 +256,7 @@ optionsContent.on('click',"#updateGoalGoal", function () {
 });
 
 function fillGoalOptionMenu(data){
-    fillOptionMenu("../../CAIRIS/fastTemplates/editGoalsOptions.html","#optionsContent",null,true,true, function(){
+    fillOptionMenu("fastTemplates/editGoalsOptions.html","#optionsContent",null,true,true, function(){
             $.session.set("Goal", JSON.stringify(data));
             $('#editGoalOptionsForm').loadJSON(data,null);
 
