@@ -20,7 +20,7 @@ $(document).on('click', "button.editAssetsButton",function(){
         url: serverIP + "/api/assets/name/" + name.replace(" ", "%20"),
         success: function (newdata) {
             // console.log(JSON.stringify(rawData));
-            fillOptionMenu("fastTemplates/EditAssetsOptions.html","#optionsContent",null,true,true, function(){
+            fillOptionMenu("fastTemplates/editAssetsOptions.html","#optionsContent",null,true,true, function(){
                     $.session.set("Asset", JSON.stringify(newdata));
                     $('#editAssetsOptionsform').loadJSON(newdata,null);
                     forceOpenOptions();

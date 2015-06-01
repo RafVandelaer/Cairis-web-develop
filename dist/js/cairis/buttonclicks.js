@@ -141,7 +141,7 @@ $("#vulnerabilitiesClick").click(function(){
 $(document).on('click', "button.editRoleButton",function() {
    var name = $(this).val();
     if(name == undefined || name == "") {
-        fillOptionMenu("fastTemplates/EditRoleOptions.html", "#optionsContent", null, true, true, function () {
+        fillOptionMenu("fastTemplates/editRoleOptions.html", "#optionsContent", null, true, true, function () {
             forceOpenOptions();
             $("#editRoleOptionsform").addClass("newRole");
         });
@@ -156,7 +156,7 @@ $(document).on('click', "button.editRoleButton",function() {
             crossDomain: true,
             url: serverIP + "/api/roles/name/" + name.replace(" ", "%20"),
             success: function (json) {
-                fillOptionMenu("fastTemplates/EditRoleOptions.html", "#optionsContent", null, true, true, function () {
+                fillOptionMenu("fastTemplates/editRoleOptions.html", "#optionsContent", null, true, true, function () {
                     forceOpenOptions();
                     var form = $('#editRoleOptionsform');
                     form.loadJSON(json, null);
@@ -768,7 +768,7 @@ removing a prop
 Add an asset
  */
 $(document).on('click', "#addNewAsset",function(){
-    fillOptionMenu("fastTemplates/EditAssetsOptions.html","#optionsContent",null,true,true,function(){
+    fillOptionMenu("fastTemplates/editAssetsOptions.html","#optionsContent",null,true,true,function(){
     forceOpenOptions();
        // empty it because new environment;
         $.session.set("AssetProperties","");
