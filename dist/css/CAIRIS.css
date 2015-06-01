@@ -203,7 +203,8 @@ select#theType {
     vertical-align:middle;
     text-align: center;
     position: absolute;
-    bottom:-100px;
+    margin-left: 25%;
+    bottom:100px;
     overflow: hidden;
     font-size: 20px;
 }
@@ -214,8 +215,13 @@ select#theType {
 .infoText{
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     color: #5c5c5c;
-    height: 100%;
+    /*height: 100%;*/
     text-align: center;
+}
+.infoText > .faultInfo {
+    font-size: 13px;
+    color: #000000;
+
 }
 .popupMessage div{
     height: 100%;
@@ -225,6 +231,7 @@ select#theType {
 }
 .popupMessage div .fa-exclamation{
      color: #fd0100;
+    height: 100%;
 }
 .columnSmall{
     border: 1px solid black;

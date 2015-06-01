@@ -11,7 +11,6 @@ function debugLogger(info){
         console.log(info);
     }
 }
-
 //The config window at start
 var dialogwindow = $( "#dialogContent" ).dialog({
     autoOpen: false,
@@ -1092,30 +1091,40 @@ function deepEquals(o1, o2) {
     }).all();
 }
 
-function showPopup(succes){
+function showPopup(succes, text){
+    var popup = $('.popupMessage');
+    popup.css("margin-left",$(document).width()/2);
 
-    if ($('.popupMessage').is(':visible')) {
+    /*if (popup.is(':visible')) {
 
     }else{
-        $('.popupMessage').show();
-    }
+        popup.show();
+    */
     if(succes){
-        $(".popupMessage").css("width","175px");
+        popup.css("width","175px");
+        popup.css("height","50px");
+
         $(".Succes").show();
         $(".Fail").hide();
     }
     else{
-        $(".popupMessage").css("width","350px");
+        var charcount = text.length;
+        charcount = charcount/47;
+
+        popup.css("width","350px");
+        popup.css("height",30*charcount);
         $(".Fail").show();
+        $(".Fail").find(".faultInfo").text(text);
         $(".Succes").hide();
     }
-    $(".popupMessage").css("margin-left",$( document).width()/2);
-    $(".popupMessage").animate({
-        bottom: '100px'
-    }, 1500).delay(3000).fadeOut("slow",function(){
+
+
+    popup.show("slide", { direction: "down" },1500).delay(5000).fadeOut("slow",function(){
         //bottom: '-100px'
-        $(".popupMessage").css("bottom","-100px");
+
     });
+  //  popup.fadeIn("slow").delay(5000).fadeOut("slow");
+
 }
 function fillRolesTable(){
     window.activeTable = "Roles";

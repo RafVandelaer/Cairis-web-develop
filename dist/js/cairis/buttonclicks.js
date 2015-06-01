@@ -178,7 +178,8 @@ $(document).on('click', "button.editRoleButton",function() {
                             $.session.set("RoleEnvironments", JSON.stringify(json))
                         },
                         error: function (xhr, textStatus, errorThrown) {
-                            showPopup(false);
+                            var error = JSON.parse(xhr.responseText);
+                            showPopup(false, String(error.message));
                             debugLogger(String(this.url));
                             debugLogger("error: " + xhr.responseText + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
                         }
@@ -188,7 +189,8 @@ $(document).on('click', "button.editRoleButton",function() {
                 });
             },
             error: function (xhr, textStatus, errorThrown) {
-                showPopup(false);
+                var error = JSON.parse(xhr.responseText);
+                showPopup(false, String(error.message));
                 debugLogger(String(this.url));
                 debugLogger("error: " + xhr.responseText + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
             }

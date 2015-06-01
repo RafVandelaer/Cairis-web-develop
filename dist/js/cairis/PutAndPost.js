@@ -63,7 +63,8 @@ function putRequirementRow(row){
             showPopup(true);
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -87,7 +88,8 @@ function postRequirementRow(row,whatKind,value){
             showPopup(true);
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -139,7 +141,8 @@ function putAssetProperty(assetSON){
             showPopup(true);
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -169,7 +172,8 @@ function putAsset(json){
             showPopup(true);
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -199,7 +203,8 @@ function postAsset(json,callback){
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -229,7 +234,8 @@ function updateAssetEnvironment(json,callback){
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -263,7 +269,8 @@ function newAssetEnvironment(jsonString,callback){
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -294,7 +301,8 @@ function updateRole(role, oldName, callback){
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -325,7 +333,8 @@ function postRole(role, callback){
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -349,7 +358,8 @@ function deleteRole(roleName, callback){
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -379,7 +389,8 @@ function putEnvironment(environment, oldName, callback){
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -403,7 +414,8 @@ function postEnvironment(environment, callback){
         data: output,
         url: serverIP + "/api/environments" + "?session_id=" + $.session.get('sessionID'),
         success: function (data) {
-            showPopup(true);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             if(jQuery.isFunction(callback)){
                 callback();
             }
@@ -433,7 +445,8 @@ function deleteEnvironment(name, callback){
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -463,7 +476,8 @@ function putVulnerability(vuln, oldName, callback){
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -493,7 +507,8 @@ function postVulnerability(vuln, callback){
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -517,7 +532,8 @@ function deleteVulnerability(name, callback){
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -547,7 +563,8 @@ function putThreat(threat, oldName, callback){
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -577,7 +594,8 @@ function postThreat(threat, callback){
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -601,7 +619,8 @@ function deleteThreat(name, callback){
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -634,7 +653,8 @@ function putAttacker(attacker, oldName, usePopup, callback){
         },
         error: function (xhr, textStatus, errorThrown) {
             if(usePopup) {
-                showPopup(false);
+                var error = JSON.parse(xhr.responseText);
+                showPopup(false, String(error.message));
             }
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
@@ -665,7 +685,8 @@ function postAttacker(attacker, callback){
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
@@ -688,7 +709,8 @@ function deleteAttacker(name, callback){
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            showPopup(false);
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }

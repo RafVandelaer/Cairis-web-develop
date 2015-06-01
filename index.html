@@ -71,7 +71,7 @@
                         </a>
                     </li>
                     <li class="dropdown messages-menu">
-                        <a href="#" class="dropdown-toggle imgwrapper" data-toggle="dropdown">
+                        <a href="#" class="dropdown-toggle imgwrapper" id="debugID" data-toggle="dropdown">
                             <img class="menu-image" src="images/Save-icon.png" alt="Save Project">
                                 <p class="imgPopup">Save Project</p>
                         </a>
@@ -588,9 +588,9 @@
 <div id="errorDialog" title="ERROR">
     <p style="color: black">You can't use CAIRIS without any settings</p>
 </div>
-<div class="popupMessage" style="display: none;">
+<div class="popupMessage" style="display:none;" >
     <div class="Succes"><i class="fa fa-check fa-2x"></i><div class="infoText">Success</div></div>
-    <div class="Fail"><i class="fa fa-exclamation fa-2x"></i><div class="infoText">Something went wrong...</div></div>
+    <div class="Fail"><i class="fa fa-exclamation fa-2x"></i><div class="infoText">Something went wrong...<p class="faultInfo"></p></div></div>
 </div>
 <div id="ChooseAssetDialog" title="Choose an Asset" style="display: none">
     <select>
@@ -618,7 +618,9 @@
         //console.log("Scrolling");
     });
     $("#comboboxDialog").hide();
-
+    $("#debugID").click(function () {
+        putThreat("{}", "NoName");
+    })
 
 </script>
 
