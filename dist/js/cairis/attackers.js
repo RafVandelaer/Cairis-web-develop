@@ -118,12 +118,13 @@ optionsContent.on("click",".attackerEnvironment", function () {
 });
 optionsContent.on("click", "#addMotivetoAttacker", function () {
     var hasMot = [];
+    var theEnvName =  $.session.get("attackerEnvironmentName");
     $(".attackerMotive").each(function (index, tag) {
         hasMot.push($(tag).text());
     });
-    motivationDialogBox(hasMot, function (text) {
+    motivationDialogBox(theEnvName, function (text) {
         var attacker = JSON.parse($.session.get("Attacker"));
-        var theEnvName =  $.session.get("attackerEnvironmentName");
+
         $.each(attacker.theEnvironmentProperties, function (index, env) {
             if(env.theEnvironmentName == theEnvName){
                 env.theMotives.push(text);

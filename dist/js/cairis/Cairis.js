@@ -513,7 +513,64 @@ function assetsDialogBox(haveEnv,callback){
         }
     });
 }
+/*
+ Dialog for choosing an asset in a certain environment
+ */
+function assetsInEnvDialogBox(environ, haveEnv, callback){
+    var dialogwindow = $("#ChooseEnvAssetsDialog");
+    var select = dialogwindow.find("select");
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
 
+        },
+        crossDomain: true,
+        url: serverIP + "/api/assets/environment/" + environ.replace(" ", "%20")+ "/names",
+        success: function (data) {
+
+            select.empty();
+            var none = true;
+            $.each(data, function(index1, object) {
+                var found = false;
+                $.each(haveEnv,function(index, text) {
+                    if(text == object){
+                        found = true
+                    }
+                });
+                //if not found in assets
+                if(!found) {
+                    select.append("<option value=" + object + ">" + object + "</option>");
+                    none = false;
+                }
+            });
+            if(!none) {
+                //dialogwindow.show();
+                dialogwindow.dialog({
+                    modal: true,
+                    buttons: {
+                        Ok: function () {
+                            var text =  select.find("option:selected" ).text();
+                            if(jQuery.isFunction(callback)){
+                                callback(text);
+                            }
+                            $(this).dialog("close");
+                        }
+                    }
+                });
+                $(".comboboxD").css("visibility", "visible");
+            }else {
+                alert("All assets are already added");
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
 
 
 function environmentDialogBox(haveEnv,callback){
@@ -994,6 +1051,28 @@ function getAllAssets(callback) {
         },
         crossDomain: true,
         url: serverIP + "/api/assets",
+        success: function (data) {
+            if (jQuery.isFunction(callback)) {
+                callback(data);
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText + ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            return null;
+        }
+    })
+}
+function getAllAssetsInEnv(env,callback) {
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crossDomain: true,
+        url: serverIP + "/api/assets/environment/" + env.replace(" ", "%20") + "/names" ,
         success: function (data) {
             if (jQuery.isFunction(callback)) {
                 callback(data);

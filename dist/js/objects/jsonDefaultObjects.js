@@ -115,3 +115,17 @@ var attackerDefault = {
     "theImage": "",
     "theEnvironmentProperties": []
 };
+var goalEnvDefault =     {
+        "__python_obj__": "GoalEnvironmentProperties.GoalEnvironmentProperties",
+        "theFitCriterion": "",
+        "theConcerns": [],
+        "theSubGoalRefinements": [],
+        "thePriority": "",
+        "theEnvironmentName": "",
+        "theCategory": "",
+        "theDefinition": "",
+        "theConcernAssociations": [],
+        "theGoalRefinements": [],
+        "theLabel": "",
+        "theIssue": ""
+    };
