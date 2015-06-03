@@ -278,7 +278,7 @@ function newAssetEnvironment(jsonString,callback){
 }
 function updateRole(role, oldName, callback){
 
-    output = {};
+    var output = {};
     output.object = role;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
@@ -310,7 +310,7 @@ function updateRole(role, oldName, callback){
 }
 function postRole(role, callback){
 
-    output = {};
+   var output = {};
     output.object = role;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
@@ -366,7 +366,7 @@ function deleteRole(roleName, callback){
     });
 }
 function putEnvironment(environment, oldName, callback){
-    output = {};
+    var output = {};
     output.object = environment;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
@@ -397,7 +397,7 @@ function putEnvironment(environment, oldName, callback){
     });
 }
 function postEnvironment(environment, callback){
-    output = {};
+   var output = {};
     output.object = environment;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
@@ -453,7 +453,7 @@ function deleteEnvironment(name, callback){
     });
 }
 function putVulnerability(vuln, oldName, callback){
-    output = {};
+   var output = {};
     output.object = vuln;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
@@ -484,7 +484,7 @@ function putVulnerability(vuln, oldName, callback){
     });
 }
 function postVulnerability(vuln, callback){
-    output = {};
+    var output = {};
     output.object = vuln;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
@@ -540,7 +540,7 @@ function deleteVulnerability(name, callback){
     });
 }
 function putThreat(threat, oldName, callback){
-    output = {};
+    var output = {};
     output.object = threat;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
@@ -571,7 +571,7 @@ function putThreat(threat, oldName, callback){
     });
 }
 function postThreat(threat, callback){
-    output = {};
+   var output = {};
     output.object = threat;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
@@ -627,7 +627,7 @@ function deleteThreat(name, callback){
     });
 }
 function putAttacker(attacker, oldName, usePopup, callback){
-    output = {};
+   var output = {};
     output.object = attacker;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
@@ -662,7 +662,7 @@ function putAttacker(attacker, oldName, usePopup, callback){
     });
 }
 function postAttacker(attacker, callback){
-    output = {};
+    var output = {};
     output.object = attacker;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
@@ -717,7 +717,7 @@ function deleteAttacker(name, callback){
     });
 }
 function putGoal(goal, oldName, callback){
-    output = {};
+   var output = {};
     output.object = goal;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
@@ -748,7 +748,7 @@ function putGoal(goal, oldName, callback){
     });
 }
 function postGoal(goal, callback){
-    output = {};
+    var output = {};
     output.object = goal;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
@@ -795,6 +795,36 @@ function postNewProject(callback){
         error: function (xhr, textStatus, errorThrown) {
             var error = JSON.parse(xhr.responseText);
             showPopup(false, String(error.message));
+        }
+    });
+}
+function putProjectSettings(settings, callback){
+    var output = {};
+    output.object = settings;
+    output.session_id = $.session.get('sessionID');
+    output = JSON.stringify(output);
+
+    $.ajax({
+        type: "PUT",
+        dataType: "json",
+        contentType: "application/json",
+        accept: "application/json",
+        crossDomain: true,
+        processData: false,
+        origin: serverIP,
+        data: output,
+        url: serverIP + "/api/settings?session_id=" + $.session.get('sessionID'),
+        success: function (data) {
+            showPopup(true);
+            if(jQuery.isFunction(callback)){
+                callback();
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });
 }

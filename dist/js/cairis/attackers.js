@@ -86,7 +86,7 @@ $(document).on('click', ".editAttackerButton", function () {
                     });
                     $("#theAttackerEnvironments").find(".attackerEnvironment:first").trigger('click');
                     $("#theImages").attr("src",getImagedir(data.theImage));
-                    resaleAgain($("#theImages"));
+                    resaleImage($("#theImages"));
                 }
             );
         },
@@ -404,19 +404,6 @@ $("#optionsContent").on('change','#fileupload', function () {
     outerbar.show("slide", { direction: "up" }, 750);
 
     $.ajax({
-        xhr: function() {
-            var xhr = new window.XMLHttpRequest();
-            xhr.upload.addEventListener("progress", function(evt) {
-                if (evt.lengthComputable) {
-                    var percentComplete = evt.loaded / evt.total;
-                    console.log("Percentage: "+percentComplete);
-                    percentComplete = (percentComplete) * 150;
-                    console.log("Me: " + percentComplete);
-                    bar.css("width", percentComplete)
-                }
-            }, false);
-            return xhr;
-        },
         type: "POST",
         accept: "application/json",
         processData:false,
@@ -438,6 +425,17 @@ $("#optionsContent").on('change','#fileupload', function () {
             outerbar.hide("slide", { direction: "down" }, 750);
             debugLogger(String(this.url));
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        },
+        xhr: function() {
+            var xhr = new window.XMLHttpRequest();
+            xhr.upload.addEventListener("progress", function(evt) {
+                if (evt.lengthComputable) {
+                    var percentComplete = evt.loaded / evt.total;
+                    percentComplete = (percentComplete) * outerbar.width();
+                    bar.css("width", percentComplete)
+                }
+            }, false);
+            return xhr;
         }
     });
 
@@ -449,29 +447,12 @@ function postImage(imagedir, actualDir) {
     $("#theImages").attr("src", actualDir);
     putAttacker(attacker, attacker.theName, false, function () {
         $("#theImages").attr("src", actualDir);
-        resaleAgain($("#theImages"));
+        resaleImage($("#theImages"),200);
     });
 
     $.session.set("Attacker", JSON.stringify(attacker));
     //appendAttackerCapability(prop);
 
-}
-
-
-function resaleAgain(image){
-    var theImage = new Image();
-    theImage.src = image.attr("src");
-
-    var imageWidth = theImage.width;
-    var imageHeight = theImage.height;
-
-    var resizeNumber = imageWidth/200;
-    imageHeight = imageHeight/resizeNumber;
-    image.attr("width",200);
-    image.attr("height", imageHeight);
-}
-function getImagedir(imageName){
-    return serverIP + "/images/"+ imageName;
 }
 
 function attackerToggle(){

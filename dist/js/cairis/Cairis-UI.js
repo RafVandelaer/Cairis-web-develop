@@ -98,6 +98,21 @@ function forceCloseOptions(){
         navMenu.animate({"right": "-500px"});
         navGear.removeClass("open");
 }
+/*
+for rescaling an image
+ */
+function resaleImage(image, maxWidth){
+    var theImage = new Image();
+    theImage.src = image.attr("src");
+
+    var imageWidth = theImage.width;
+    var imageHeight = theImage.height;
+
+    var resizeNumber = imageWidth/maxWidth;
+    imageHeight = imageHeight/resizeNumber;
+    image.attr("width",maxWidth);
+    image.attr("height", imageHeight);
+}
 
 /*
  Created for the top navbar, which in AdminLTE didn't stick on top.

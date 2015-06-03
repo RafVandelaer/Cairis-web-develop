@@ -1242,6 +1242,9 @@ function getAssetDefinition(props){
     $('#Properties').find('tbody').append(textToInsert.join(''));
 
 }
+function getImagedir(imageName){
+    return serverIP + "/images/"+ imageName;
+}
 
 function deepEquals(o1, o2) {
     var k1 = Object.keys(o1).sort();
@@ -1258,14 +1261,12 @@ function deepEquals(o1, o2) {
 
 function showPopup(succes, text){
     var popup = $('.popupMessage');
+    var time = 0;
     popup.css("margin-left",$(document).width()/2);
 
-    /*if (popup.is(':visible')) {
-
-    }else{
-        popup.show();
-    */
     if(succes){
+        //just 5 seconds
+        time = 5000;
         popup.css("width","175px");
         popup.css("height","50px");
 
@@ -1275,21 +1276,15 @@ function showPopup(succes, text){
     else{
         var charcount = text.length;
         charcount = charcount/47;
-
+        time = 7000;
         popup.css("width","350px");
         popup.css("height",30*(charcount+1));
         $(".Fail").show();
         $(".Fail").find(".faultInfo").text(text);
         $(".Succes").hide();
     }
-
-
-    popup.show("slide", { direction: "down" },1500).delay(7000).fadeOut("slow",function(){
-        //bottom: '-100px'
-
+    popup.show("slide", { direction: "down" },1500).delay(time).fadeOut("slow",function(){
     });
-  //  popup.fadeIn("slow").delay(5000).fadeOut("slow");
-
 }
 function fillRolesTable(){
     window.activeTable = "Roles";
