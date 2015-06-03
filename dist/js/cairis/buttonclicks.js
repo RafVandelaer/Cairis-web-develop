@@ -199,7 +199,10 @@ $(document).on('click', "button.editRoleButton",function() {
     }
 });
 $("#startNewProject").click(function () {
-
+    postNewProject(function () {
+        window.activeTable = "Requirements";
+        startingTable();
+    });
 });
 
 $(document).on('click', "button.editVulnerabilityButton",function(){
