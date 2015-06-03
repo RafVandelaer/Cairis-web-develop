@@ -300,47 +300,68 @@ function createRequirementsTable(data){
 /*
  A function for filling the table with requirements
  */
-function createEditGoalsTable(data){
-    var theTable = $(".theTable");
-    $(".theTable tr").not(function(){if ($(this).has('th').length){return true}}).remove();
-    //var arr = reallyLongArray;
-    var textToInsert = [];
-    var i = 0;
+function createEditGoalsTable(){
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crfossDomain: true,
+        url: serverIP + "/api/goals",
+        success: function (data) {
+            window.activeTable = "EditGoals";
+            setTableHeader();
+            var theTable = $(".theTable");
+            $(".theTable tr").not(function(){if ($(this).has('th').length){return true}}).remove();
+            //var arr = reallyLongArray;
+            var textToInsert = [];
+            var i = 0;
 
-    $.each(data, function(count, item) {
-        textToInsert[i++] = "<tr>";
-        textToInsert[i++] = '<td><button class="editGoalsButton" value="' + item.theName + '">' + 'Edit' + '</button> <button class="deleteGoalButton" value="' + item.theName + '">' + 'Delete' + '</button></td>';
+            $.each(data, function(count, item) {
+                textToInsert[i++] = "<tr>";
+                textToInsert[i++] = '<td><button class="editGoalsButton" value="' + item.theName + '">' + 'Edit' + '</button> <button class="deleteGoalButton" value="' + item.theName + '">' + 'Delete' + '</button></td>';
 
-        textToInsert[i++] = '<td name="theName">';
-        textToInsert[i++] = item.theName;
-        textToInsert[i++] = '</td>';
+                textToInsert[i++] = '<td name="theName">';
+                textToInsert[i++] = item.theName;
+                textToInsert[i++] = '</td>';
 
-        textToInsert[i++] = '<td name="theOriginator">';
-        textToInsert[i++] = item.theOriginator;
-        textToInsert[i++] = '</td>';
+                textToInsert[i++] = '<td name="theOriginator">';
+                textToInsert[i++] = item.theOriginator;
+                textToInsert[i++] = '</td>';
 
-       textToInsert[i++] = '<td name="Status">';
-        if(item.theColour == 'black'){
-            textToInsert[i++] = "Check";
-        }else if(item.theColour == 'red'){
-            textToInsert[i++] = "To refine";
-        }else{
-            textToInsert[i++] = "OK";
+                textToInsert[i++] = '<td name="Status">';
+                if(item.theColour == 'black'){
+                    textToInsert[i++] = "Check";
+                }else if(item.theColour == 'red'){
+                    textToInsert[i++] = "To refine";
+                }else{
+                    textToInsert[i++] = "OK";
+                }
+
+                textToInsert[i++] = '</td>';
+
+                textToInsert[i++] = '<td name="theId"  style="display:none;">';
+                textToInsert[i++] = item.theId;
+                textToInsert[i++] = '</td>';
+
+                textToInsert[i++] = '</tr>';
+            });
+
+            // theRows[j++]=textToInsert.join('');
+            theTable.append(textToInsert.join(''));
+
+            theTable.css("visibility","visible");
+            activeElement("reqTable");
+            sortTableByRow(0);
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
+    })
 
-        textToInsert[i++] = '</td>';
-
-        textToInsert[i++] = '<td name="theId"  style="display:none;">';
-        textToInsert[i++] = item.theId;
-        textToInsert[i++] = '</td>';
-
-        textToInsert[i++] = '</tr>';
-    });
-
-    // theRows[j++]=textToInsert.join('');
-    theTable.append(textToInsert.join(''));
-
-    theTable.css("visibility","visible");
 }
 
 function createAssetsTable(data, callback){
@@ -1256,14 +1277,14 @@ function showPopup(succes, text){
         charcount = charcount/47;
 
         popup.css("width","350px");
-        popup.css("height",30*charcount);
+        popup.css("height",30*(charcount+1));
         $(".Fail").show();
         $(".Fail").find(".faultInfo").text(text);
         $(".Succes").hide();
     }
 
 
-    popup.show("slide", { direction: "down" },1500).delay(5000).fadeOut("slow",function(){
+    popup.show("slide", { direction: "down" },1500).delay(7000).fadeOut("slow",function(){
         //bottom: '-100px'
 
     });

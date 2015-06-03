@@ -2,29 +2,7 @@
  * Created by Raf on 29/05/2015.
  */
 $("#EditGoals").click(function(){
-
-    $.ajax({
-        type: "GET",
-        dataType: "json",
-        accept: "application/json",
-        data: {
-            session_id: String($.session.get('sessionID'))
-        },
-        crfossDomain: true,
-        url: serverIP + "/api/goals",
-        success: function (data) {
-            window.activeTable = "EditGoals";
-            setTableHeader();
-            createEditGoalsTable(data);
-            activeElement("reqTable");
-            sortTableByRow(0);
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            debugLogger(String(this.url));
-            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
-        }
-    })
-
+    createEditGoalsTable()
 });
 
 $(document).on('click', "button.editGoalsButton",function() {
@@ -47,7 +25,11 @@ optionsContent.on('click', ".goalEnvProperties", function () {
     $.each(goal.theEnvironmentProperties, function (index, env) {
         if(env.theEnvironmentName == name){
             $('#goalsProperties').loadJSON(env,null);
-            $("#theIssue").val = env.theIssue;
+            $("#theIssue").val(env.theIssue);
+            $("#theDefinition").val(env.theDefinition);
+            $("#theFitCriterion").val(env.theFitCriterion);
+            //theDef fitcrit issue
+
             $.each(env.theGoalRefinements, function (index, goal) {
                 appendGoalEnvGoals(goal);
             });
@@ -282,6 +264,63 @@ optionsContent.on('click', '#updateGoalSubGoal', function () {
     fillGoalOptionMenu(goal);
     toggleGoalwindow("#editGoalOptionsForm");
 });
+optionsContent.on('change', ".goalAutoUpdater" ,function() {
+    var goal = JSON.parse($.session.get("Goal"));
+    var envName = $.session.get("GoalEnvName");
+    var name = $(this).attr("name");
+    var element = $(this);
+
+        $.each(goal.theEnvironmentProperties, function (index, env) {
+            if(env.theEnvironmentName == envName){
+                //This is made for future development.
+                if($(element).is("input")){
+                    env[name] = $(element).val();
+                }
+                else if($(element).is("textarea")){
+                    env[name] = $(element).val();
+                }
+                else {
+                    env[name] = $(element).find(":selected").text();
+                }
+                $.session.set("Goal", JSON.stringify(goal));
+            }
+        });
+
+
+
+});
+$(document).on('click', '#addNewGoal', function () {
+    fillGoalOptionMenu(null, function () {
+        $("#editGoalOptionsForm").addClass('new');
+        forceOpenOptions();
+    });
+
+});
+
+
+optionsContent.on('click', "#updateGoalButton", function (e) {
+    e.preventDefault();
+    var goal = JSON.parse($.session.get("Goal"));
+    var oldName = goal.theName;
+    goal.theName = $("#theName").val();
+    goal.theOriginator = $("#theOriginator").val();
+    var tags = $("#theTags").text().split(", ");
+    if(tags[0] != ""){
+        goal.theTags = tags;
+    }
+    //IF NEW Attacker
+    if($("#editGoalOptionsForm").hasClass("new")){
+        postGoal(goal, function () {
+
+            createEditGoalsTable();
+            $("#editAttackerOptionsForm").removeClass("new")
+        });
+    } else {
+        putGoal(goal, oldName, function () {
+            createEditGoalsTable();
+        });
+    }
+});
 optionsContent.on('dblclick', '.editGoalSubGoalRow', function () {
     toggleGoalwindow("#editgoalSubGoal");
     var name = $(this).find("td").eq(1).text();
@@ -403,21 +442,31 @@ function getGoalOptions(name){
     });
 }
 
-function fillGoalOptionMenu(data){
+function fillGoalOptionMenu(data,callback){
     fillOptionMenu("fastTemplates/editGoalsOptions.html","#optionsContent",null,true,true, function(){
-            $.session.set("Goal", JSON.stringify(data));
-            $('#editGoalOptionsForm').loadJSON(data,null);
+            if(data != null) {
+                $.session.set("Goal", JSON.stringify(data));
+                $('#editGoalOptionsForm').loadJSON(data, null);
 
-            $.each(data.theTags, function (index, tag) {
-                $("#theTags").append(tag + ", ");
-            });
-            $.each(data.theEnvironmentProperties, function (index, prop) {
-                appendGoalEnvironment(prop.theEnvironmentName);
-            });
-            forceOpenOptions();
-            $("#theGoalEnvironments").find(".goalEnvProperties:first").trigger('click');
+                $.each(data.theTags, function (index, tag) {
+                    $("#theTags").append(tag + ", ");
+                });
+                $.each(data.theEnvironmentProperties, function (index, prop) {
+                    appendGoalEnvironment(prop.theEnvironmentName);
+                });
+                forceOpenOptions();
+                $("#theGoalEnvironments").find(".goalEnvProperties:first").trigger('click');
 
+            }
+            else{
+                var goal =  jQuery.extend(true, {},goalDefault );
+                $.session.set("Goal", JSON.stringify(goal));
+            }
+            if (jQuery.isFunction(callback)) {
+                callback();
+            }
         }
+
     );
 }
 function fillGoalEditSubGoal(theSettableValue){

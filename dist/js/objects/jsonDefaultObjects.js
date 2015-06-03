@@ -129,3 +129,12 @@ var goalEnvDefault =     {
         "theLabel": "",
         "theIssue": ""
     };
+var goalDefault = {
+    "__python_obj__": "Goal.Goal",
+    "theColour": "",
+    "theId": -1,
+    "theOriginator": "",
+    "theTags": [],
+    "theName": "",
+    "theEnvironmentProperties": []
+};

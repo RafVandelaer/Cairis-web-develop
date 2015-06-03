@@ -198,6 +198,9 @@ $(document).on('click', "button.editRoleButton",function() {
 
     }
 });
+$("#startNewProject").click(function () {
+
+});
 
 $(document).on('click', "button.editVulnerabilityButton",function(){
     if($(this).hasClass("newVulnerability")){

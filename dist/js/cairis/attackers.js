@@ -288,7 +288,7 @@ optionsContent.on('click', '#UpdateAttacker', function (e) {
     if(tags[0] != ""){
         attacker.theTags = tags;
     }
-    //IF NEW THREAT
+    //IF NEW Attacker
     if($("#editAttackerOptionsForm").hasClass("new")){
         postAttacker(attacker, function () {
             createAttackersTable();
