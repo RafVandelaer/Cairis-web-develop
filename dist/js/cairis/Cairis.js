@@ -983,6 +983,10 @@ function setTableHeader(){
             debugLogger("Is Attacker");
             thead = "<th width='120px' id='addNewAttacker'><i class='fa fa-plus floatCenter'></i></th><th>Name</th><th>Description</th>";
             break;
+        case "Risks":
+            debugLogger("Is Risk");
+            thead = "<th width='120px' id='addnewRisk'><i class='fa fa-plus floatCenter'></i></th><th>Name</th>";
+            break;
     }
     $("#reqTable").find("thead").empty();
    // $("#reqTable").empty();
