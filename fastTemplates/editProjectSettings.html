@@ -1,5 +1,5 @@
-<form>
-    <div id="ProjectsProperties" class="tabs right" style="margin: 5px;">
+<form id="ProjectsProperties">
+    <div class="tabs right" style="margin: 5px;">
         <ul>
             <li><a href="#Background">Background</a></li>
             <li><a href="#ProjectGoalsDiv">Goals</a></li>
@@ -63,3 +63,47 @@
     </div>
     <button id="updateProjectButton" style="margin: 5px;">Update</button>
 </form>
+<div id="editContributorWindow" style="display: none; margin:10px;">
+    <p>
+        <label>Firstname</label>
+        <input class="optionsInput" type="text" name="firstName" id="firstName">
+    </p>
+    <p>
+        <label>Surname</label>
+        <input class="optionsInput" type="text" value="" id="surname" name="surname">
+    </p>
+    <p>
+        <label>Affliation</label>
+        <input class="optionsInput" type="text" value="" id="affliation" name="affliation">
+    </p>
+    <p>
+        <label>Role</label>
+        <select  class="optionsInput" id="role" name="role">
+            <option value="Participant">Participant</option>
+            <option value="Facilitator">Facilitator</option>
+            <option value="Scribe">Scribe</option>
+        </select>
+    </p>
+    <button class="projectSettingsCancel">Cancel</button>
+    <button id="updateContributor">Update</button>
+</div>
+<div id="addRevision" style="display: none; margin:10px;">
+    <p>
+    <label> Add a Revision</label>
+    <textarea id="revisionTextArea" style="margin: 0px; width: 477px; height: 86px;"></textarea>
+    </p>
+    <button id="addRevisionButton">Add revision</button>
+</div>
+<div id="editNamingConvention" style="display: none; margin:10px;">
+    <p>
+        <label>Name</label>
+        <input class="optionsInput" type="text" name="conventionName" id="conventionName">
+    </p>
+    <p>
+        <label>Definition</label>
+        <textarea id="conventionDefinition" style="margin: 0px; width: 477px; height: 86px;"></textarea>
+    </p>
+
+    <button class="projectSettingsCancel">Cancel</button>
+    <button id="updateNamingConventions">Update</button>
+</div>
