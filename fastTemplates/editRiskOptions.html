@@ -1,10 +1,49 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+<form id="editRisksForm">
+    <p>
+        <label>Name</label>
+        <input class="optionsInput" type="text" name="theName" id="theName">
+    </p>
+    <p>
+        <label>Tags</label>
+        <input class="optionsInput" type="text" name="theTags" id="theTags">
+    </p>
+    <p>
+        <label>Threat</label>
+        <select class="right" id="theThreatNames">
 
-</body>
-</html>
+        </select>
+        </p>
+    <p>
+        <label>Vulnerability</label>
+        <select class="right" id="theVulnerabilityNames">
+
+        </select>
+    </p>
+    <p>
+        <table class="clickable-table" id="theRiskEnvironments" style="width: 100%;">
+            <thead>
+            <tr><th>Environment</th></tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </p>
+    <p>
+        <label>Rating</label>
+        <input class="optionsInput" type="text" name="rating" id="rating">
+    </p>
+    <p>
+    <table class="clickable-table" id="theResponses" style="width: 100%;">
+        <thead>
+        <tr><th>Response</th><th>Unmit. Score</th><th>Mit. Score</th></tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+    </p>
+
+
+    <button id="5">Update</button>
+</form>
