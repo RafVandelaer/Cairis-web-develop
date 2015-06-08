@@ -45,10 +45,49 @@ function createRisksTable(){
         }
     })
 }
+optionsContent.on('dblclick', ".riskEnvironment", function () {
+
+});
+optionsContent.on('click', "#editMisusedCase", function (e) {
+    e.preventDefault();
+    var name = $.session.get("riskName");
+    toggleRiskWindows();
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crossDomain: true,
+        url: serverIP + "/api/misuse-cases/risk/" + name ,
+        success: function (data) {
+            $("#theMisuseName").val(data.theName);
+            $("#theMisuseRisk").val(data.theRiskName);
+            $.each(data.theEnvironmentDictionary, function (key, object) {
+                appendMisuseEnvironment(key);
+                //TODO misuseCASE WHEN API IS READY
+
+            });
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    })
+
+});
+
+function toggleRiskWindows(){
+    $("#editMisusedCaseDiv").toggle();
+    $("#editRisksForm").toggle();
+}
+
+
 //fillOptionMenu("fastTemplates/editAttackerOptions.html", "#optionsContent", null, true, true, function () {
 $(document).on('click', '.editRiskButton', function () {
-
     var name = $(this).val();
+    $.session.set("riskName", name);
     $.ajax({
         type: "GET",
         dataType: "json",
@@ -58,7 +97,7 @@ $(document).on('click', '.editRiskButton', function () {
         },
         crossDomain: true,
         url: serverIP + "/api/risks/name/" + name.replace(" ", "%20"),
-        success: function (data) {
+        success: function (mainData) {
             // console.log(JSON.stringify(rawData));
             fillOptionMenu("fastTemplates/editRiskOptions.html", "#optionsContent", null, true, true, function () {
                     forceOpenOptions();
@@ -70,6 +109,7 @@ $(document).on('click', '.editRiskButton', function () {
                                     .attr("value",key)
                                     .text(key));
                         });
+                        threatSelect.val(mainData.theThreatName);
                     });
                     getVulnerabilities(function (data) {
                         $.each(data, function (key, obj) {
@@ -77,12 +117,16 @@ $(document).on('click', '.editRiskButton', function () {
                                 .attr("value",key)
                                 .text(key));
                         });
+                        vulnSelect.val(mainData.theVulnerabilityName);
+                        getRiskEnvironments();
                     });
-                    $("#theName").text(data.theName);
-                    //TODO: TAGS
-                    $.each(data.theEnvironmentProperties, function (index, env) {
-                        appendRiskEnvironment(env.theEnvironmentName);
+                    $("#theName").val(mainData.theName);
+                    var tags = data.theTags;
+                    var text = "";
+                    $.each(tags, function (index, type) {
+                        text += type + ", ";
                     });
+                    $("#theTags").val(text);
                 }
             );
         },
@@ -93,6 +137,84 @@ $(document).on('click', '.editRiskButton', function () {
     });
 
 });
+optionsContent.on('click', '.riskEnvironment', function () {
+    var env = $(this).text();
+    var name = $("#theName").val();
+    getRiskEnvironmentDetails(name, env);
+});
+optionsContent.on('change', ".riskDetailsChanger", function () {
+   getRiskEnvironments()
+});
+
+function getRiskEnvironments(){
+    var threatName = $("#theThreatNames").val();
+    var vulName = $("#theVulnerabilityNames").val();
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crfossDomain: true,
+        url: serverIP + "/api/environments/threat/" + threatName + "/vulnerability/"+ vulName + "/names",
+        success: function (data) {
+            $('#theRiskEnvironments').find('tbody').empty();
+            $.each(data, function (index, object) {
+                appendRiskEnvironment(object);
+            })
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
+
+function getRiskEnvironmentDetails(name, environment){
+    var threatName = $("#theThreatNames").val();
+    var vulName = $("#theVulnerabilityNames").val();
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crfossDomain: true,
+        //GET /api/risks/threat/{threat}/vulnerability/{vulnerability}/environment/{environment}
+        url: serverIP + "/api/risks/threat/" + threatName + "/vulnerability/"+ vulName + "/environment/" + environment,
+        success: function (data) {
+            $("#rating").val(data.rating);
+
+            $.ajax({
+                type: "GET",
+                dataType: "json",
+                accept: "application/json",
+                data: {
+                    session_id: String($.session.get('sessionID'))
+                },
+                crfossDomain: true,
+                //GET /api/risks/threat/{threat}/vulnerability/{vulnerability}/environment/{environment}
+                url: serverIP + "/api/risks/name/"+ name +"/threat/" + threatName + "/vulnerability/"+ vulName + "/environment/" + environment,
+                success: function (data) {
+                    $("#theResponses").find("tbody").empty();
+                    $.each(data, function (index, object) {
+                        appendRiskResponse(object);
+                    })
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    debugLogger(String(this.url));
+                    debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+                }
+            });
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
 
 //TODO> to CAIRIS.js
 function getThreats(callback){
@@ -141,4 +263,10 @@ function getVulnerabilities(callback){
 }
 function appendRiskEnvironment(environment){
     $("#theRiskEnvironments").find("tbody").append('<tr></td><td class="riskEnvironment">'+environment+'</td></tr>');
+}
+function appendRiskResponse(resp){
+    $("#theResponses").find("tbody").append('<tr></td><td>'+resp.responseName+'</td><td>'+ resp.unmitScore +'</td><td>'+ resp.mitScore +'</td></tr>');
+}
+function appendMisuseEnvironment(environment){
+    $("#theMisuseEnvironments").find("tbody").append('<tr><td>'+environment+'</td></tr>');
 }
