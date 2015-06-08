@@ -17,7 +17,7 @@ var dialogwindow = $( "#dialogContent" ).dialog({
     modal: true,
     buttons: {
         OK: function() {
-
+            showLoading();
             var json_text = JSON.stringify($('#configForm').serializeObject());
             var portArr  = json_text.match('port":"(.*)","user');
             var port = portArr[1];
@@ -35,6 +35,7 @@ var dialogwindow = $( "#dialogContent" ).dialog({
                    var sessionID = data.session_id;
                     $.session.set("sessionID", sessionID);
                     startingTable();
+                    hideLoading();
 
                 },
                 error: function(data, status, xhr) {
@@ -47,6 +48,7 @@ var dialogwindow = $( "#dialogContent" ).dialog({
             /*$('#response').html('The value entered was ' + $('#myInput').val());
              record.find('.name').html($('#myInput').val());*/
             $( this ).dialog( "close" );
+
         },
         Cancel: function() {
             $( this ).dialog( "close" );
@@ -62,7 +64,7 @@ $(document).ready(function() {
     var sessionID = $.session.get('sessionID');
     if(!sessionID){
         dialogwindow.dialog( "open" );
-        $(".loadingWrapper").fadeOut(500);
+        hideLoading();
     }
     else{
         //Else we can show the table
@@ -71,6 +73,12 @@ $(document).ready(function() {
 
 
 });
+function showLoading(){
+    $(".loadingWrapper").fadeIn(500);
+}
+function hideLoading(){
+    $(".loadingWrapper").fadeOut(500);
+}
 
 /*
 Filling the asset environment in the HTML
@@ -1013,6 +1021,10 @@ function setTableHeader(){
         case "Risks":
             debugLogger("Is Risk");
             thead = "<th width='120px' id='addnewRisk'><i class='fa fa-plus floatCenter'></i></th><th>Name</th>";
+            break;
+        case "Respones":
+            debugLogger("Is Response");
+            thead = "<th width='120px' id='addNewResponse'><i class='fa fa-plus floatCenter'></i></th><th>Name</th><th>Type</th>";
             break;
     }
     $("#reqTable").find("thead").empty();
