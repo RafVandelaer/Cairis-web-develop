@@ -61,7 +61,8 @@ $(document).ready(function() {
   //  localStorage.removeItem('sessionID');
     var sessionID = $.session.get('sessionID');
     if(!sessionID){
-        dialogwindow.dialog( "open" )
+        dialogwindow.dialog( "open" );
+        $(".loadingWrapper").fadeOut(500);
     }
     else{
         //Else we can show the table
@@ -930,6 +931,8 @@ function startingTable(){
             setTableHeader("Requirements");
             createRequirementsTable(data);
             activeElement("reqTable");
+            $(".loadingWrapper").fadeOut(500);
+
         },
         error: function(xhr, textStatus, errorThrown) {
             debugLogger(String(this.url));
