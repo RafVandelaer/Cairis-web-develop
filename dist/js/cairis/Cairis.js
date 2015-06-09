@@ -1,6 +1,8 @@
 /**
  * Created by Raf on 24/04/2015.
  */
+
+window.serverIP = "http://"+ window.location.host;
 window.serverIP = "http://192.168.112.131:7071";
 window.activeTable ="Requirements";
 window.boxesAreFilled = false;
@@ -485,6 +487,50 @@ function createVulnerabilityTable(){
 
 
 }
+function getRisks(callback){
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crossDomain: true,
+        url: serverIP + "/api/risks",
+        success: function (data) {
+            if(jQuery.isFunction(callback)){
+                callback(data);
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            return null;
+        }
+    });
+}
+function getRoles(callback){
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        accept: "application/json",
+        data: {
+            session_id: String($.session.get('sessionID'))
+        },
+        crossDomain: true,
+        url: serverIP + "/api/roles",
+        success: function (data) {
+            if(jQuery.isFunction(callback)){
+                callback(data);
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+            return null;
+        }
+    });
+}
 /*
 Dialog for choosing an asset
  */
@@ -557,6 +603,38 @@ function fileDialogbox(callback){
                 if(jQuery.isFunction(callback)){
                     callback(text);
                     $("#importFile").trigger('click')
+                }
+                $(this).dialog("close");
+            }
+        }
+    });
+    $(".comboboxD").css("visibility", "visible");
+
+}
+/*
+ Dialog for choosing a new role for the responses
+ */
+function newRoleDialogbox(callback){
+    var dialogwindow = $("#ChooseRoleForResponse");
+    var roleSelect = dialogwindow.find("#theNewRole");
+    var costSelect = dialogwindow.find("#theRoleCost");
+    getRoles(function (roles) {
+        $.each(roles, function (key, obj) {
+            roleSelect.append($('<option>', { value : key })
+                .text(key));
+        });
+    });
+    dialogwindow.dialog({
+        modal: true,
+        buttons: {
+            Ok: function () {
+                var role =  roleSelect.find("option:selected" ).text();
+                var cost =  costSelect.find("option:selected" ).text();
+                if(jQuery.isFunction(callback)){
+                    var newRole =  jQuery.extend(true, {}, respRoleDefault );
+                    newRole.roleName = role;
+                    newRole.cost = cost;
+                    callback(newRole);
                 }
                 $(this).dialog("close");
             }
