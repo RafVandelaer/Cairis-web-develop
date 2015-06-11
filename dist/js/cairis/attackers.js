@@ -240,6 +240,7 @@ optionsContent.on('click', ".deleteAttackerEnv", function () {
         if(env.theEnvironmentName == envi){
             attacker.theEnvironmentProperties.splice( index ,1 );
             $.session.set("Attacker", JSON.stringify(attacker));
+            clearAttackerEnvInfo();
             $("#theAttackerEnvironments").find(".attackerEnvironment:first").trigger('click');
              return false;
         }
