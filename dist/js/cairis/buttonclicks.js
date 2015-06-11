@@ -386,7 +386,7 @@ $("#reqTable").on("click", "#addNewRole", function () {
 });
 //addNewVulnerability
 $("#reqTable").on("click", "#addNewVulnerability", function () {
-    $("#reqTable").find("tbody").append('<tr><td><button class="editVulnerabilityButton newVulnerability" value="">Edit</button> <button class="deleteVulnerabilityButton" value="">Delete</button></td><td name="theVulnerabilityName"></td><td name="theVulnerabilityType"></td></tr>');
+    //$("#reqTable").find("tbody").append('<tr><td><button class="editVulnerabilityButton newVulnerability" value="">Edit</button> <button class="deleteVulnerabilityButton" value="">Delete</button></td><td name="theVulnerabilityName"></td><td name="theVulnerabilityType"></td></tr>');
     var vul = jQuery.extend(true, {}, vulnerabilityDefault);
     $.session.set("Vulnerability", JSON.stringify(vul));
     fillOptionMenu("fastTemplates/editVulnerabilityOptions.html", "#optionsContent", null, true, true, function () {
