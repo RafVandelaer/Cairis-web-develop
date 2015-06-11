@@ -3,7 +3,7 @@
  */
 
 window.serverIP = "http://"+ window.location.host;
-window.serverIP = "http://192.168.112.131:7071";
+window.serverIP = "http://192.168.112.136:7071";
 window.activeTable ="Requirements";
 window.boxesAreFilled = false;
 window.debug = true;
@@ -90,7 +90,7 @@ function fillEditAssetsEnvironment(){
     var i = 0;
     var textToInsert = [];
     $.each(data, function(arrayindex, value) {
-        textToInsert[i++] = '<tr><td class="removeEnvironment"><i class="fa fa-minus"></i></td><td class="clickable-environments assetEnvironmetRow">';
+        textToInsert[i++] = '<tr><td class="removeAssetEnvironment"><i class="fa fa-minus"></i></td><td class="clickable-environments assetEnvironmetRow">';
         textToInsert[i++] = value.theEnvironmentName;
         textToInsert[i++] = '</td></tr>';
     });
@@ -760,7 +760,7 @@ function environmentDialogBox(haveEnv,callback){
 /*
  Dialog for choosing an attacker
  */
-function attackerDialogBox(haveEnv, environment ,callback){
+function attackerDialogBox(hassAtt, environment ,callback){
     var dialogwindow = $("#ChooseAssetDialog");
     var select = dialogwindow.find("select");
     $.ajax({
@@ -778,7 +778,7 @@ function attackerDialogBox(haveEnv, environment ,callback){
             var none = true;
             $.each(data, function(key, attacker) {
                 var found = false;
-                $.each(haveEnv,function(index, text) {
+                $.each(hassAtt,function(index, text) {
                     if(text == key){
                         found = true
                     }
