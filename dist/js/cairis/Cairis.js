@@ -1011,7 +1011,9 @@ function startingTable(){
         accept:"application/json",
         crossDomain: true,
         url: serverIP + "/api/requirements",
-        data: {session_id: String($.session.get('sessionID'))},
+        data: {session_id: String($.session.get('sessionID')),
+                ordered: "1"
+        },
         success: function(data) {
             // $("#test").append(JSON.stringify(data));
             setTableHeader("Requirements");
