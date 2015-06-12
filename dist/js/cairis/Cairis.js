@@ -2,7 +2,7 @@
  * Created by Raf on 24/04/2015.
  */
 window.serverIP = "http://192.168.112.137:7071";
-//window.serverIP = "http://"+ window.location.host;
+window.serverIP = "http://"+ window.location.host;
 
 window.activeTable ="Requirements";
 window.boxesAreFilled = false;
