@@ -1385,7 +1385,7 @@ function getAssetDefinition(props){
 
 }
 function getImagedir(imageName){
-    return serverIP + "/images/"+ imageName;
+    return serverIP + "/api/images/"+ imageName;
 }
 
 function deepEquals(o1, o2) {

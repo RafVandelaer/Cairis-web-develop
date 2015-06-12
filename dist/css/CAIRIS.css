@@ -11,7 +11,7 @@ p.imgPopup {
     color: #fff;
     padding: 5px;
     left: -5px;
-    height: 200px;
+    height: 100px;
     width: 100px;
     visibility: hidden;
     opacity: 0;
@@ -304,7 +304,7 @@ select#theType {
     background-color: rgba(255,255,255,0.7);
 }
 .main-footer {
-    padding-top:  0;
+    padding-top: 5;
     padding-bottom: 0;
 }
 .noHover a:hover{
