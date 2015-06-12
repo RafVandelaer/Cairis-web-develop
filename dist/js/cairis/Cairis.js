@@ -1,8 +1,8 @@
 /**
  * Created by Raf on 24/04/2015.
  */
-window.serverIP = "http://192.168.112.136:7071";
-window.serverIP = "http://"+ window.location.host;
+window.serverIP = "http://192.168.112.137:7071";
+//window.serverIP = "http://"+ window.location.host;
 
 window.activeTable ="Requirements";
 window.boxesAreFilled = false;
@@ -875,6 +875,25 @@ function roleDialogBox(hasRole ,callback){
             debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
         }
     });
+}/*
+ Dialog for choosing a new Response
+ */
+function responseDialog(callback){
+    var dialogwindow = $("#responseType");
+    var select = dialogwindow.find("select");
+                dialogwindow.dialog({
+                    modal: true,
+                    buttons: {
+                        Ok: function () {
+                            var text =  select.find("option:selected" ).text();
+                            if(jQuery.isFunction(callback)){
+                                callback(text);
+                            }
+                            $(this).dialog("close");
+                        }
+                    }
+                });
+               // $(".comboboxD").css("visibility", "visible");
 }
 
 /*

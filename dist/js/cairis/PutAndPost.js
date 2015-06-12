@@ -282,7 +282,7 @@ function updateRole(role, oldName, callback){
     output.object = role;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
-    debugLogger(output);
+    //debugLogger(output);
 
     $.ajax({
         type: "PUT",
@@ -314,7 +314,7 @@ function postRole(role, callback){
     output.object = role;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
-    debugLogger(output);
+   // debugLogger(output);
 
     $.ajax({
         type: "POST",
@@ -370,7 +370,7 @@ function putEnvironment(environment, oldName, callback){
     output.object = environment;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
-    debugLogger(output);
+    //debugLogger(output);
 
     $.ajax({
         type: "PUT",
@@ -401,7 +401,7 @@ function postEnvironment(environment, callback){
     output.object = environment;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
-    debugLogger(output);
+   // debugLogger(output);
 
     $.ajax({
         type: "POST",
@@ -457,7 +457,7 @@ function putVulnerability(vuln, oldName, callback){
     output.object = vuln;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
-    debugLogger(output);
+    //debugLogger(output);
 
     $.ajax({
         type: "PUT",
@@ -488,7 +488,7 @@ function postVulnerability(vuln, callback){
     output.object = vuln;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
-    debugLogger(output);
+   // debugLogger(output);
 
     $.ajax({
         type: "POST",
@@ -544,7 +544,7 @@ function putThreat(threat, oldName, callback){
     output.object = threat;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
-    debugLogger(output);
+    //debugLogger(output);
 
     $.ajax({
         type: "PUT",
@@ -575,7 +575,7 @@ function postThreat(threat, callback){
     output.object = threat;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
-    debugLogger(output);
+   // debugLogger(output);
 
     $.ajax({
         type: "POST",
@@ -631,7 +631,7 @@ function putAttacker(attacker, oldName, usePopup, callback){
     output.object = attacker;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
-    debugLogger(output);
+    //debugLogger(output);
 
     $.ajax({
         type: "PUT",
@@ -666,7 +666,7 @@ function postAttacker(attacker, callback){
     output.object = attacker;
     output.session_id = $.session.get('sessionID');
     output = JSON.stringify(output);
-    debugLogger(output);
+   // debugLogger(output);
 
     $.ajax({
         type: "POST",
@@ -813,6 +813,93 @@ function putProjectSettings(settings, callback){
         origin: serverIP,
         data: output,
         url: serverIP + "/api/settings?session_id=" + $.session.get('sessionID'),
+        success: function (data) {
+            showPopup(true);
+            if(jQuery.isFunction(callback)){
+                callback();
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
+
+function putResponse(response, oldName, callback){
+    var output = {};
+    output.object = response;
+    output.session_id = $.session.get('sessionID');
+    output = JSON.stringify(output);
+    //debugLogger(output);
+
+    $.ajax({
+        type: "PUT",
+        dataType: "json",
+        contentType: "application/json",
+        accept: "application/json",
+        crossDomain: true,
+        processData: false,
+        origin: serverIP,
+        data: output,
+        url: serverIP + "/api/responses/name/" + oldName.replace(" ","%20") + "?session_id=" + $.session.get('sessionID'),
+        success: function (data) {
+            showPopup(true);
+            if(jQuery.isFunction(callback)){
+                callback();
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
+
+function postResponse(goal, callback){
+    var output = {};
+    output.object = goal;
+    output.session_id = $.session.get('sessionID');
+    output = JSON.stringify(output);
+
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        accept: "application/json",
+        crossDomain: true,
+        processData: false,
+        origin: serverIP,
+        data: output,
+        url: serverIP + "/api/responses" + "?session_id=" + $.session.get('sessionID'),
+        success: function (data) {
+            showPopup(true);
+            if(jQuery.isFunction(callback)){
+                callback();
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            var error = JSON.parse(xhr.responseText);
+            showPopup(false, String(error.message));
+            debugLogger(String(this.url));
+            debugLogger("error: " + xhr.responseText +  ", textstatus: " + textStatus + ", thrown: " + errorThrown);
+        }
+    });
+}
+function deleteResponse(name, callback){
+    $.ajax({
+        type: "DELETE",
+        dataType: "json",
+        contentType: "application/json",
+        accept: "application/json",
+        crossDomain: true,
+        processData: false,
+        origin: serverIP,
+        url: serverIP + "/api/responses/name/" + name.replace(" ","%20") + "?session_id=" + $.session.get('sessionID'),
         success: function (data) {
             showPopup(true);
             if(jQuery.isFunction(callback)){

@@ -69,6 +69,53 @@ $(document).on('click', ".editResponseButton", function () {
     });
 });
 var optionsContent = $("#optionsContent");
+$(document).on('click', "#addNewResponse" , function () {
+    var resp =  jQuery.extend(true, {},respDefault );
+
+    responseDialog(function (text) {
+        resp.theResponseType = text;
+        resp.theEnvironmentProperties[text.toLowerCase()] = [];
+        $.session.set("response", JSON.stringify(resp));
+        $.session.set("responseKind", text.toLowerCase());
+        fillOptionMenu("fastTemplates/editResponseOptions.html", "#optionsContent", null, true, true, function () {
+            $("#editResponseOptionsform").addClass("newResponse");
+            var select = $("#chooseRisk");
+            select.empty();
+            getRisks(function (risks) {
+                $.each(risks, function (key, obj) {
+                    select.append($('<option>', { value : key })
+                        .text(key));
+                });
+
+                switch (resp.theResponseType){
+                    case "Transfer":
+                        toggleResponse("#transferWindow");
+                        break;
+                    case "Mitigate":
+                        //  $.session.set("responseKind", "prevent");
+                        toggleResponse("#mitigateWindow");
+                        break;
+                    case "Accept":
+                        toggleResponse("#acceptWindow");
+                        break;
+                    default :
+                        alert("You have an old, unsupported project");
+                        break;
+                }
+                $("#theRespEnvironments").find(".responseEnvironment:first").trigger('click');
+                forceOpenOptions();
+            });
+        });
+    });
+});
+
+$(document).on("click", ".deleteResponseButton", function (e) {
+    e.preventDefault();
+    deleteResponse($(this).val(), function () {
+        createResponsesTable();
+    });
+});
+
 optionsContent.on('click', ".deleteTransferRole", function () {
     var roleName = $(this).next(".roleName").text();
     var resp = JSON.parse($.session.get("response"));
@@ -102,7 +149,6 @@ optionsContent.on('click', "#addRespEnv", function () {
         $.session.set("response", JSON.stringify(resp));
     });
 });
-//TODO: ADD NEW RESPONSE
 
 optionsContent.on('click', ".deleteRespEnv", function () {
     var envi = $(this).next(".responseEnvironment").text();
@@ -126,6 +172,27 @@ optionsContent.on('click', ".deleteRespEnv", function () {
         });
     });
 
+});
+optionsContent.on('click', "#UpdateResponse", function (e) {
+    e.preventDefault();
+    var response = JSON.parse($.session.get("response"));
+    var oldName = response.theName;
+    response.theName = $("#theResponseName").val();
+    response.theMethod = $("#theMethod").val();
+    var tags = $("#theTags").text().split(", ");
+    response.theTags = tags;
+    response.theRisk = $("#chooseRisk").val();
+
+    //IF NEW THREAT
+    if($("#editResponseOptionsform").hasClass("newResponse")){
+        postResponse(response, function () {
+            createResponsesTable();
+        });
+    } else {
+        putResponse(response, oldName, function () {
+            createResponsesTable();
+        });
+    }
 });
 
 

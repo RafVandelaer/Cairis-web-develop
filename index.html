@@ -64,14 +64,14 @@
             <div class="navbar-custom-menu">
                 <ul class="nav navbar-nav">
 
-                    <li class="dropdown messages-menu">
-                        <a href="#" class="dropdown-toggle imgwrapper" id="startNewProject" data-toggle="dropdown">
+                    <li class="dropdown messages-menu" id="startNewProject">
+                        <a href="#" class="dropdown-toggle imgwrapper" data-toggle="dropdown">
                            <img class="menu-image" src="images/new_file2.png" alt="New Project">
                                 <p class="imgPopup">New Project</p>
                         </a>
                     </li>
-                    <li class="dropdown messages-menu">
-                        <a href="#" class="dropdown-toggle imgwrapper" id="debugID" data-toggle="dropdown">
+                    <li class="dropdown messages-menu" id="debugID">
+                        <a href="#" class="dropdown-toggle imgwrapper" data-toggle="dropdown">
                             <img class="menu-image" src="images/Save-icon.png" alt="Save Project">
                                 <p class="imgPopup">Save Project</p>
                         </a>
@@ -89,8 +89,8 @@
                         <p class="imgPopup">Project Settings</p>
                     </a>
                     </li>
-                    <li class="dropdown messages-menu">
-                    <a href="#" id="editEnvironmentsButton" class="dropdown-toggle imgwrapper" data-toggle="dropdown">
+                    <li class="dropdown messages-menu" id="editEnvironmentsButton">
+                    <a href="#"  class="dropdown-toggle imgwrapper" data-toggle="dropdown">
                         <img class="menu-image" src="images/environment.png" alt="Environment Settings">
                         <p class="imgPopup">Environment Settings</p>
                     </a>
@@ -101,14 +101,14 @@
                             <p class="imgPopup">Edit Architectural Patterns</p>
                         </a>
                     </li>
-                    <li class="dropdown messages-menu">
-                        <a href="#" id="addRow" class="dropdown-toggle imgwrapper" data-toggle="dropdown">
+                    <li class="dropdown messages-menu" id="addRow">
+                        <a href="#"  class="dropdown-toggle imgwrapper" data-toggle="dropdown">
                             <img class="menu-image"  src="images/addEO.png" alt="Add new requirement">
                             <p class="imgPopup">Add new requirement</p>
                         </a>
                     </li>
-                    <li class="dropdown messages-menu">
-                        <a href="#" id="removeReq" class="dropdown-toggle imgwrapper" data-toggle="dropdown">
+                    <li class="dropdown messages-menu" id="removeReq">
+                        <a href="#"  class="dropdown-toggle imgwrapper" data-toggle="dropdown">
                             <img class="menu-image" src="images/deleteEO.png" alt="Delete requirement">
                             <p class="imgPopup">Delete requirement</p>
                         </a>
@@ -167,8 +167,8 @@
                             <p class="imgPopup">Edit Use Cases</p>
                         </a>
                     </li>
-                    <li class="dropdown messages-menu">
-                    <a href="#" class="dropdown-toggle imgwrapper" id="editAssetsClick" data-toggle="dropdown">
+                    <li class="dropdown messages-menu"  id="editAssetsClick">
+                    <a href="#" class="dropdown-toggle imgwrapper" data-toggle="dropdown">
                         <img class="menu-image" src="images/template_asset.png" alt="Edit Assets">
                         <p class="imgPopup">Edit Assets</p>
                     </a>
@@ -180,8 +180,8 @@
                         </a>
                     </li>
                     </li>
-                    <li class="dropdown messages-menu">
-                        <a href="#" class="dropdown-toggle imgwrapper" id="attackerClick" data-toggle="dropdown">
+                    <li class="dropdown messages-menu" id="attackerClick">
+                        <a href="#" class="dropdown-toggle imgwrapper"  data-toggle="dropdown">
                             <img class="menu-image" src="images/attacker.png" alt="Edit Attackers">
                             <p class="imgPopup">Edit Attackers</p>
                         </a>
@@ -192,8 +192,8 @@
                             <p class="imgPopup">Edit Threats</p>
                         </a>
                     </li>
-                 <li class="dropdown messages-menu">
-                        <a href="#" class="dropdown-toggle imgwrapper" id="risksClick" data-toggle="dropdown">
+                 <li class="dropdown messages-menu" id="risksClick" >
+                        <a href="#" class="dropdown-toggle imgwrapper" data-toggle="dropdown">
                             <img class="menu-image" src="images/risk.png" alt="Edit Risks">
                             <p class="imgPopup">Edit Risks</p>
                         </a>
@@ -551,7 +551,7 @@
         <!-- To the right -->
         <div class="pull-right hidden-xs">
 
-            <strong>Copyright &copy; 2015 <a href="#">Company</a>.</strong> All rights reserved.
+            <!--<strong>Copyright &copy; 2015 <a href="#">Company</a>.</strong> All rights reserved.-->
         </div>
         <!-- Default to the left -->
         <div id="inform"></div>
@@ -646,6 +646,13 @@
         <option>Processes</option>
     </select>
 </div>
+<div id="responseType" title="Select Response" style="display: none">
+    <select>
+        <option>Accept</option>
+        <option>Transfer</option>
+        <option>Mitigate</option>
+    </select>
+</div>
 <div class="loadingWrapper">
     <div class="divLoading">
     </div>
@@ -663,7 +670,8 @@
     $("#comboboxDialog").hide();
     $("#debugID").click(function () {
         putThreat("{}", "NoName");
-    })
+    });
+
 
 </script>
 
@@ -679,8 +687,10 @@
         "dist/js/cairis/SVGhandler.js","dist/js/cairis/PutAndPost.js", "plugins/contextMenu/contextMenu.js", "dist/js/objects/jsonDefaultObjects.js"], function () {
 
        console.log("All Cairis JS loaded");
+        setAvailableIcons();
 
     });
+
 
 </script>
 <!-- For the basic page, keeping it separate from the Cairis jQuery

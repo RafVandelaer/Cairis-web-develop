@@ -148,3 +148,13 @@ var respEnvDefault = {"__python_obj__": "TransferEnvironmentProperties.TransferE
     "theRoles": [],
     "theEnvironmentName": "Stroke"
 };
+
+var respDefault = {
+    "__python_obj__": "Response.Response",
+    "theId": -1,
+    "theTags": [],
+    "theRisk": "",
+    "theName": "",
+    "theEnvironmentProperties": {},
+    "theResponseType": ""
+};
