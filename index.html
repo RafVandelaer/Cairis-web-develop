@@ -40,6 +40,7 @@
     <script src="plugins/JsonPopulate/jquery.loadJSON.js"></script>
 
     <script src="plugins/jQueryUI/jquery-ui-contextmenu.js"></script>
+    <script src="plugins/jQueryCookie/jquery.cookie.js"></script>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -562,10 +563,6 @@
     <p>Define your database settings</p>
     <form  enctype='application/json' id="configForm">
         <p>
-            <label for="host">Host </label>
-            <input type="text" id="host" name="host" value="127.0.0.1" />
-        </p>
-        <p>
             <label for="port">Port </label>
             <input type='number' id="port" name="port" value="3306" />
         <p/>
@@ -575,10 +572,10 @@
         <p/>
         <p>
             <label for="passwd">Password </label>
-            <input type="password" id="passwd" name="passwd" value="cairis123" />
+            <input type="password" id="passwd" name="passwd" value="" />
         <p/>
         <p>
-            <label for="db">User </label>
+            <label for="db">DB Name</label>
             <input type="text" id="db" name="db" value="cairis" />
         </p>
     </form>
@@ -657,6 +654,30 @@
     <div class="divLoading">
     </div>
 </div>
+<div id="settingsDialog" title="Settings" style="display: none" >
+    <form  enctype='application/json'  id="connectionForm">
+        <p>
+       <select id="connectionSelection" style="width: 250px;">
+       </select>
+        </p>
+        <p>
+        <button id="addConnection">Add a new connection</button>
+        </p>
+        </form>
+    <div id="aNewConnection" style="display: none">
+        <p>
+        <label for="IP">Host IP</label>
+        <input id="IP" type="text">
+            </p><p>
+        <label for="DBIP">DB IP</label>
+        <input id="DBIP" type="text">
+        </p>
+        <button id="addThisConnection">Add</button>
+    </div>
+
+
+</div>
+
 <script>
    var reqTabl =  $('#reqTable').editableTableWidget({editor: $('<textarea>')});
     /*
@@ -680,7 +701,7 @@
 <script>
     LazyLoad.js(["dist/js/cairis/Cairis-UI.js","dist/js/cairis/buttonclicks.js", "dist/js/cairis/Cairis.js", "dist/js/cairis/readFile.js",
         "dist/js/cairis/threats.js", "dist/js/cairis/attackers.js", "dist/js/cairis/assets.js", "dist/js/cairis/goals.js", "dist/js/cairis/projectSettings.js",
-        "dist/js/cairis/risks.js", "dist/js/cairis/fileImport.js", "dist/js/cairis/responses.js",
+        "dist/js/cairis/risks.js", "dist/js/cairis/fileImport.js", "dist/js/cairis/responses.js","dist/js/cairis/connections.js",
         "dist/js/cairis/SVGhandler.js","dist/js/cairis/PutAndPost.js", "plugins/contextMenu/contextMenu.js", "dist/js/objects/jsonDefaultObjects.js"], function () {
 
        //console.log("All Cairis JS loaded");

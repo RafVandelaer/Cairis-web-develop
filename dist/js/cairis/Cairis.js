@@ -21,9 +21,19 @@ var dialogwindow = $( "#dialogContent" ).dialog({
         OK: function() {
             showLoading();
             var json = $('#configForm').serializeObject();
-            var port = parseInt(json.port);;
+            var port = parseInt(json.port);
             json.port = port;
+            var cookieSon = JSON.parse($.cookie("connections"));
+            var index = $.session.get("usedConnectionIndex");
+            var usedObject = cookieSon[index];
+            json.host = usedObject.DB;
+            window.serverIP = "http://"+ usedObject.IP+":7071";
             var json_text = JSON.stringify(json);
+
+            json.passwd = "";
+            var cookieText = $.session.get("cookieText");
+            $.cookie(cookieText, JSON.stringify(json));
+
             debugLogger(json_text);
             $.ajax({
                 type: 'POST',
@@ -61,20 +71,6 @@ var dialogwindow = $( "#dialogContent" ).dialog({
 
 
 
-$(document).ready(function() {
-  //  localStorage.removeItem('sessionID');
-    var sessionID = $.session.get('sessionID');
-    if(!sessionID){
-        dialogwindow.dialog( "open" );
-        hideLoading();
-    }
-    else{
-        //Else we can show the table
-       startingTable();
-    }
-
-
-});
 function showLoading(){
     $(".loadingWrapper").fadeIn(500);
 }
