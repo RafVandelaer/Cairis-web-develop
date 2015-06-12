@@ -20,10 +20,10 @@ var dialogwindow = $( "#dialogContent" ).dialog({
     buttons: {
         OK: function() {
             showLoading();
-            var json_text = JSON.stringify($('#configForm').serializeObject());
-            var portArr  = json_text.match('port":"(.*)","user');
-            var port = portArr[1];
-            json_text = json_text.replace('"'+port+'"',port);
+            var json = $('#configForm').serializeObject();
+            var port = parseInt(json.port);;
+            json.port = port;
+            var json_text = JSON.stringify(json);
             debugLogger(json_text);
             $.ajax({
                 type: 'POST',
