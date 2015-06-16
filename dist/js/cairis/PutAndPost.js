@@ -83,7 +83,7 @@ function postRequirementRow(row,whatKind,value){
            body: JSON.stringify(json)
         },
         crossDomain: true,
-        url: serverIP + "/api/requirements/update?" + whatKind+"="+value.replace(' ',"%20"),
+        url: serverIP + "/api/requirements?" + whatKind+"="+value.replace(' ',"%20"),
         success: function (data) {
             showPopup(true);
         },
